@@ -1,13 +1,12 @@
 """
 Strategic Technique Categories for Polyhegel
 
-Defines strategic technique categories aligned with CLM (Collaborative Leadership Model) mandates
-for technique-guided generation of strategic plans.
+Defines strategic technique categories for technique-guided generation of strategic plans.
 
-Based on CLM framework:
-- 2.1 Resource Acquisition
-- 2.2 Strategic Security  
-- 2.3 Value Catalysis
+Based on common strategic domains:
+- Resource Acquisition: Obtaining and optimizing necessary resources
+- Strategic Security: Maintaining operational integrity and resilience
+- Value Catalysis: Accelerating value creation and stakeholder benefit
 """
 
 from enum import Enum
@@ -15,11 +14,11 @@ from typing import Dict, List, Optional
 from dataclasses import dataclass
 
 
-class CLMMandate(Enum):
-    """CLM mandate categories"""
-    RESOURCE_ACQUISITION = "2.1"
-    STRATEGIC_SECURITY = "2.2"  
-    VALUE_CATALYSIS = "2.3"
+class StrategyDomain(Enum):
+    """Strategic domain categories"""
+    RESOURCE_ACQUISITION = "resource_acquisition"
+    STRATEGIC_SECURITY = "strategic_security"  
+    VALUE_CATALYSIS = "value_catalysis"
 
 
 @dataclass
@@ -27,18 +26,18 @@ class StrategicTechnique:
     """Represents a strategic technique with metadata"""
     name: str
     description: str
-    mandate: CLMMandate
+    domain: StrategyDomain
     use_cases: List[str]
     complexity: str  # "low", "medium", "high"
     timeframe: str   # "immediate", "short-term", "long-term"
 
 
-# Resource Acquisition Techniques (CLM 2.1)
+# Resource Acquisition Techniques
 RESOURCE_ACQUISITION_TECHNIQUES = [
     StrategicTechnique(
         name="Stakeholder Alignment Matrix",
         description="Map stakeholder interests to resource needs and create win-win partnerships",
-        mandate=CLMMandate.RESOURCE_ACQUISITION,
+        domain=StrategyDomain.RESOURCE_ACQUISITION,
         use_cases=[
             "Securing funding from multiple investor types",
             "Building coalitions for resource sharing",
@@ -50,7 +49,7 @@ RESOURCE_ACQUISITION_TECHNIQUES = [
     StrategicTechnique(
         name="Incremental Resource Bootstrap",
         description="Start with minimal resources and systematically expand through staged achievements",
-        mandate=CLMMandate.RESOURCE_ACQUISITION,
+        domain=StrategyDomain.RESOURCE_ACQUISITION,
         use_cases=[
             "Bootstrapping with limited initial capital",
             "Building proof-of-concept before major investment",
@@ -62,7 +61,7 @@ RESOURCE_ACQUISITION_TECHNIQUES = [
     StrategicTechnique(
         name="Multi-Channel Resource Diversification",
         description="Develop multiple independent resource streams to reduce dependency risk",
-        mandate=CLMMandate.RESOURCE_ACQUISITION,
+        domain=StrategyDomain.RESOURCE_ACQUISITION,
         use_cases=[
             "Revenue diversification strategies",
             "Multiple funding source coordination",
@@ -74,7 +73,7 @@ RESOURCE_ACQUISITION_TECHNIQUES = [
     StrategicTechnique(
         name="Strategic Resource Pooling",
         description="Collaborate with partners to share and optimize resource utilization",
-        mandate=CLMMandate.RESOURCE_ACQUISITION,
+        domain=StrategyDomain.RESOURCE_ACQUISITION,
         use_cases=[
             "Consortium-based resource sharing",
             "Collaborative infrastructure development",
@@ -86,7 +85,7 @@ RESOURCE_ACQUISITION_TECHNIQUES = [
     StrategicTechnique(
         name="Value-Based Resource Exchange",
         description="Trade unique capabilities or assets for needed resources rather than cash",
-        mandate=CLMMandate.RESOURCE_ACQUISITION,
+        domain=StrategyDomain.RESOURCE_ACQUISITION,
         use_cases=[
             "Skill-based bartering arrangements",
             "Intellectual property licensing deals",
@@ -97,12 +96,12 @@ RESOURCE_ACQUISITION_TECHNIQUES = [
     )
 ]
 
-# Strategic Security Techniques (CLM 2.2)
+# Strategic Security Techniques
 STRATEGIC_SECURITY_TECHNIQUES = [
     StrategicTechnique(
         name="Layered Defense Architecture",
         description="Multiple independent security layers to prevent single points of failure",
-        mandate=CLMMandate.STRATEGIC_SECURITY,
+        domain=StrategyDomain.STRATEGIC_SECURITY,
         use_cases=[
             "Information security frameworks",
             "Supply chain risk mitigation",
@@ -114,7 +113,7 @@ STRATEGIC_SECURITY_TECHNIQUES = [
     StrategicTechnique(
         name="Transparent Accountability Systems",
         description="Open processes and auditable decision-making to build trust and prevent corruption",
-        mandate=CLMMandate.STRATEGIC_SECURITY,
+        domain=StrategyDomain.STRATEGIC_SECURITY,
         use_cases=[
             "Governance transparency initiatives",
             "Public audit and oversight mechanisms",
@@ -126,7 +125,7 @@ STRATEGIC_SECURITY_TECHNIQUES = [
     StrategicTechnique(
         name="Distributed Authority Networks",
         description="Spread decision-making authority to prevent centralized vulnerabilities",
-        mandate=CLMMandate.STRATEGIC_SECURITY,
+        domain=StrategyDomain.STRATEGIC_SECURITY,
         use_cases=[
             "Decentralized organizational structures",
             "Multi-party consensus mechanisms",
@@ -138,7 +137,7 @@ STRATEGIC_SECURITY_TECHNIQUES = [
     StrategicTechnique(
         name="Adaptive Threat Response",
         description="Dynamic security measures that evolve with changing threat landscapes",
-        mandate=CLMMandate.STRATEGIC_SECURITY,
+        domain=StrategyDomain.STRATEGIC_SECURITY,
         use_cases=[
             "Cybersecurity threat intelligence",
             "Market competition response systems",
@@ -150,7 +149,7 @@ STRATEGIC_SECURITY_TECHNIQUES = [
     StrategicTechnique(
         name="Community-Based Security",
         description="Leverage collective stakeholder interests to create mutual security benefits",
-        mandate=CLMMandate.STRATEGIC_SECURITY,
+        domain=StrategyDomain.STRATEGIC_SECURITY,
         use_cases=[
             "Industry security standards cooperation",
             "Mutual aid and disaster response",
@@ -161,12 +160,12 @@ STRATEGIC_SECURITY_TECHNIQUES = [
     )
 ]
 
-# Value Catalysis Techniques (CLM 2.3)
+# Value Catalysis Techniques
 VALUE_CATALYSIS_TECHNIQUES = [
     StrategicTechnique(
         name="Exponential Value Creation",
         description="Design systems where value creation accelerates rather than scales linearly",
-        mandate=CLMMandate.VALUE_CATALYSIS,
+        domain=StrategyDomain.VALUE_CATALYSIS,
         use_cases=[
             "Network effect business models",
             "Compounding knowledge systems",
@@ -178,7 +177,7 @@ VALUE_CATALYSIS_TECHNIQUES = [
     StrategicTechnique(
         name="Cross-Pollination Innovation",
         description="Combine insights from different domains to create breakthrough value",
-        mandate=CLMMandate.VALUE_CATALYSIS,
+        domain=StrategyDomain.VALUE_CATALYSIS,
         use_cases=[
             "Interdisciplinary research initiatives",
             "Cross-industry solution adaptation",
@@ -190,7 +189,7 @@ VALUE_CATALYSIS_TECHNIQUES = [
     StrategicTechnique(
         name="Stakeholder Value Optimization",
         description="Simultaneously maximize value for all stakeholder groups rather than zero-sum thinking",
-        mandate=CLMMandate.VALUE_CATALYSIS,
+        domain=StrategyDomain.VALUE_CATALYSIS,
         use_cases=[
             "Multi-stakeholder platform design",
             "Ecosystem value creation strategies",
@@ -202,7 +201,7 @@ VALUE_CATALYSIS_TECHNIQUES = [
     StrategicTechnique(
         name="Iterative Value Discovery",
         description="Use rapid experimentation to discover and capture unexpected value opportunities",
-        mandate=CLMMandate.VALUE_CATALYSIS,
+        domain=StrategyDomain.VALUE_CATALYSIS,
         use_cases=[
             "Lean startup methodologies",
             "A/B testing for strategic decisions",
@@ -214,7 +213,7 @@ VALUE_CATALYSIS_TECHNIQUES = [
     StrategicTechnique(
         name="Collective Intelligence Amplification",
         description="Harness and enhance group intelligence to create value beyond individual capabilities",
-        mandate=CLMMandate.VALUE_CATALYSIS,
+        domain=StrategyDomain.VALUE_CATALYSIS,
         use_cases=[
             "Crowdsourcing and collective problem-solving",
             "Collaborative knowledge management",
@@ -237,11 +236,11 @@ TECHNIQUE_REGISTRY: Dict[str, StrategicTechnique] = {
     technique.name: technique for technique in ALL_TECHNIQUES
 }
 
-# Techniques by mandate
-TECHNIQUES_BY_MANDATE: Dict[CLMMandate, List[StrategicTechnique]] = {
-    CLMMandate.RESOURCE_ACQUISITION: RESOURCE_ACQUISITION_TECHNIQUES,
-    CLMMandate.STRATEGIC_SECURITY: STRATEGIC_SECURITY_TECHNIQUES,
-    CLMMandate.VALUE_CATALYSIS: VALUE_CATALYSIS_TECHNIQUES
+# Techniques by domain
+TECHNIQUES_BY_DOMAIN: Dict[StrategyDomain, List[StrategicTechnique]] = {
+    StrategyDomain.RESOURCE_ACQUISITION: RESOURCE_ACQUISITION_TECHNIQUES,
+    StrategyDomain.STRATEGIC_SECURITY: STRATEGIC_SECURITY_TECHNIQUES,
+    StrategyDomain.VALUE_CATALYSIS: VALUE_CATALYSIS_TECHNIQUES
 }
 
 # Techniques by complexity
@@ -259,9 +258,9 @@ TECHNIQUES_BY_TIMEFRAME: Dict[str, List[StrategicTechnique]] = {
 }
 
 
-def get_techniques_for_mandate(mandate: CLMMandate) -> List[StrategicTechnique]:
-    """Get all techniques for a specific CLM mandate"""
-    return TECHNIQUES_BY_MANDATE.get(mandate, [])
+def get_techniques_for_domain(domain: StrategyDomain) -> List[StrategicTechnique]:
+    """Get all techniques for a specific strategy domain"""
+    return TECHNIQUES_BY_DOMAIN.get(domain, [])
 
 
 def get_techniques_by_complexity(complexity: str) -> List[StrategicTechnique]:
@@ -280,7 +279,7 @@ def get_technique_by_name(name: str) -> Optional[StrategicTechnique]:
 
 
 def get_recommended_techniques(
-    mandate: Optional[CLMMandate] = None,
+    domain: Optional[StrategyDomain] = None,
     complexity: Optional[str] = None,
     timeframe: Optional[str] = None,
     limit: Optional[int] = None
@@ -289,7 +288,7 @@ def get_recommended_techniques(
     Get recommended techniques based on filtering criteria
     
     Args:
-        mandate: Filter by CLM mandate (optional)
+        domain: Filter by strategy domain (optional)
         complexity: Filter by complexity level (optional)
         timeframe: Filter by timeframe (optional)
         limit: Maximum number of techniques to return (optional)
@@ -299,8 +298,8 @@ def get_recommended_techniques(
     """
     techniques = ALL_TECHNIQUES
     
-    if mandate:
-        techniques = [t for t in techniques if t.mandate == mandate]
+    if domain:
+        techniques = [t for t in techniques if t.domain == domain]
     
     if complexity:
         techniques = [t for t in techniques if t.complexity == complexity]
@@ -316,7 +315,7 @@ def get_recommended_techniques(
 
 def format_technique_for_prompt(technique: StrategicTechnique) -> str:
     """Format a technique for use in LLM prompts"""
-    return f"""**{technique.name}** ({technique.mandate.value})
+    return f"""**{technique.name}** ({technique.domain.value})
 {technique.description}
 
 Use cases:
@@ -327,13 +326,13 @@ Timeframe: {technique.timeframe.title()}"""
 
 
 def get_techniques_prompt_text(
-    mandate: Optional[CLMMandate] = None,
+    domain: Optional[StrategyDomain] = None,
     complexity: Optional[str] = None,
     timeframe: Optional[str] = None,
     limit: int = 3
 ) -> str:
     """Generate formatted text of techniques for LLM prompts"""
-    techniques = get_recommended_techniques(mandate, complexity, timeframe, limit)
+    techniques = get_recommended_techniques(domain, complexity, timeframe, limit)
     
     if not techniques:
         return "No techniques match the specified criteria."
