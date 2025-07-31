@@ -55,3 +55,18 @@ python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+markers = [
+    "unit: marks tests as unit tests (fast, isolated)",
+    "integration: marks tests as integration tests (may use multiple components)",
+    "slow: marks tests as slow (>5 seconds)",
+    "llm: marks tests that make real LLM API calls",
+    "web: marks tests that make web requests",
+    "git: marks tests that interact with git repositories",
+]
