@@ -7,6 +7,7 @@ import asyncio
 import json
 import logging
 import sys
+import numpy as np
 from pathlib import Path
 from typing import Union
 
@@ -14,6 +15,18 @@ from .simulator import PolyhegelSimulator
 from .config import Config
 
 logger = logging.getLogger(__name__)
+
+
+class NumpyEncoder(json.JSONEncoder):
+    """JSON encoder that handles numpy types"""
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super(NumpyEncoder, self).default(obj)
 
 
 def read_text_from_file(file_path: Union[str, Path]) -> str:
@@ -40,17 +53,20 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Run simulation with default settings
+  # Run simulation with default temperature mode
   python -m polyhegel simulate --output results/
   
-  # Use specific model and temperature settings
+  # Use hierarchical mode with leader-follower agents
+  python -m polyhegel simulate --output results/ --mode hierarchical --user-prompt-file strategic-challenge.md
+  
+  # Use specific model and temperature settings (temperature mode)
   python -m polyhegel simulate --output results/ --model claude-3-haiku-20240307 --temperatures 0.8:5 0.9:10 1.0:5
   
   # Use custom system and user prompts from files
   python -m polyhegel simulate --output results/ --system-prompt-file system-prompt.md --user-prompt-file user-query.md
   
-  # Use different models for leader and followers
-  python -m polyhegel simulate --output results/ --leader-model grok-2-1212 --follower-model claude-3-haiku-20240307
+  # Use different models for leader and followers (hierarchical mode)
+  python -m polyhegel simulate --output results/ --mode hierarchical --leader-model grok-2-1212 --follower-model claude-3-haiku-20240307 --user-prompt-file challenge.md
   
   # List available models
   python -m polyhegel models
@@ -89,6 +105,12 @@ Environment Variables:
     simulate_parser.add_argument(
         '--user-prompt-file',
         help='Path to file containing user prompt'
+    )
+    simulate_parser.add_argument(
+        '--mode',
+        choices=['temperature', 'hierarchical'],
+        default='temperature',
+        help='Generation mode: temperature sampling or hierarchical agents (default: temperature)'
     )
     
     # Models command
@@ -162,7 +184,8 @@ Environment Variables:
             results = asyncio.run(simulator.run_simulation(
                 temperature_counts=temperature_counts,
                 system_prompt=system_prompt,
-                user_prompt=user_prompt
+                user_prompt=user_prompt,
+                mode=args.mode
             ))
             
             # Create output directory
@@ -172,7 +195,7 @@ Environment Variables:
             # Save results
             output_path = output_dir / 'simulation_results.json'
             with open(output_path, 'w') as f:
-                json.dump(results, f, indent=2)
+                json.dump(results, f, indent=2, cls=NumpyEncoder)
             
             logger.info(f"Results saved to {output_path}")
             
@@ -180,16 +203,22 @@ Environment Variables:
             if results['trunk']:
                 trunk_file = output_dir / 'trunk_strategy.json'
                 with open(trunk_file, 'w') as f:
-                    json.dump(results['trunk'], f, indent=2)
+                    json.dump(results['trunk'], f, indent=2, cls=NumpyEncoder)
             
             for i, twig in enumerate(results['twigs']):
                 twig_file = output_dir / f'twig_strategy_{i+1}.json'
                 with open(twig_file, 'w') as f:
-                    json.dump(twig, f, indent=2)
+                    json.dump(twig, f, indent=2, cls=NumpyEncoder)
             
             # Display summary
             print(f"\nSimulation Complete!")
+            print(f"Mode: {args.mode}")
             print(f"Model: {args.model}")
+            if args.mode == 'hierarchical':
+                print(f"Leader model: {leader_model}")
+                print(f"Follower model: {follower_model}")
+            else:
+                print(f"Temperature settings: {temperature_counts}")
             print(f"Total strategies generated: {results['metadata']['total_chains']}")
             print(f"Trunk identified: {results['trunk'] is not None}")
             print(f"Twigs found: {len(results['twigs'])}")

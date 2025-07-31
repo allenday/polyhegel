@@ -204,7 +204,7 @@ class PolyhegelSimulator:
                 'total_chains': len(self.chains),
                 'model': self.model_name,
                 'temperature_counts': temperature_counts,
-                'clustering': self.cluster_results if self.cluster_results else {}
+                'clustering': self._clean_cluster_results() if self.cluster_results else {}
             }
         }
         
@@ -235,7 +235,7 @@ class PolyhegelSimulator:
         """Compute statistics about the generated strategies"""
         stats = {
             'total_strategies': len(self.chains),
-            'average_steps': np.mean([len(c.strategy.steps) for c in self.chains]),
+            'average_steps': float(np.mean([len(c.strategy.steps) for c in self.chains])),
             'temperature_distribution': {},
             'cluster_distribution': {}
         }
@@ -247,10 +247,30 @@ class PolyhegelSimulator:
         
         # Cluster distribution
         for chain in self.chains:
-            label = chain.cluster_label
+            label = int(chain.cluster_label)  # Convert numpy types to int
             stats['cluster_distribution'][label] = stats['cluster_distribution'].get(label, 0) + 1
         
         return stats
+    
+    def _clean_cluster_results(self) -> Dict:
+        """Clean cluster results for JSON serialization"""
+        if not self.cluster_results:
+            return {}
+        
+        cleaned = {}
+        for key, value in self.cluster_results.items():
+            if key in ['trunk', 'twigs']:
+                # Skip trunk/twigs as they're handled separately
+                continue
+            elif isinstance(value, (int, float, str, bool, list, dict)):
+                cleaned[key] = value
+            elif hasattr(value, 'tolist'):  # numpy arrays
+                cleaned[key] = value.tolist()
+            else:
+                # Convert to string for anything else
+                cleaned[key] = str(value)
+        
+        return cleaned
     
     async def analyze_strategy(self, strategy_index: int) -> Dict:
         """
