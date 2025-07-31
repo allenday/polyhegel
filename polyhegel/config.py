@@ -18,10 +18,15 @@ class Config:
     DEFAULT_TARGET_USERS = 10000
     DEFAULT_OUTPUT_DIR = "results"
     
-    # Sampling defaults
-    DEFAULT_NUM_SAMPLES = 30
-    DEFAULT_TEMPERATURE_RANGE = (0.8, 1.2)
-    DEFAULT_TEMPERATURE_COUNTS = [(0.8, 5), (0.9, 10), (1.0, 10), (1.1, 5)]
+    # Sampling defaults (based on LLM-As-Hierarchical-Policy research)
+    DEFAULT_NUM_SAMPLES = 30  # Balanced sample count for strategic exploration
+    DEFAULT_TEMPERATURE_RANGE = (0.7, 0.7)  # Primary temperature from research
+    DEFAULT_TEMPERATURE_COUNTS = [(0.7, 30)]  # Single temperature with strategic sample count
+    
+    # Alternative configurations for different scenarios
+    ZERO_SHOT_TEMPERATURE_COUNTS = [(0.7, 64)]  # For complex zero-shot problems
+    TOURNAMENT_TEMPERATURE_COUNTS = [(0.3, 5)]  # For focused comparisons
+    TEST_TEMPERATURE_COUNTS = [(0.8, 3)]  # Minimal for testing to avoid costs
     
     # Clustering defaults
     DEFAULT_EMBEDDING_MODEL = "all-MiniLM-L6-v2"
