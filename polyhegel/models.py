@@ -31,7 +31,7 @@ class GenesisStrategy(BaseModel):
 
 
 class ThemeCategory(str, Enum):
-    """Strategic theme categories aligned with CLM mandates"""
+    """Strategic theme categories aligned with Strategic mandates"""
     RESOURCE_ACQUISITION = "resource_acquisition"
     STRATEGIC_SECURITY = "strategic_security"
     VALUE_CATALYSIS = "value_catalysis"
@@ -63,7 +63,7 @@ class StrategicTheme(BaseModel):
     )
     
     clm_alignment: Dict[str, float] = Field(
-        description="Alignment scores with CLM mandates (2.1, 2.2, 2.3) on 1-5 scale",
+        description="Alignment scores with Strategic mandates (2.1, 2.2, 2.3) on 1-5 scale",
         default_factory=dict
     )
     
@@ -100,13 +100,13 @@ class StrategicTheme(BaseModel):
     
     @validator('clm_alignment')
     def validate_clm_alignment(cls, v):
-        """Validate CLM alignment scores"""
+        """Validate Strategic alignment scores"""
         valid_mandates = {"2.1", "2.2", "2.3"}
         for mandate, score in v.items():
             if mandate not in valid_mandates:
-                raise ValueError(f"Invalid CLM mandate: {mandate}. Must be one of {valid_mandates}")
+                raise ValueError(f"Invalid Strategic mandate: {mandate}. Must be one of {valid_mandates}")
             if not (1.0 <= score <= 5.0):
-                raise ValueError(f"CLM alignment score must be between 1.0 and 5.0, got {score}")
+                raise ValueError(f"Strategic alignment score must be between 1.0 and 5.0, got {score}")
         return v
     
     @validator('key_concepts')
@@ -124,20 +124,20 @@ class StrategicTheme(BaseModel):
         return [criterion.strip() for criterion in v if criterion.strip()]
     
     def get_primary_mandate(self) -> Optional[str]:
-        """Get the CLM mandate with highest alignment score"""
+        """Get the Strategic mandate with highest alignment score"""
         if not self.clm_alignment:
             return None
         return max(self.clm_alignment.items(), key=lambda x: x[1])[0]
     
     def is_cross_cutting(self) -> bool:
-        """Check if theme spans multiple CLM mandates (scores > 3.0 in multiple)"""
+        """Check if theme spans multiple Strategic mandates (scores > 3.0 in multiple)"""
         high_scores = [mandate for mandate, score in self.clm_alignment.items() if score > 3.0]
         return len(high_scores) > 1
     
     def get_alignment_summary(self) -> str:
         """Get human-readable alignment summary"""
         if not self.clm_alignment:
-            return "No CLM alignment specified"
+            return "No Strategic alignment specified"
         
         mandate_names = {
             "2.1": "Resource Acquisition",

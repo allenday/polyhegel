@@ -56,7 +56,7 @@ Examples:
   # Run simulation with default temperature mode
   python -m polyhegel simulate --output results/
   
-  # Use hierarchical mode with leader-follower agents
+  # Use hierarchical mode with A2A distributed agents  
   python -m polyhegel simulate --output results/ --mode hierarchical --user-prompt-file strategic-challenge.md
   
   # Use specific model and temperature settings (temperature mode)
@@ -65,20 +65,24 @@ Examples:
   # Use custom system and user prompts from files
   python -m polyhegel simulate --output results/ --system-prompt-file system-prompt.md --user-prompt-file user-query.md
   
-  # Use different models for leader and followers (hierarchical mode)
-  python -m polyhegel simulate --output results/ --mode hierarchical --leader-model grok-2-1212 --follower-model claude-3-haiku-20240307 --user-prompt-file challenge.md
-  
   # List available models
   python -m polyhegel models
 
 Environment Variables:
-  Create a .env file with your API keys:
+  API Keys (.env file):
   OPENAI_API_KEY=your_openai_key
-  ANTHROPIC_API_KEY=your_anthropic_key
+  ANTHROPIC_API_KEY=your_anthropic_key  
   GOOGLE_API_KEY=your_google_key
   MISTRAL_API_KEY=your_mistral_key
   GROQ_API_KEY=your_groq_key
   XAI_API_KEY=your_xai_key
+  
+  A2A Agent Endpoints (hierarchical mode):
+  POLYHEGEL_LEADER_URL=http://localhost:8001
+  POLYHEGEL_FOLLOWER_RESOURCE_URL=http://localhost:8002/resource
+  POLYHEGEL_FOLLOWER_SECURITY_URL=http://localhost:8002/security  
+  POLYHEGEL_FOLLOWER_VALUE_URL=http://localhost:8002/value
+  POLYHEGEL_FOLLOWER_GENERAL_URL=http://localhost:8002/general
         """
     )
     
