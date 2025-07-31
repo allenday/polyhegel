@@ -7,3 +7,6 @@
 [submodule "third_party/LLM-As-Hierarchical-Policy"]
 	path = third_party/LLM-As-Hierarchical-Policy
 	url = https://github.com/lz1oceani/LLM-As-Hierarchical-Policy.git
+[submodule "third_party/a2a-python"]
+	path = third_party/a2a-python
+	url = https://github.com/a2aproject/a2a-python.git
