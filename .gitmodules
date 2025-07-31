@@ -10,3 +10,6 @@
 [submodule "third_party/a2a-python"]
 	path = third_party/a2a-python
 	url = https://github.com/a2aproject/a2a-python.git
+[submodule "third_party/a2a-samples"]
+	path = third_party/a2a-samples
+	url = https://github.com/a2aproject/a2a-samples.git
