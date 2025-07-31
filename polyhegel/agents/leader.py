@@ -174,6 +174,13 @@ Focus on themes that align with these mandates:
             })
             return []
     
+    def validate_request(self, request: Dict[str, Any]) -> bool:
+        """Validate that this leader agent can handle the request"""
+        request_type = request.get("type", "")
+        
+        # Leader agents only handle generate_themes requests
+        return request_type == "generate_themes"
+    
     async def process_request(self, request: Dict[str, Any]) -> AgentResponse:
         """
         Process a request to generate themes

@@ -202,6 +202,25 @@ aligned with the organizational context and constraints.
             })
             return None
     
+    def validate_request(self, request: Dict[str, Any]) -> bool:
+        """Validate that this follower agent can handle the request"""
+        request_type = request.get("type", "")
+        
+        # Follower agents only handle develop_strategy requests
+        if request_type != "develop_strategy":
+            return False
+        
+        # Check if theme is provided and matches specialization
+        theme_data = request.get("theme", {})
+        if theme_data:
+            try:
+                theme = StrategicTheme(**theme_data)
+                return self._can_handle_theme(theme)
+            except Exception:
+                return False
+        
+        return True
+    
     async def process_request(self, request: Dict[str, Any]) -> AgentResponse:
         """
         Process a request to develop strategy from theme
@@ -350,7 +369,14 @@ aligned with the organizational context and constraints.
             }
             specialization_key = mandate_key_map.get(self.specialization_mandate)
             if specialization_key and specialization_key in theme.clm_alignment:
-                return theme.clm_alignment[specialization_key] > 2.0
+                # Must have strong alignment (>= 4.0) AND be the primary mandate
+                my_score = theme.clm_alignment[specialization_key]
+                if my_score < 4.0:
+                    return False
+                
+                # Check if this is the highest scoring mandate (primary)
+                primary_mandate = theme.get_primary_mandate()
+                return primary_mandate == specialization_key
         
         # Check category alignment
         category_mandate_map = {
