@@ -1,0 +1,81 @@
+{
+  "title": "Hotdog-Sandwich Taxonomy Framework",
+  "steps": [
+    {
+      "action": "Establish a Hotdog-Sandwich Classification Council",
+      "prerequisites": [
+        "Secure buy-in from key stakeholder groups"
+      ],
+      "outcome": "Create a legitimate, impartial body to oversee hotdog-sandwich taxonomy",
+      "risks": [
+        "Difficulty achieving consensus on council composition and authority"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Develop a Hybrid Taxonomy Model",
+      "prerequisites": [
+        "Analyze structural and cultural perspectives",
+        "Identify key criteria for classification"
+      ],
+      "outcome": "Define a taxonomy that recognizes both structural and cultural dimensions of hotdogs and sandwiches",
+      "risks": [
+        "Resistance from purists on both sides"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Establish Flexible Categorization Guidelines",
+      "prerequisites": [
+        "Engage culinary professionals and regulators"
+      ],
+      "outcome": "Create practical guidelines for classifying borderline food items",
+      "risks": [
+        "Potential for continued ambiguity and debate"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Implement a Dispute Resolution Mechanism",
+      "prerequisites": [
+        "Design fair and transparent adjudication process"
+      ],
+      "outcome": "Provide a formal channel for resolving classification disagreements",
+      "risks": [
+        "Potential for gaming the system or lack of compliance"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Launch a Public Education Campaign",
+      "prerequisites": [
+        "Communicate the new taxonomy framework"
+      ],
+      "outcome": "Increase public understanding and acceptance of the hybrid hotdog-sandwich model",
+      "risks": [
+        "Difficulty overcoming entrenched beliefs and preferences"
+      ],
+      "confidence": 0.8
+    }
+  ],
+  "alignment_score": {
+    "Respects structural and cultural perspectives": 4.0,
+    "Establishes legitimate taxonomic authority": 5.0,
+    "Creates mechanisms for peaceful coexistence": 4.0,
+    "Prevents escalation into broader conflicts": 4.0,
+    "Maintains practical utility": 4.0
+  },
+  "estimated_timeline": "18-24 months",
+  "resource_requirements": [
+    "Funding for council operations and public campaign",
+    "Expertise in food science, culinary arts, linguistics, and conflict resolution",
+    "Cooperation from key stakeholder groups"
+  ],
+  "metadata": {
+    "source_sample": 23,
+    "temperature": 0.7,
+    "cluster_label": -1,
+    "is_trunk": false,
+    "is_twig": false
+  }
+}

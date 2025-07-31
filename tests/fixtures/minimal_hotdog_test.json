@@ -1,0 +1,55 @@
+{
+  "trunk": {
+    "title": "Minimal Hotdog Test Strategy",
+    "steps": [
+      {
+        "action": "Establish Test Hotdog Council",
+        "prerequisites": [
+          "Set up test environment",
+          "Configure mock stakeholders"
+        ],
+        "outcome": "Functional testing infrastructure with hotdog classification framework",
+        "risks": [
+          "Insufficient sandwich representation",
+          "Mock hotdog limitations"
+        ],
+        "confidence": 0.9
+      }
+    ],
+    "alignment_score": {
+      "Culinary Harmony": 4.5,
+      "Test Coverage": 4.8
+    },
+    "estimated_timeline": "1-2 hours",
+    "resource_requirements": [
+      "Test hotdogs",
+      "Mock sandwich council",
+      "Taxonomic framework"
+    ],
+    "metadata": {
+      "source_sample": 0,
+      "temperature": 0.8,
+      "cluster_label": -1,
+      "is_trunk": true,
+      "is_twig": false
+    }
+  },
+  "twigs": [],
+  "summary": "Minimal hotdog reconciliation strategy for unit testing. Provides basic structure without requiring expensive LLM generation.",
+  "metadata": {
+    "total_chains": 1,
+    "model": "test-fixture",
+    "temperature_counts": [
+      [
+        0.8,
+        1
+      ]
+    ],
+    "clustering": {
+      "trunk": "test",
+      "twigs": [],
+      "cluster_count": 1,
+      "noise_count": 0
+    }
+  }
+}

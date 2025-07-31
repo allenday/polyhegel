@@ -1,0 +1,90 @@
+{
+  "title": "Hotdog-Sandwich Consensus Framework",
+  "steps": [
+    {
+      "action": "Establish a Hotdog-Sandwich Classification Council",
+      "prerequisites": [
+        "Secure participation from key stakeholder groups"
+      ],
+      "outcome": "Create a legitimate, authoritative body to define hotdog taxonomy",
+      "risks": [
+        "Difficulty gaining buy-in from all stakeholders",
+        "Potential for council decisions to be seen as biased or unrepresentative"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Develop a Hybrid Taxonomy Framework",
+      "prerequisites": [
+        "Gather input from culinary experts, linguists, and the public",
+        "Analyze structural, cultural, and practical considerations"
+      ],
+      "outcome": "Establish a classification system that balances structural and cultural factors",
+      "risks": [
+        "Difficulty reconciling competing definitional approaches",
+        "Potential for ongoing debate over borderline cases"
+      ],
+      "confidence": 0.7
+    },
+    {
+      "action": "Implement Flexible Labeling and Menu Standards",
+      "prerequisites": [
+        "Socialize new taxonomy framework with restaurants and regulators",
+        "Provide guidance on consistent labeling and menu presentation"
+      ],
+      "outcome": "Enable peaceful coexistence of hotdog and sandwich categories",
+      "risks": [
+        "Resistance from traditionalists to any concessions on labeling",
+        "Potential consumer confusion over hybrid terminology"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Launch Public Education Campaign",
+      "prerequisites": [
+        "Develop engaging content explaining the new taxonomy",
+        "Distribute through media, schools, and community channels"
+      ],
+      "outcome": "Increase public understanding and acceptance of the hybrid framework",
+      "risks": [
+        "Difficulty overcoming entrenched views on both sides",
+        "Potential for continued debate and divisiveness"
+      ],
+      "confidence": 0.7
+    },
+    {
+      "action": "Establish Ongoing Governance and Dispute Resolution",
+      "prerequisites": [
+        "Empower the Classification Council to monitor and refine the taxonomy",
+        "Develop clear procedures for handling classification challenges and appeals"
+      ],
+      "outcome": "Maintain stability and legitimacy of the hybrid framework over time",
+      "risks": [
+        "Potential for the Council to be seen as biased or ineffective",
+        "Ongoing disputes and legal challenges from hardline stakeholders"
+      ],
+      "confidence": 0.8
+    }
+  ],
+  "alignment_score": {
+    "Respects structural and cultural perspectives": 4.0,
+    "Establishes legitimate taxonomic authority": 4.0,
+    "Creates mechanisms for peaceful coexistence": 4.0,
+    "Prevents escalation into broader conflicts": 4.0,
+    "Maintains practical utility": 4.0
+  },
+  "estimated_timeline": "12-18 months",
+  "resource_requirements": [
+    "Diverse Council of culinary, linguistic, and regulatory experts",
+    "Public relations and marketing budget for education campaign",
+    "Legal and policy support for developing taxonomy and dispute resolution",
+    "Coordination with major food service industry associations"
+  ],
+  "metadata": {
+    "source_sample": 29,
+    "temperature": 0.7,
+    "cluster_label": -1,
+    "is_trunk": false,
+    "is_twig": false
+  }
+}

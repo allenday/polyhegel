@@ -16,7 +16,10 @@ class TestStrategicComparison:
 
     def setup_method(self):
         """Set up test environment"""
+        # Use fixtures by default, fall back to cache for backwards compatibility
+        self.fixtures_dir = Path(__file__).parent / "fixtures"
         self.cache_dir = Path(__file__).parent / "out"
+        self.primary_fixture = self.fixtures_dir / "hotdog_reconciliation_simulation.json"
         self.cache_file = self.cache_dir / "strategic_simulation_cache.json"
         
         # Initialize model manager and evaluator
@@ -25,14 +28,18 @@ class TestStrategicComparison:
         self.evaluator = StrategyEvaluator(self.model)
 
     def load_cached_strategies(self):
-        """Load strategies from cache file"""
-        if not self.cache_file.exists():
-            pytest.skip(f"No cached strategies found at {self.cache_file}")
+        """Load strategies from fixtures or cache file"""
+        # Try fixtures first
+        if self.primary_fixture.exists():
+            with open(self.primary_fixture, 'r') as f:
+                return json.load(f)
         
-        with open(self.cache_file, 'r') as f:
-            cache_data = json.load(f)
+        # Fall back to cache for backwards compatibility
+        if self.cache_file.exists():
+            with open(self.cache_file, 'r') as f:
+                return json.load(f)
         
-        return cache_data
+        pytest.skip(f"No cached strategies found at {self.primary_fixture} or {self.cache_file}")
 
     def create_strategy_chain_from_dict(self, strategy_dict: dict, source_sample: int = 0, temperature: float = 0.8) -> StrategyChain:
         """Convert dictionary representation back to StrategyChain"""

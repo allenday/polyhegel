@@ -1,0 +1,90 @@
+{
+  "title": "Hotdog-Sandwich Consensus Framework",
+  "steps": [
+    {
+      "action": "Convene a Hotdog-Sandwich Classification Commission",
+      "prerequisites": [
+        "Identify and recruit diverse stakeholder representatives"
+      ],
+      "outcome": "Establish legitimate taxonomic authority through inclusive deliberation",
+      "risks": [
+        "Difficulty in getting buy-in from entrenched ideological camps",
+        "Potential for grandstanding and unproductive debate"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Develop a Dual-Taxonomy Classification System",
+      "prerequisites": [
+        "Analyze structural, cultural, and culinary perspectives",
+        "Consult linguistic and taxonomic experts"
+      ],
+      "outcome": "Create a hybrid classification that respects both structural and cultural dimensions",
+      "risks": [
+        "Resistance to complexity over simple binary categorization",
+        "Challenges in establishing clear operational definitions"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Implement Flexible Labeling and Regulatory Standards",
+      "prerequisites": [
+        "Engage with food service industry and regulatory bodies",
+        "Pilot test classification system with consumers"
+      ],
+      "outcome": "Establish practical guidelines that accommodate diverse perspectives",
+      "risks": [
+        "Pushback from stakeholders over perceived compromises",
+        "Difficulty in achieving consistent application across contexts"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Launch Public Education and Conflict Resolution Initiatives",
+      "prerequisites": [
+        "Develop compelling narratives to explain the new classification framework",
+        "Establish mediation channels for resolving disputes"
+      ],
+      "outcome": "Foster societal understanding and acceptance of the dual-taxonomy approach",
+      "risks": [
+        "Entrenched ideological positions resistant to new information",
+        "Potential for the issue to become a proxy for broader cultural divides"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Continuously Evaluate and Iterate the Framework",
+      "prerequisites": [
+        "Collect feedback from stakeholders and the public",
+        "Monitor emerging trends and taxonomic developments"
+      ],
+      "outcome": "Maintain the relevance and legitimacy of the classification system over time",
+      "risks": [
+        "Difficulty in balancing stability and flexibility",
+        "Potential for new controversies to arise around edge cases"
+      ],
+      "confidence": 0.8
+    }
+  ],
+  "alignment_score": {
+    "Respects both structural and cultural perspectives": 5.0,
+    "Establishes legitimate taxonomic authority": 4.0,
+    "Creates mechanisms for peaceful coexistence": 4.0,
+    "Prevents escalation into broader food conflicts": 4.0,
+    "Maintains practical utility": 5.0
+  },
+  "estimated_timeline": "12-18 months",
+  "resource_requirements": [
+    "Funding for the Hotdog-Sandwich Classification Commission",
+    "Expertise in food science, linguistics, and conflict resolution",
+    "Engagement and buy-in from key stakeholder groups",
+    "Communication and public outreach capabilities"
+  ],
+  "metadata": {
+    "source_sample": 8,
+    "temperature": 0.7,
+    "cluster_label": -1,
+    "is_trunk": false,
+    "is_twig": false
+  }
+}

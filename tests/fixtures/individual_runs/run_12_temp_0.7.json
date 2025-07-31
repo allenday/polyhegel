@@ -1,0 +1,90 @@
+{
+  "title": "Resolving the Hotdog-Sandwich Controversy",
+  "steps": [
+    {
+      "action": "Establish a Hotdog-Sandwich Classification Council",
+      "prerequisites": [
+        "Secure buy-in from key stakeholder groups"
+      ],
+      "outcome": "A legitimate, authoritative body to define food taxonomy standards",
+      "risks": [
+        "Stakeholders may not agree on Council composition or decision-making process",
+        "Council may lack enforcement power over holdout groups"
+      ],
+      "confidence": 0.7
+    },
+    {
+      "action": "Develop a Taxonomy Framework that Integrates Structural and Cultural Criteria",
+      "prerequisites": [
+        "Council has been established",
+        "Comprehensive review of existing taxonomic models"
+      ],
+      "outcome": "A classification system that balances objective structural analysis with subjective cultural considerations",
+      "risks": [
+        "Framework may still leave ambiguous edge cases",
+        "Stakeholders may resist compromises that don't fully align with their views"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Establish Formal Dispute Resolution Mechanisms",
+      "prerequisites": [
+        "Taxonomy framework has been defined",
+        "Key stakeholders have agreed to participate in resolution process"
+      ],
+      "outcome": "A fair, transparent process for adjudicating classification disagreements",
+      "risks": [
+        "Stakeholders may still refuse to accept rulings that go against their positions",
+        "Dispute resolution process could become overly bureaucratic and slow"
+      ],
+      "confidence": 0.7
+    },
+    {
+      "action": "Promote Public Education and Consensus-Building Campaigns",
+      "prerequisites": [
+        "Taxonomy framework and dispute resolution mechanisms are in place",
+        "Funding and resources secured for public outreach"
+      ],
+      "outcome": "Widespread public acceptance and internalization of the official food taxonomy",
+      "risks": [
+        "Entrenched viewpoints may be difficult to change through education alone",
+        "Public may become fatigued by ongoing \"food wars\" messaging"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Establish Hotdog-Sandwich Coexistence Standards",
+      "prerequisites": [
+        "Public has generally accepted the taxonomy framework",
+        "Dispute resolution process is functioning effectively"
+      ],
+      "outcome": "Clear guidelines for restaurants, regulators, and consumers on how to properly identify and label hotdogs and sandwiches",
+      "risks": [
+        "Some stakeholders may still resist any formal recognition of the opposing category",
+        "Standards may become overly complex or impractical to implement"
+      ],
+      "confidence": 0.7
+    }
+  ],
+  "alignment_score": {
+    "Respects structural and cultural perspectives": 4.0,
+    "Establishes legitimate taxonomic authority": 5.0,
+    "Creates mechanisms for peaceful coexistence": 4.0,
+    "Prevents escalation into broader food conflicts": 4.0,
+    "Maintains practical utility": 4.0
+  },
+  "estimated_timeline": "18-24 months",
+  "resource_requirements": [
+    "Funding for Council operations and public campaigns",
+    "Legal expertise to establish dispute resolution process",
+    "Culinary and linguistic experts to develop taxonomy framework",
+    "Communications/marketing resources for public outreach"
+  ],
+  "metadata": {
+    "source_sample": 11,
+    "temperature": 0.7,
+    "cluster_label": -1,
+    "is_trunk": false,
+    "is_twig": false
+  }
+}

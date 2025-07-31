@@ -1,0 +1,90 @@
+{
+  "title": "Hotdog-Sandwich Consensus Framework",
+  "steps": [
+    {
+      "action": "Establish a multi-stakeholder Hotdog-Sandwich Classification Commission",
+      "prerequisites": [
+        "Identify and invite representatives from key stakeholder groups (Sandwich Purists, Hotdog Traditionalists, Culinary Professionals, Linguistic Scholars, General Public)"
+      ],
+      "outcome": "Create a legitimate, authoritative body to develop a consensus classification framework",
+      "risks": [
+        "Difficulty in getting buy-in from all stakeholders",
+        "Potential for ongoing ideological gridlock"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Establish a dual-criteria classification system",
+      "prerequisites": [
+        "Commission reviews structural, cultural, and practical considerations",
+        "Commission develops criteria for both 'sandwich' and 'hotdog' categorization"
+      ],
+      "outcome": "A classification system that respects both structural and cultural perspectives",
+      "risks": [
+        "Potential for gray areas and ambiguous cases",
+        "Resistance from hardline stakeholders"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Implement a tiered dispute resolution process",
+      "prerequisites": [
+        "Commission defines clear guidelines for classifying borderline/disputed items",
+        "Commission establishes an independent review board and appeals process"
+      ],
+      "outcome": "A mechanism for peaceful coexistence of differing viewpoints",
+      "risks": [
+        "Potential for ongoing disputes and challenges to the system",
+        "Difficulty in enforcing rulings"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Develop public education and awareness campaigns",
+      "prerequisites": [
+        "Commission crafts clear, intuitive messaging on the classification framework",
+        "Commission partners with media, schools, and industry groups to disseminate information"
+      ],
+      "outcome": "Broad public understanding and acceptance of the classification system",
+      "risks": [
+        "Resistance to change from entrenched viewpoints",
+        "Potential for continued public debate and controversy"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Incorporate the classification framework into regulations, standards, and industry practices",
+      "prerequisites": [
+        "Commission works with government agencies, trade associations, and businesses to adopt the framework",
+        "Commission monitors implementation and addresses any operational issues"
+      ],
+      "outcome": "Practical utility and consistent application of the classification system",
+      "risks": [
+        "Potential for loopholes or selective enforcement",
+        "Ongoing need for adaptation and refinement"
+      ],
+      "confidence": 0.8
+    }
+  ],
+  "alignment_score": {
+    "Respects both structural and cultural perspectives": 5.0,
+    "Establishes legitimate taxonomic authority": 4.0,
+    "Creates mechanisms for peaceful coexistence of viewpoints": 4.0,
+    "Prevents escalation into broader food classification conflicts": 4.0,
+    "Maintains practical utility for restaurants, regulations, and consumers": 5.0
+  },
+  "estimated_timeline": "12-18 months",
+  "resource_requirements": [
+    "Funding for the Hotdog-Sandwich Classification Commission",
+    "Expertise from culinary, linguistic, and regulatory professionals",
+    "Cooperation and buy-in from key stakeholder groups",
+    "Public awareness and education campaign resources"
+  ],
+  "metadata": {
+    "source_sample": 19,
+    "temperature": 0.7,
+    "cluster_label": -1,
+    "is_trunk": false,
+    "is_twig": false
+  }
+}

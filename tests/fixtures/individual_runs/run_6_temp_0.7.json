@@ -1,0 +1,89 @@
+{
+  "title": "Hotdog-Sandwich Taxonomy Consensus Framework",
+  "steps": [
+    {
+      "action": "Establish Joint Taxonomy Review Board",
+      "prerequisites": [
+        "Secure participation from key stakeholder groups (Sandwich Purists, Hotdog Traditionalists, Culinary Professionals, Linguistic Scholars)"
+      ],
+      "outcome": "Create legitimate, authoritative body to define food taxonomy standards",
+      "risks": [
+        "Stakeholders refuse to participate or withdraw from process",
+        "Board unable to reach consensus on classification criteria"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Define Tiered Taxonomy System",
+      "prerequisites": [
+        "Taxonomy Review Board established",
+        "Conduct research on existing food classification frameworks"
+      ],
+      "outcome": "Develop multi-level taxonomy that balances structural, cultural, and practical considerations",
+      "risks": [
+        "Taxonomy seen as overly complex or confusing by general public",
+        "Disagreements on placement of specific food items"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Establish Dual-Labeling Standards",
+      "prerequisites": [
+        "Tiered taxonomy system defined",
+        "Engage with food service industry, regulators, and consumer groups"
+      ],
+      "outcome": "Allow for both structural and cultural labels (e.g. 'Elongated Bread-Encased Meat Product' and 'Hotdog')",
+      "risks": [
+        "Dual-labeling seen as overly burdensome or confusing",
+        "Disagreements on primary vs secondary labeling"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Launch Public Education Campaign",
+      "prerequisites": [
+        "Taxonomy and dual-labeling standards established",
+        "Secure buy-in from major media outlets and food influencers"
+      ],
+      "outcome": "Inform and engage general public on new food classification framework",
+      "risks": [
+        "Persistent public resistance to new taxonomy",
+        "Failure to reach key demographics"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Institutionalize Taxonomy Governance",
+      "prerequisites": [
+        "Public education campaign successful",
+        "Secure regulatory and legislative support"
+      ],
+      "outcome": "Enshrine taxonomy system into law, regulations, and industry standards",
+      "risks": [
+        "Ongoing legal/political challenges to taxonomy",
+        "Failure to keep pace with evolving food landscape"
+      ],
+      "confidence": 0.8
+    }
+  ],
+  "alignment_score": {
+    "Respects structural and cultural perspectives": 5.0,
+    "Establishes legitimate taxonomic authority": 5.0,
+    "Enables peaceful coexistence of viewpoints": 4.0,
+    "Prevents escalation into broader food conflicts": 4.0,
+    "Maintains practical utility": 5.0
+  },
+  "estimated_timeline": "18-24 months",
+  "resource_requirements": [
+    "Funding for Taxonomy Review Board operations",
+    "Public relations/marketing budget for education campaign",
+    "Legal/regulatory expertise to institutionalize framework"
+  ],
+  "metadata": {
+    "source_sample": 5,
+    "temperature": 0.7,
+    "cluster_label": -1,
+    "is_trunk": false,
+    "is_twig": false
+  }
+}

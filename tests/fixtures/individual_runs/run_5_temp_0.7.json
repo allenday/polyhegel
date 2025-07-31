@@ -1,0 +1,89 @@
+{
+  "title": "Hotdog-Sandwich Taxonomy Consensus Framework",
+  "steps": [
+    {
+      "action": "Establish a Hotdog-Sandwich Classification Council (HSCC)",
+      "prerequisites": [
+        "Gain buy-in from key stakeholder groups"
+      ],
+      "outcome": "Create a legitimate, authoritative body to define and maintain hotdog-sandwich taxonomy",
+      "risks": [
+        "Difficulty achieving balanced representation",
+        "Potential for Council decisions to be ignored or disputed"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Define a Hybrid Taxonomy Model",
+      "prerequisites": [
+        "Comprehensive review of structural, cultural, and culinary perspectives",
+        "Establish Council decision-making process"
+      ],
+      "outcome": "Taxonomy that recognizes both structural sandwich criteria and distinct cultural/culinary hotdog identity",
+      "risks": [
+        "Difficulty reconciling conflicting viewpoints",
+        "Potential for model to be seen as overly complex or arbitrary"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Implement Flexible Labeling and Regulatory Standards",
+      "prerequisites": [
+        "Finalize Hybrid Taxonomy Model",
+        "Gain buy-in from regulatory bodies and industry"
+      ],
+      "outcome": "Clear, consistent guidelines for food service, packaging, and consumer understanding",
+      "risks": [
+        "Resistance from entrenched positions",
+        "Potential for loopholes or inconsistent application"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Launch Public Education Campaign",
+      "prerequisites": [
+        "Establish Hybrid Taxonomy as authoritative standard",
+        "Develop clear, engaging communication materials"
+      ],
+      "outcome": "Broad public awareness and acceptance of Hybrid Taxonomy",
+      "risks": [
+        "Difficulty overcoming existing biases and assumptions",
+        "Potential for continued debate and controversy"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Institutionalize Periodic Taxonomy Review",
+      "prerequisites": [
+        "Hybrid Taxonomy in active use",
+        "Establish HSCC as permanent governing body"
+      ],
+      "outcome": "Maintain relevance and legitimacy of Hybrid Taxonomy over time",
+      "risks": [
+        "Potential for political capture of HSCC",
+        "Difficulty achieving consensus on future changes"
+      ],
+      "confidence": 0.8
+    }
+  ],
+  "alignment_score": {
+    "Respects structural and cultural perspectives": 5.0,
+    "Establishes legitimate taxonomic authority": 4.0,
+    "Enables peaceful coexistence of viewpoints": 4.0,
+    "Prevents escalation into broader food conflicts": 4.0,
+    "Maintains practical utility": 5.0
+  },
+  "estimated_timeline": "12-18 months",
+  "resource_requirements": [
+    "Funding for HSCC operations and public campaign",
+    "Expertise in food science, culinary history, taxonomy, and public policy",
+    "Cooperation from regulatory bodies and food industry"
+  ],
+  "metadata": {
+    "source_sample": 4,
+    "temperature": 0.7,
+    "cluster_label": -1,
+    "is_trunk": false,
+    "is_twig": false
+  }
+}

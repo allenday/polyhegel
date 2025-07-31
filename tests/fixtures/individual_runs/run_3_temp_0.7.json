@@ -1,0 +1,87 @@
+{
+  "title": "Hotdog-Sandwich Taxonomy Framework",
+  "steps": [
+    {
+      "action": "Establish a Hotdog-Sandwich Classification Commission",
+      "prerequisites": [
+        "Secure buy-in from key stakeholder groups"
+      ],
+      "outcome": "Create an authoritative body to define taxonomic standards",
+      "risks": [
+        "Difficulty gaining consensus on commission composition",
+        "Potential for commission rulings to be ignored or challenged"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Develop a Hybrid Taxonomic Model",
+      "prerequisites": [
+        "Commission has defined membership and operating procedures"
+      ],
+      "outcome": "Establish a framework that recognizes both structural and cultural classification criteria",
+      "risks": [
+        "Resistance from purists on both sides",
+        "Difficulty translating hybrid model into clear, practical guidelines"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Implement Flexible Labeling and Dual-Classification Standards",
+      "prerequisites": [
+        "Hybrid taxonomic model is defined and approved",
+        "Regulations and industry standards are updated"
+      ],
+      "outcome": "Allow for multiple valid classification options on menus, packaging, and regulations",
+      "risks": [
+        "Potential consumer confusion from ambiguous labeling",
+        "Resistance from stakeholders seeking clear, universal definitions"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Launch Public Education Campaign",
+      "prerequisites": [
+        "Taxonomic framework and dual-classification standards are established"
+      ],
+      "outcome": "Increase public understanding and acceptance of the hybrid model",
+      "risks": [
+        "Difficulty overcoming entrenched views and biases",
+        "Potential for continued debate and controversy"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Establish Conflict Resolution Mechanisms",
+      "prerequisites": [
+        "Public education campaign is underway",
+        "Regulatory bodies have adopted the hybrid taxonomy"
+      ],
+      "outcome": "Create formal processes for stakeholders to resolve classification disputes",
+      "risks": [
+        "Resistance to third-party mediation and arbitration",
+        "Potential for rulings to be ignored or challenged"
+      ],
+      "confidence": 0.8
+    }
+  ],
+  "alignment_score": {
+    "Respects both structural and cultural perspectives": 4.0,
+    "Establishes legitimate taxonomic authority": 4.0,
+    "Creates mechanisms for peaceful coexistence of viewpoints": 4.0,
+    "Prevents escalation into broader food classification conflicts": 4.0,
+    "Maintains practical utility for restaurants, regulations, and consumers": 4.0
+  },
+  "estimated_timeline": "12-18 months",
+  "resource_requirements": [
+    "Diverse representation on Hotdog-Sandwich Classification Commission",
+    "Funding for public education campaign and conflict resolution infrastructure",
+    "Cooperation from regulatory bodies and industry associations"
+  ],
+  "metadata": {
+    "source_sample": 2,
+    "temperature": 0.7,
+    "cluster_label": -1,
+    "is_trunk": false,
+    "is_twig": false
+  }
+}

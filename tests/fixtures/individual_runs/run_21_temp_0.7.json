@@ -1,0 +1,91 @@
+{
+  "title": "Hotdog-Sandwich Classification Consensus Framework",
+  "steps": [
+    {
+      "action": "Establish a Hotdog-Sandwich Classification Council",
+      "prerequisites": [
+        "Identify key stakeholder groups and recruit representatives",
+        "Secure funding and administrative support"
+      ],
+      "outcome": "Create a legitimate, authoritative body to define classification standards",
+      "risks": [
+        "Difficulty achieving buy-in from all stakeholders",
+        "Potential for the council to become politicized"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Develop a Hybrid Classification Taxonomy",
+      "prerequisites": [
+        "Conduct research on structural, cultural, and practical considerations",
+        "Engage stakeholders to understand diverse perspectives"
+      ],
+      "outcome": "Establish a classification system that respects both structural and cultural factors",
+      "risks": [
+        "Difficulty balancing competing priorities and finding consensus",
+        "Potential for the taxonomy to be overly complex or ambiguous"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Implement a Flexible Labeling and Packaging Standard",
+      "prerequisites": [
+        "Collaborate with food producers, restaurants, and regulators",
+        "Ensure the standard is intuitive and user-friendly for consumers"
+      ],
+      "outcome": "Provide clear, consistent guidance on hotdog and sandwich packaging and menus",
+      "risks": [
+        "Resistance from stakeholders who prefer more rigid definitions",
+        "Difficulty enforcing the standard across a diverse food industry"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Launch a Public Education Campaign",
+      "prerequisites": [
+        "Develop engaging, informative content on the classification framework",
+        "Leverage diverse media channels to reach a broad audience"
+      ],
+      "outcome": "Increase public understanding and acceptance of the hybrid classification system",
+      "risks": [
+        "Difficulty overcoming entrenched beliefs and biases",
+        "Potential for the campaign to be perceived as biased or partisan"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Establish a Dispute Resolution Mechanism",
+      "prerequisites": [
+        "Create a neutral, impartial panel to adjudicate classification disputes",
+        "Develop clear guidelines and procedures for submitting and reviewing cases"
+      ],
+      "outcome": "Provide a formal process for resolving disagreements and maintaining the integrity of the classification system",
+      "risks": [
+        "Difficulty ensuring the panel's decisions are accepted as legitimate",
+        "Potential for the process to become overly bureaucratic or time-consuming"
+      ],
+      "confidence": 0.8
+    }
+  ],
+  "alignment_score": {
+    "Respects both structural and cultural perspectives": 5.0,
+    "Establishes legitimate taxonomic authority": 4.0,
+    "Creates mechanisms for peaceful coexistence of viewpoints": 4.0,
+    "Prevents escalation into broader food classification conflicts": 4.0,
+    "Maintains practical utility for restaurants, regulations, and consumers": 5.0
+  },
+  "estimated_timeline": "12-18 months",
+  "resource_requirements": [
+    "Funding for the Hotdog-Sandwich Classification Council",
+    "Research and development expertise in food taxonomy and classification",
+    "Collaboration with food industry, regulatory bodies, and academic institutions",
+    "Public relations and communications capabilities for the education campaign"
+  ],
+  "metadata": {
+    "source_sample": 20,
+    "temperature": 0.7,
+    "cluster_label": -1,
+    "is_trunk": false,
+    "is_twig": false
+  }
+}

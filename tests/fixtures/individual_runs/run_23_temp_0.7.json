@@ -1,0 +1,90 @@
+{
+  "title": "Hotdog-Sandwich Consensus Framework",
+  "steps": [
+    {
+      "action": "Convene a Hotdog-Sandwich Classification Commission",
+      "prerequisites": [
+        "Secure buy-in from key stakeholder groups"
+      ],
+      "outcome": "Establish legitimate taxonomic authority with diverse representation",
+      "risks": [
+        "Difficulty achieving balanced stakeholder participation",
+        "Potential for ideological gridlock and unresolvable disputes"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Develop a Hybrid Classification System",
+      "prerequisites": [
+        "Commission agrees on key principles and criteria",
+        "Consult with culinary experts and linguistic scholars"
+      ],
+      "outcome": "Create a classification framework that recognizes both structural and cultural dimensions",
+      "risks": [
+        "Difficulty reconciling competing definitions and priorities",
+        "Potential for continued disagreement and lack of consensus"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Implement Flexible Labeling and Regulatory Standards",
+      "prerequisites": [
+        "Hybrid classification system is finalized",
+        "Engage with industry, government, and consumer groups"
+      ],
+      "outcome": "Establish practical guidelines that accommodate diverse perspectives",
+      "risks": [
+        "Resistance from groups who prefer more rigid categorization",
+        "Potential for continued confusion and lack of clarity for consumers"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Launch Public Education and Engagement Campaign",
+      "prerequisites": [
+        "Hybrid classification system and labeling standards are in place",
+        "Secure funding and resources for outreach"
+      ],
+      "outcome": "Foster greater public understanding and acceptance of the consensus framework",
+      "risks": [
+        "Difficulty overcoming deeply entrenched beliefs and biases",
+        "Potential for ongoing debates and disputes in the public sphere"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "action": "Establish Mechanisms for Continuous Review and Adaptation",
+      "prerequisites": [
+        "Framework is implemented and gaining traction",
+        "Collect feedback from stakeholders and monitor impacts"
+      ],
+      "outcome": "Ensure the classification system remains relevant and responsive to evolving needs",
+      "risks": [
+        "Resistance to changes or updates to the established framework",
+        "Potential for renewed conflicts if the system is perceived as unstable"
+      ],
+      "confidence": 0.8
+    }
+  ],
+  "alignment_score": {
+    "Respects both structural and cultural perspectives": 5.0,
+    "Establishes legitimate taxonomic authority": 4.0,
+    "Creates mechanisms for peaceful coexistence of viewpoints": 4.0,
+    "Prevents escalation into broader food classification conflicts": 4.0,
+    "Maintains practical utility for restaurants, regulations, and consumers": 5.0
+  },
+  "estimated_timeline": "12-18 months",
+  "resource_requirements": [
+    "Funding for Commission operations and public outreach",
+    "Expertise from culinary professionals, linguistic scholars, and regulatory specialists",
+    "Cooperation and buy-in from key stakeholder groups",
+    "Robust communication and engagement channels with the public"
+  ],
+  "metadata": {
+    "source_sample": 22,
+    "temperature": 0.7,
+    "cluster_label": -1,
+    "is_trunk": false,
+    "is_twig": false
+  }
+}
