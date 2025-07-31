@@ -43,3 +43,17 @@ class TestPrompts:
         """Test that loading non-existent prompt raises FileNotFoundError"""
         with pytest.raises(FileNotFoundError, match="Prompt template not found"):
             load_prompt("nonexistent_prompt.txt")
+
+    def test_strategic_compare_template_exists(self):
+        """Test that strategic_compare.txt template exists"""
+        strategic_path = PROMPTS_DIR / "strategic_compare.txt"
+        assert strategic_path.exists()
+
+    def test_load_strategic_compare_prompt(self):
+        """Test loading strategic comparison prompt"""
+        content = load_prompt("strategic_compare.txt")
+        assert isinstance(content, str)
+        assert len(content) > 0
+        assert "Strategic Situation:" in content
+        assert "Strategic Viability" in content
+        assert "Preferred Strategy Index:" in content
