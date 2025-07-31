@@ -445,9 +445,9 @@ class TestAgentCoordinator:
         """Test coordination when no agents can handle task"""
         self.coordinator.register_agent(self.agent1)
         
-        # Task that no agent can handle
+        # Task that no agent can handle - agent1 can only generate, not evaluate
         task = {
-            "type": "unknown_task_type"
+            "type": "evaluate_strategy"
         }
         
         responses = await self.coordinator.coordinate_task(task)
