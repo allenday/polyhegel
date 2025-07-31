@@ -5,7 +5,7 @@ Tests for strategic technique prompt templates
 import pytest
 from pathlib import Path
 from polyhegel.strategic_techniques import (
-    CLMMandate,
+    StrategyDomain,
     get_technique_by_name,
     get_techniques_for_mandate,
     RESOURCE_ACQUISITION_TECHNIQUES
@@ -81,7 +81,7 @@ class TestStrategicTechniquePrompts:
             "Strategic Steps:",
             "Alignment Scores",
             "Strategic Coherence:",
-            "CLM Mandate Alignment:",
+            "Strategic Mandate Alignment:",
             "Implementation Feasibility:",
             "Risk Management:",
             "Stakeholder Value:",
@@ -93,24 +93,24 @@ class TestStrategicTechniquePrompts:
             assert element in template_content, f"Missing strategic element: {element}"
 
     def test_template_clm_integration(self):
-        """Test that template properly integrates CLM mandates"""
+        """Test that template properly integrates Strategic mandates"""
         with open(self.techniques_template, 'r') as f:
             template_content = f.read()
         
-        # Should reference CLM mandate multiple times
+        # Should reference Strategic mandate multiple times
         clm_references = template_content.count("{clm_mandate}")
-        assert clm_references >= 2, "Should reference CLM mandate at least twice"
+        assert clm_references >= 2, "Should reference Strategic mandate at least twice"
         
-        # Should mention alignment with CLM mandate
+        # Should mention alignment with Strategic mandate
         assert "alignment with" in template_content.lower() and "clm mandate" in template_content.lower()
 
     def test_template_with_different_mandates(self):
-        """Test template formatting with different CLM mandates"""
+        """Test template formatting with different Strategic mandates"""
         with open(self.techniques_template, 'r') as f:
             template = f.read()
         
         # Test with each mandate
-        for mandate in CLMMandate:
+        for mandate in StrategyDomain:
             techniques = get_techniques_for_mandate(mandate)
             if techniques:
                 technique = techniques[0]
@@ -203,7 +203,7 @@ def test_prompt_template_integration():
     assert len(formatted_prompt) > 500  # Should be substantial
     assert "hotdog taxonomy" in formatted_prompt
     assert "Stakeholder Alignment Matrix" in formatted_prompt
-    assert "2.1" in formatted_prompt  # CLM mandate
+    assert "2.1" in formatted_prompt  # Strategic mandate
     assert "Strategic Plan Title:" in formatted_prompt
     
 

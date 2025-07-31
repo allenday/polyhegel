@@ -13,7 +13,7 @@ class TestWebTools:
     @pytest.mark.asyncio
     async def test_web_search_tool(self):
         """Test web search functionality"""
-        request = WebSearchRequest(query="Core Logic Module CLM Post Fiat", max_results=3)
+        request = WebSearchRequest(query="Core Logic Module Strategic Post Fiat", max_results=3)
         result = await web_search_tool(None, request)
         
         assert isinstance(result, str)
@@ -23,7 +23,7 @@ class TestWebTools:
     @pytest.mark.asyncio
     async def test_web_fetch_tool(self):
         """Test web fetch functionality"""
-        # Test with CLM gist URL from strategic-query.md
+        # Test with Strategic gist URL from strategic-query.md
         request = WebFetchRequest(url="https://gist.github.com/allenday/66f5402e513a8f62b443058417610632")
         result = await web_fetch_tool(None, request)
         

@@ -132,7 +132,7 @@ class TestTechniqueGuidance:
 
     @pytest.mark.asyncio
     async def test_technique_guidance_different_mandates(self):
-        """Test technique guidance across different CLM mandates"""
+        """Test technique guidance across different Strategic mandates"""
         strategic_challenge = "Build a thriving ecosystem for collaborative innovation"
         
         # Test one technique from each mandate

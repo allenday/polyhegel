@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, AsyncMock, patch
 
 from polyhegel.simulator import PolyhegelSimulator
 from polyhegel.models import StrategyChain, GenesisStrategy, StrategyStep, StrategicTheme, ThemeCategory
-from polyhegel.strategic_techniques import CLMMandate
+from polyhegel.strategic_techniques import StrategyDomain
 
 
 @pytest.mark.unit

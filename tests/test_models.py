@@ -174,7 +174,7 @@ class TestStrategicTheme:
             )
 
     def test_clm_alignment_validation(self):
-        """Test CLM alignment validation"""
+        """Test Strategic alignment validation"""
         # Invalid mandate
         with pytest.raises(ValidationError):
             StrategicTheme(
@@ -233,11 +233,11 @@ class TestStrategicTheme:
             )
 
     def test_get_primary_mandate(self):
-        """Test getting primary CLM mandate"""
+        """Test getting primary Strategic mandate"""
         theme = StrategicTheme(
             title="Test Theme",
             category=ThemeCategory.CROSS_CUTTING,
-            description="A theme that spans multiple CLM mandates with varying alignment scores.",
+            description="A theme that spans multiple Strategic mandates with varying alignment scores.",
             clm_alignment={"2.1": 3.0, "2.2": 4.5, "2.3": 2.8},
             key_concepts=["cross-cutting"],
             success_criteria=["Success across mandates"]
@@ -249,7 +249,7 @@ class TestStrategicTheme:
         theme_no_alignment = StrategicTheme(
             title="No Alignment Theme",
             category=ThemeCategory.FOUNDATIONAL,
-            description="A theme without CLM alignment scores specified for testing purposes.",
+            description="A theme without Strategic alignment scores specified for testing purposes.",
             key_concepts=["foundation"],
             success_criteria=["Basic success"]
         )
@@ -262,7 +262,7 @@ class TestStrategicTheme:
         cross_cutting_theme = StrategicTheme(
             title="Cross-Cutting Theme",
             category=ThemeCategory.CROSS_CUTTING,
-            description="A strategic theme that spans multiple CLM mandates with high alignment.",
+            description="A strategic theme that spans multiple Strategic mandates with high alignment.",
             clm_alignment={"2.1": 4.0, "2.2": 4.2, "2.3": 2.5},
             key_concepts=["cross-cutting"],
             success_criteria=["Multi-mandate success"]
@@ -308,7 +308,7 @@ class TestStrategicTheme:
         )
         
         summary = no_alignment_theme.get_alignment_summary()
-        assert summary == "No CLM alignment specified"
+        assert summary == "No Strategic alignment specified"
 
     def test_priority_levels(self):
         """Test valid priority levels"""

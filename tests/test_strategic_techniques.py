@@ -4,7 +4,7 @@ Tests for strategic techniques module
 
 import pytest
 from polyhegel.strategic_techniques import (
-    CLMMandate,
+    StrategyDomain,
     StrategicTechnique,
     ALL_TECHNIQUES,
     TECHNIQUE_REGISTRY,
@@ -27,9 +27,9 @@ class TestStrategicTechniques:
         assert len(TECHNIQUE_REGISTRY) == 15
         
         # Verify each mandate has 5 techniques
-        resource_techniques = get_techniques_for_mandate(CLMMandate.RESOURCE_ACQUISITION)
-        security_techniques = get_techniques_for_mandate(CLMMandate.STRATEGIC_SECURITY)
-        value_techniques = get_techniques_for_mandate(CLMMandate.VALUE_CATALYSIS)
+        resource_techniques = get_techniques_for_mandate(StrategyDomain.RESOURCE_ACQUISITION)
+        security_techniques = get_techniques_for_mandate(StrategyDomain.STRATEGIC_SECURITY)
+        value_techniques = get_techniques_for_mandate(StrategyDomain.VALUE_CATALYSIS)
         
         assert len(resource_techniques) == 5
         assert len(security_techniques) == 5
@@ -41,7 +41,7 @@ class TestStrategicTechniques:
         assert isinstance(technique, StrategicTechnique)
         assert isinstance(technique.name, str)
         assert isinstance(technique.description, str)
-        assert isinstance(technique.mandate, CLMMandate)
+        assert isinstance(technique.mandate, StrategyDomain)
         assert isinstance(technique.use_cases, list)
         assert len(technique.use_cases) > 0
         assert technique.complexity in ["low", "medium", "high"]
@@ -49,14 +49,14 @@ class TestStrategicTechniques:
 
     def test_get_techniques_for_mandate(self):
         """Test filtering techniques by mandate"""
-        resource_techniques = get_techniques_for_mandate(CLMMandate.RESOURCE_ACQUISITION)
-        assert all(t.mandate == CLMMandate.RESOURCE_ACQUISITION for t in resource_techniques)
+        resource_techniques = get_techniques_for_mandate(StrategyDomain.RESOURCE_ACQUISITION)
+        assert all(t.mandate == StrategyDomain.RESOURCE_ACQUISITION for t in resource_techniques)
         
-        security_techniques = get_techniques_for_mandate(CLMMandate.STRATEGIC_SECURITY)
-        assert all(t.mandate == CLMMandate.STRATEGIC_SECURITY for t in security_techniques)
+        security_techniques = get_techniques_for_mandate(StrategyDomain.STRATEGIC_SECURITY)
+        assert all(t.mandate == StrategyDomain.STRATEGIC_SECURITY for t in security_techniques)
         
-        value_techniques = get_techniques_for_mandate(CLMMandate.VALUE_CATALYSIS)
-        assert all(t.mandate == CLMMandate.VALUE_CATALYSIS for t in value_techniques)
+        value_techniques = get_techniques_for_mandate(StrategyDomain.VALUE_CATALYSIS)
+        assert all(t.mandate == StrategyDomain.VALUE_CATALYSIS for t in value_techniques)
 
     def test_get_techniques_by_complexity(self):
         """Test filtering techniques by complexity"""
@@ -109,11 +109,11 @@ class TestStrategicTechniques:
         """Test multi-criteria filtering"""
         # Filter by mandate and complexity
         resource_medium = get_recommended_techniques(
-            mandate=CLMMandate.RESOURCE_ACQUISITION,
+            mandate=StrategyDomain.RESOURCE_ACQUISITION,
             complexity="medium"
         )
         assert all(
-            t.mandate == CLMMandate.RESOURCE_ACQUISITION and t.complexity == "medium"
+            t.mandate == StrategyDomain.RESOURCE_ACQUISITION and t.complexity == "medium"
             for t in resource_medium
         )
         
@@ -150,22 +150,22 @@ class TestStrategicTechniques:
         
         # Test with specific criteria
         resource_prompt = get_techniques_prompt_text(
-            mandate=CLMMandate.RESOURCE_ACQUISITION,
+            mandate=StrategyDomain.RESOURCE_ACQUISITION,
             limit=1
         )
         assert len(resource_prompt) > 0
         
         # Test no matches
         no_match_prompt = get_techniques_prompt_text(
-            mandate=CLMMandate.RESOURCE_ACQUISITION,
+            mandate=StrategyDomain.RESOURCE_ACQUISITION,
             complexity="nonexistent"
         )
         assert "No techniques match" in no_match_prompt
 
     def test_clm_mandate_coverage(self):
-        """Test that all CLM mandates are covered"""
+        """Test that all Strategic mandates are covered"""
         mandates_covered = set(t.mandate for t in ALL_TECHNIQUES)
-        expected_mandates = set(CLMMandate)
+        expected_mandates = set(StrategyDomain)
         
         assert mandates_covered == expected_mandates
 
