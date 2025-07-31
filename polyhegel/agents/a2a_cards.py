@@ -8,7 +8,7 @@ the Agent2Agent protocol specification.
 
 from typing import List, Optional
 from a2a.types import AgentCard, AgentSkill, AgentCapabilities, AgentInterface
-from ..strategic_techniques import CLMMandate
+from ..strategic_techniques import StrategyDomain
 
 
 def create_leader_agent_skills() -> List[AgentSkill]:
@@ -19,10 +19,10 @@ def create_leader_agent_skills() -> List[AgentSkill]:
         name='Generate Strategic Themes',
         description=(
             'Analyzes strategic challenges and generates high-level thematic frameworks '
-            'that guide detailed strategy development. Applies CLM mandate filtering '
+            'that guide detailed strategy development. Applies strategic domain filtering '
             'and strategic technique analysis to identify key strategic priorities.'
         ),
-        tags=['strategy', 'themes', 'leadership', 'planning', 'clm'],
+        tags=['strategy', 'themes', 'leadership', 'planning'],
         examples=[
             'Generate strategic themes for resolving the hotdog-sandwich classification conflict',
             'Create thematic framework for organizational digital transformation',
@@ -36,7 +36,7 @@ def create_leader_agent_skills() -> List[AgentSkill]:
     return [generate_themes_skill]
 
 
-def create_follower_agent_skills(specialization_mandate: Optional[CLMMandate] = None) -> List[AgentSkill]:
+def create_follower_agent_skills(specialization_domain: Optional[StrategyDomain] = None) -> List[AgentSkill]:
     """Create AgentSkill definitions for FollowerAgent capabilities"""
     
     # Base strategy development skill
@@ -62,7 +62,7 @@ def create_follower_agent_skills(specialization_mandate: Optional[CLMMandate] = 
     skills = [develop_strategy_skill]
     
     # Add specialization-specific skills
-    if specialization_mandate == CLMMandate.RESOURCE_ACQUISITION:
+    if specialization_domain == StrategyDomain.RESOURCE_ACQUISITION:
         resource_skill = AgentSkill(
             id='resource_acquisition_strategy',
             name='Resource Acquisition Strategy',
@@ -70,7 +70,7 @@ def create_follower_agent_skills(specialization_mandate: Optional[CLMMandate] = 
                 'Specializes in developing strategies for acquiring and optimizing '
                 'organizational resources including funding, talent, technology, and partnerships.'
             ),
-            tags=['resources', 'acquisition', 'funding', 'talent', 'clm-2.1'],
+            tags=['resources', 'acquisition', 'funding', 'talent'],
             examples=[
                 'Develop funding strategy for startup growth',
                 'Create talent acquisition plan for technical roles',
@@ -81,7 +81,7 @@ def create_follower_agent_skills(specialization_mandate: Optional[CLMMandate] = 
         )
         skills.append(resource_skill)
         
-    elif specialization_mandate == CLMMandate.STRATEGIC_SECURITY:
+    elif specialization_domain == StrategyDomain.STRATEGIC_SECURITY:
         security_skill = AgentSkill(
             id='strategic_security_strategy',
             name='Strategic Security Strategy',
@@ -89,7 +89,7 @@ def create_follower_agent_skills(specialization_mandate: Optional[CLMMandate] = 
                 'Specializes in developing strategies for organizational security, '
                 'risk management, resilience, and threat mitigation across all domains.'
             ),
-            tags=['security', 'risk', 'resilience', 'threats', 'clm-2.2'],
+            tags=['security', 'risk', 'resilience', 'threats'],
             examples=[
                 'Develop cybersecurity strategy for digital transformation',
                 'Create crisis response and business continuity plan',
@@ -100,7 +100,7 @@ def create_follower_agent_skills(specialization_mandate: Optional[CLMMandate] = 
         )
         skills.append(security_skill)
         
-    elif specialization_mandate == CLMMandate.VALUE_CATALYSIS:
+    elif specialization_domain == StrategyDomain.VALUE_CATALYSIS:
         value_skill = AgentSkill(
             id='value_catalysis_strategy',
             name='Value Catalysis Strategy',
@@ -173,7 +173,7 @@ def create_leader_agent_card(base_url: str = "http://localhost:8001") -> AgentCa
         description=(
             'AI agent specializing in strategic theme generation and high-level '
             'planning using the polyhegel strategic simulation framework. '
-            'Applies CLM mandate analysis and strategic techniques to generate '
+            'Applies Strategic mandate analysis and strategic techniques to generate '
             'coherent thematic frameworks for complex challenges.'
         ),
         url=base_url,
@@ -190,19 +190,19 @@ def create_leader_agent_card(base_url: str = "http://localhost:8001") -> AgentCa
 
 
 def create_follower_agent_card(
-    specialization_mandate: Optional[CLMMandate] = None,
+    specialization_domain: Optional[StrategyDomain] = None,
     base_url: str = "http://localhost:8002"
 ) -> AgentCard:
     """Create A2A AgentCard for polyhegel FollowerAgent"""
     
     # Determine specialization name for card
-    if specialization_mandate == CLMMandate.RESOURCE_ACQUISITION:
+    if specialization_domain == StrategyDomain.RESOURCE_ACQUISITION:
         specialization_name = "Resource Acquisition"
         description_suffix = "specializing in resource acquisition and optimization strategies"
-    elif specialization_mandate == CLMMandate.STRATEGIC_SECURITY:
+    elif specialization_domain == StrategyDomain.STRATEGIC_SECURITY:
         specialization_name = "Strategic Security" 
         description_suffix = "specializing in security, risk management, and resilience strategies"
-    elif specialization_mandate == CLMMandate.VALUE_CATALYSIS:
+    elif specialization_domain == StrategyDomain.VALUE_CATALYSIS:
         specialization_name = "Value Catalysis"
         description_suffix = "specializing in value creation and stakeholder engagement strategies"
     else:
@@ -269,15 +269,15 @@ def create_all_agent_cards(
         'simulation': create_simulation_agent_card(simulation_url),
         'leader': create_leader_agent_card(leader_url),
         'follower_resource': create_follower_agent_card(
-            CLMMandate.RESOURCE_ACQUISITION, 
+            StrategyDomain.RESOURCE_ACQUISITION, 
             f"{follower_base_url}/resource"
         ),
         'follower_security': create_follower_agent_card(
-            CLMMandate.STRATEGIC_SECURITY,
+            StrategyDomain.STRATEGIC_SECURITY,
             f"{follower_base_url}/security"
         ),
         'follower_value': create_follower_agent_card(
-            CLMMandate.VALUE_CATALYSIS,
+            StrategyDomain.VALUE_CATALYSIS,
             f"{follower_base_url}/value"
         ),
         'follower_general': create_follower_agent_card(
