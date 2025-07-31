@@ -16,6 +16,7 @@ from .base import (
     AgentResponse, AgentCoordinator
 )
 from .leader import LeaderAgent
+from .follower import FollowerAgent
 
 __all__ = [
     "BaseAgent",
@@ -24,5 +25,6 @@ __all__ = [
     "AgentContext",
     "AgentResponse",
     "AgentCoordinator",
-    "LeaderAgent"
+    "LeaderAgent",
+    "FollowerAgent"
 ]
