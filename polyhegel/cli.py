@@ -116,6 +116,11 @@ Environment Variables:
         default='temperature',
         help='Generation mode: temperature sampling or hierarchical agents (default: temperature)'
     )
+    simulate_parser.add_argument(
+        '--agent-endpoints',
+        nargs='+',
+        help='A2A agent endpoints for hierarchical mode (format: role=url). Example: --agent-endpoints leader=http://localhost:8001 resource=http://localhost:8002'
+    )
     
     # Models command
     models_parser = subparsers.add_parser('models', help='List available models')
@@ -183,6 +188,36 @@ Environment Variables:
             # Parse temperature counts
             temperature_counts = simulator.parse_temperature_counts(args.temperatures)
             logger.info(f"Temperature settings: {temperature_counts}")
+            
+            # Handle A2A agent endpoints for hierarchical mode
+            if args.mode == 'hierarchical' and args.agent_endpoints:
+                # Parse agent endpoints from CLI arguments
+                endpoint_overrides = {}
+                for endpoint_arg in args.agent_endpoints:
+                    if '=' in endpoint_arg:
+                        role, url = endpoint_arg.split('=', 1)
+                        role = role.strip().lower()
+                        url = url.strip()
+                        
+                        # Map role names to environment variable names
+                        if role == 'leader':
+                            endpoint_overrides['POLYHEGEL_LEADER_URL'] = url
+                        elif role in ['resource', 'follower_resource']:
+                            endpoint_overrides['POLYHEGEL_FOLLOWER_RESOURCE_URL'] = url
+                        elif role in ['security', 'follower_security']:
+                            endpoint_overrides['POLYHEGEL_FOLLOWER_SECURITY_URL'] = url
+                        elif role in ['value', 'follower_value']:
+                            endpoint_overrides['POLYHEGEL_FOLLOWER_VALUE_URL'] = url
+                        elif role in ['general', 'follower_general']:
+                            endpoint_overrides['POLYHEGEL_FOLLOWER_GENERAL_URL'] = url
+                        else:
+                            logger.warning(f"Unknown agent role '{role}', ignoring endpoint {url}")
+                
+                # Apply endpoint overrides to environment
+                import os
+                for env_var, url in endpoint_overrides.items():
+                    os.environ[env_var] = url
+                    logger.info(f"Using A2A agent endpoint: {env_var}={url}")
             
             # Run simulation
             results = asyncio.run(simulator.run_simulation(

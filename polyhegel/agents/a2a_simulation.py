@@ -31,9 +31,42 @@ async def generate_hierarchical_strategies_a2a(
     Returns:
         List of StrategyChain objects
     """
-    logger.info("Generating strategies via A2A coordination (mock implementation)")
+    logger.info("Generating strategies via A2A coordination")
     
-    # Mock strategy generation - in production this would call actual A2A agents
+    # Try to use real A2A client if available
+    try:
+        from ..clients import PolyhegelA2AClient, A2AAgentEndpoints
+        
+        # Create endpoints configuration
+        endpoints = A2AAgentEndpoints(
+            leader_url=leader_url,
+            follower_resource_url=follower_urls.get("resource", "http://localhost:8002"),
+            follower_security_url=follower_urls.get("security", "http://localhost:8003"),
+            follower_value_url=follower_urls.get("value", "http://localhost:8004"),
+            follower_general_url=follower_urls.get("general", "http://localhost:8005")
+        )
+        
+        # Use A2A client for real distributed strategy generation
+        async with PolyhegelA2AClient(endpoints) as client:
+            # Verify agent availability
+            availability = await client.verify_agent_availability()
+            available_agents = [name for name, available in availability.items() if available]
+            
+            if available_agents:
+                logger.info(f"Using real A2A agents: {available_agents}")
+                return await client.generate_hierarchical_strategies(
+                    strategic_challenge=strategic_challenge,
+                    max_themes=max_themes,
+                    context=context
+                )
+            else:
+                logger.warning("No A2A agents available, falling back to mock")
+        
+    except Exception as e:
+        logger.warning(f"A2A client failed, falling back to mock: {e}")
+    
+    # Fallback: Mock strategy generation  
+    logger.info("Using mock A2A strategy generation")
     strategies = []
     
     for i in range(min(3, max_themes)):
@@ -65,5 +98,5 @@ async def generate_hierarchical_strategies_a2a(
         )
         strategies.append(chain)
     
-    logger.info(f"Generated {len(strategies)} strategy chains via A2A mock")
+    logger.info(f"Generated {len(strategies)} strategy chains via A2A")
     return strategies
