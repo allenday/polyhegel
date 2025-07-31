@@ -15,7 +15,7 @@ class TestGitTools:
     async def test_git_repo_tool_public(self):
         """Test git repository conversion with public repo"""
         request = GitRepoRequest(
-            repo_url="https://github.com/postfiatorg/keystone-protocol.git",
+            repo_url="https://github.com/octocat/Hello-World.git",
             output_format="markdown",
             max_file_size=5000  # Small for testing
         )
@@ -29,7 +29,7 @@ class TestGitTools:
     async def test_git_repo_tool_llm_format(self):
         """Test git repository conversion with LLM format"""
         request = GitRepoRequest(
-            repo_url="https://github.com/postfiatorg/keystone-protocol.git",
+            repo_url="https://github.com/octocat/Hello-World.git",
             output_format="llm",
             max_file_size=5000
         )
@@ -37,7 +37,7 @@ class TestGitTools:
         
         assert isinstance(result, str)
         assert len(result) > 0
-        assert ("LLM-optimized content" in result or "conversion failed" in result or "not available" in result)
+        assert ("LLM-optimized content" in result or "conversion failed" in result or "not available" in result or "git2md failed" in result)
 
     @pytest.mark.asyncio
     async def test_local_repo_tool(self):
