@@ -1,4 +1,4 @@
-.PHONY: test test-unit test-integration test-slow test-all test-quick test-no-llm test-coverage clean help
+.PHONY: test test-unit test-integration test-slow test-all test-quick test-no-llm test-coverage clean help agents agents-start agents-stop agents-status agents-restart
 
 # Default target
 help:
@@ -11,6 +11,12 @@ help:
 	@echo "  make test-quick    - Run quick smoke tests (unit without slow)"
 	@echo "  make test-no-llm   - Run all tests except LLM tests"
 	@echo "  make test-coverage - Run tests with coverage report"
+	@echo ""
+	@echo "A2A Agent targets:"
+	@echo "  make agents-start  - Start all A2A agent servers"
+	@echo "  make agents-stop   - Stop all A2A agent servers" 
+	@echo "  make agents-status - Check status of A2A agent servers"
+	@echo "  make agents-restart- Restart all A2A agent servers"
 	@echo ""
 	@echo "Other targets:"
 	@echo "  make clean         - Remove cache and temporary files"
@@ -56,3 +62,23 @@ format:
 lint:
 	source .venv/bin/activate && ruff check polyhegel tests
 	source .venv/bin/activate && mypy polyhegel --ignore-missing-imports
+
+# A2A Agent management
+agents-start:
+	@echo "🚀 Starting Polyhegel A2A Agent Ecosystem..."
+	./scripts/run-all-agents.sh start
+
+agents-stop:  
+	@echo "🛑 Stopping Polyhegel A2A Agent Ecosystem..."
+	./scripts/run-all-agents.sh stop
+
+agents-status:
+	@echo "📊 Checking Polyhegel A2A Agent Status..."
+	./scripts/run-all-agents.sh status
+
+agents-restart:
+	@echo "🔄 Restarting Polyhegel A2A Agent Ecosystem..."
+	./scripts/run-all-agents.sh restart
+
+# Convenience aliases
+agents: agents-start
