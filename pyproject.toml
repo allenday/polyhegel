@@ -1,0 +1,57 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "polyhegel"
+version = "0.1.0"
+description = "Simulator for identifying effective trunk narratives for swarm AI genesis"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    { name = "Post Fiat Team" }
+]
+dependencies = [
+    "pydantic-ai>=0.0.10",
+    "pydantic>=2.5.0",
+    "spacy>=3.7.0",
+    "networkx>=3.2",
+    "sentence-transformers>=2.2.0",
+    "hdbscan>=0.8.33",
+    "scikit-learn-extra>=0.3.0",
+    "numpy>=1.24.0",
+    "scikit-learn>=1.3.0",
+    "matplotlib>=3.7.0",
+    "langsmith>=0.0.70",
+    "python-dotenv>=1.0.0",
+    "tqdm>=4.66.0",
+    "httpx>=0.25.0",
+    "aiohttp>=3.9.0",
+    "duckduckgo-search>=4.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+]
+
+[project.scripts]
+polyhegel = "polyhegel.cli:main"
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.black]
+line-length = 120
+target-version = ["py39"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
