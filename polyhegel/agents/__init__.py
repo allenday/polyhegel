@@ -11,8 +11,18 @@ The package provides:
 - Agent coordination and communication patterns
 """
 
-from .base import BaseAgent
+from .base import (
+    BaseAgent, AgentRole, AgentCapabilities, AgentContext, 
+    AgentResponse, AgentCoordinator
+)
+from .leader import LeaderAgent
 
 __all__ = [
-    "BaseAgent"
+    "BaseAgent",
+    "AgentRole", 
+    "AgentCapabilities",
+    "AgentContext",
+    "AgentResponse",
+    "AgentCoordinator",
+    "LeaderAgent"
 ]
