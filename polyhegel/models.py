@@ -40,3 +40,6 @@ class StrategyChain:
     is_trunk: bool = False
     is_twig: bool = False
     graph: Optional[nx.DiGraph] = None
+    # Technique-guided generation metadata
+    technique_name: Optional[str] = None
+    technique_mandate: Optional[str] = None
