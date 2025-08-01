@@ -119,7 +119,7 @@ class StrategicTheme(BaseModel):
     def get_alignment_summary(self) -> str:
         """Get human-readable alignment summary"""
         if not self.domain_alignment:
-            return "No strategic alignment specified"
+            return "No Strategic alignment specified"
 
         domain_names = {"2.1": "Resource Acquisition", "2.2": "Strategic Security", "2.3": "Value Catalysis"}
 
