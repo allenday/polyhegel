@@ -39,8 +39,8 @@ class TestPrompts:
         assert "{key_technique}" in content
 
     def test_load_nonexistent_prompt_raises_error(self):
-        """Test that loading non-existent prompt raises FileNotFoundError"""
-        with pytest.raises(FileNotFoundError, match="Prompt template not found"):
+        """Test that loading non-existent prompt raises ValueError"""
+        with pytest.raises(ValueError, match="Unknown template"):
             load_prompt("nonexistent_prompt.txt")
 
     def test_strategic_compare_template_exists(self):
