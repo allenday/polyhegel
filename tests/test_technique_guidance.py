@@ -120,10 +120,12 @@ class TestTechniqueGuidance:
         strategic_challenge = "Build a thriving ecosystem for collaborative innovation"
 
         # Test one technique from each domain
+        from polyhegel.strategic_techniques import StrategyDomain
+
         technique_tests = [
-            ("Stakeholder Alignment Matrix", "2.1"),  # Resource Acquisition
-            ("Community-Based Security", "2.2"),  # Strategic Security
-            ("Cross-Pollination Innovation", "2.3"),  # Value Catalysis
+            ("Stakeholder Alignment Matrix", StrategyDomain.RESOURCE_ACQUISITION.value),  # Resource Acquisition
+            ("Community-Based Security", StrategyDomain.STRATEGIC_SECURITY.value),  # Strategic Security
+            ("Cross-Pollination Innovation", StrategyDomain.VALUE_CATALYSIS.value),  # Value Catalysis
         ]
 
         for technique_name, expected_domain in technique_tests:
