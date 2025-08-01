@@ -46,7 +46,7 @@ def create_follower_agent_skills(specialization_domain: Optional[StrategyDomain]
         description=(
             'Takes strategic themes and develops comprehensive implementation strategies '
             'with specific steps, timelines, and resource requirements. Applies strategic '
-            'techniques and maintains alignment with organizational mandates.'
+            'techniques and maintains alignment with organizational domains.'
         ),
         tags=['strategy', 'implementation', 'planning', 'execution'],
         examples=[
@@ -108,7 +108,7 @@ def create_follower_agent_skills(specialization_domain: Optional[StrategyDomain]
                 'Specializes in developing strategies for value creation, innovation, '
                 'stakeholder engagement, and sustainable competitive advantage.'
             ),
-            tags=['value', 'innovation', 'stakeholders', 'advantage', 'clm-2.3'],
+            tags=['value', 'innovation', 'stakeholders', 'advantage', 'value-catalysis'],
             examples=[
                 'Develop customer value proposition strategy',
                 'Create innovation pipeline and R&D strategy',
@@ -173,7 +173,7 @@ def create_leader_agent_card(base_url: str = "http://localhost:8001") -> AgentCa
         description=(
             'AI agent specializing in strategic theme generation and high-level '
             'planning using the polyhegel strategic simulation framework. '
-            'Applies Strategic mandate analysis and strategic techniques to generate '
+            'Applies strategic domain analysis and strategic techniques to generate '
             'coherent thematic frameworks for complex challenges.'
         ),
         url=base_url,
