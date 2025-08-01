@@ -48,6 +48,9 @@ templates:
   use_techniques:
     file: use_techniques.txt
     description: Use techniques template
+  compare_answer:
+    file: compare_answer.txt
+    description: Compare answer template
     
 version: "1.0"
 schema_version: "1.0"

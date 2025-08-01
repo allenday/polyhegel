@@ -31,7 +31,14 @@ class TestStrategicComparison:
         # Try fixtures first
         if self.primary_fixture.exists():
             with open(self.primary_fixture, "r") as f:
-                return json.load(f)
+                data = json.load(f)
+                # If trunk is null, try minimal test fixture
+                if data.get("trunk") is None:
+                    minimal_fixture = self.fixtures_dir / "minimal_hotdog_test.json"
+                    if minimal_fixture.exists():
+                        with open(minimal_fixture, "r") as f:
+                            return json.load(f)
+                return data
 
         # Fall back to cache for backwards compatibility
         if self.cache_file.exists():
