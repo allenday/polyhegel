@@ -54,10 +54,10 @@ async def web_search_tool(ctx, request: WebSearchRequest) -> str:
     try:
         # Import duckduckgo_search if available
         try:
-            from duckduckgo_search import DDGS
+            from ddgs import DDGS
         except ImportError:
-            logger.warning("duckduckgo_search not available, using mock results")
-            return f"Mock search results for: {request.query}\n[Install duckduckgo-search for real web search]"
+            logger.warning("ddgs not available, using mock results")
+            return f"Mock search results for: {request.query}\n[Install ddgs for real web search]"
 
         # Perform search
         with DDGS() as ddgs:

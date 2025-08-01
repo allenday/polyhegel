@@ -7,6 +7,7 @@ on:
 env:
   PYTHONPATH: ${{ github.workspace }}
   PYTEST_ADDOPTS: "-v --tb=short"
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
 jobs:
   fast-checks:
