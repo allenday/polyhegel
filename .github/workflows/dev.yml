@@ -25,7 +25,8 @@ jobs:
         python -m pip install --upgrade pip
         # Fix sklearn_extra numpy compatibility by constraining numpy version
         pip install "numpy<2.0" 
-        pip install -e .[dev]
+        # Force rebuild scikit-learn-extra from source to match numpy version
+        pip install --no-binary scikit-learn-extra -e .[dev]
     
     - name: Run linting
       run: make lint
