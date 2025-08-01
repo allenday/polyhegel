@@ -10,7 +10,7 @@ Based on common strategic domains:
 """
 
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 
 
@@ -38,7 +38,7 @@ class StrategyDomain(Enum):
 
 
 # Domain metadata dictionary
-DOMAIN_METADATA: Dict[StrategyDomain, Dict[str, any]] = {
+DOMAIN_METADATA: Dict[StrategyDomain, Dict[str, Any]] = {
     StrategyDomain.RESOURCE_ACQUISITION: {
         "display_name": "Resource Acquisition",
         "description": "Obtaining and optimizing necessary resources",

@@ -68,12 +68,12 @@ class StrategicTheme(BaseModel):
         default="moderate", description="Estimated complexity of implementing this theme"
     )
 
-    key_concepts: List[str] = Field(description="Core concepts and keywords associated with this theme", max_items=10)
+    key_concepts: List[str] = Field(description="Core concepts and keywords associated with this theme", max_length=10)
 
-    success_criteria: List[str] = Field(description="High-level success criteria for this theme", max_items=5)
+    success_criteria: List[str] = Field(description="High-level success criteria for this theme", max_length=5)
 
     potential_risks: List[str] = Field(
-        description="Major risks or challenges associated with this theme", max_items=5, default_factory=list
+        description="Major risks or challenges associated with this theme", max_length=5, default_factory=list
     )
 
     strategic_context: Optional[str] = Field(
@@ -121,7 +121,12 @@ class StrategicTheme(BaseModel):
         if not self.domain_alignment:
             return "No Strategic alignment specified"
 
-        domain_names = {"2.1": "Resource Acquisition", "2.2": "Strategic Security", "2.3": "Value Catalysis"}
+        # Map legacy numeric codes to StrategyDomain display names
+        domain_names = {
+            "2.1": StrategyDomain.RESOURCE_ACQUISITION.display_name,
+            "2.2": StrategyDomain.STRATEGIC_SECURITY.display_name,
+            "2.3": StrategyDomain.VALUE_CATALYSIS.display_name,
+        }
 
         summaries = []
         for domain, score in self.domain_alignment.items():
@@ -191,14 +196,14 @@ class StrategyAnalysisResponse(BaseModel):
         description="Alignment with strategic objectives score (1-10 scale)", ge=1.0, le=10.0
     )
 
-    strengths: List[str] = Field(description="Key strengths of the strategy", min_items=1, max_items=5)
+    strengths: List[str] = Field(description="Key strengths of the strategy", min_length=1, max_length=5)
 
     weaknesses: List[str] = Field(
-        description="Key weaknesses or areas for improvement", max_items=5, default_factory=list
+        description="Key weaknesses or areas for improvement", max_length=5, default_factory=list
     )
 
     recommendations: List[str] = Field(
-        description="Specific recommendations for improvement", max_items=3, default_factory=list
+        description="Specific recommendations for improvement", max_length=3, default_factory=list
     )
 
 
@@ -206,11 +211,11 @@ class FeedbackAnalysisResponse(BaseModel):
     """Structured response for feedback loop strengths/weaknesses analysis"""
 
     strengths: List[str] = Field(
-        description="Key strategic strengths identified from current metrics", max_items=5, default_factory=list
+        description="Key strategic strengths identified from current metrics", max_length=5, default_factory=list
     )
 
     weaknesses: List[str] = Field(
-        description="Key strategic weaknesses or areas needing improvement", max_items=5, default_factory=list
+        description="Key strategic weaknesses or areas needing improvement", max_length=5, default_factory=list
     )
 
     overall_assessment: str = Field(description="Overall strategic assessment summary", min_length=20, max_length=200)
@@ -218,5 +223,5 @@ class FeedbackAnalysisResponse(BaseModel):
     confidence_score: float = Field(description="Confidence in the analysis (0.0 to 1.0)", ge=0.0, le=1.0)
 
     priority_areas: List[str] = Field(
-        description="Top priority areas for improvement", max_items=3, default_factory=list
+        description="Top priority areas for improvement", max_length=3, default_factory=list
     )

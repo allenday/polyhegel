@@ -70,7 +70,7 @@ def create_follower_agent_skills(specialization_domain: Optional[StrategyDomain]
                 "Specializes in developing strategies for acquiring and optimizing "
                 "organizational resources including funding, talent, technology, and partnerships."
             ),
-            tags=["resources", "acquisition", "funding", "talent"],
+            tags=specialization_domain.tags + ["talent"],
             examples=[
                 "Develop funding strategy for startup growth",
                 "Create talent acquisition plan for technical roles",
@@ -89,7 +89,7 @@ def create_follower_agent_skills(specialization_domain: Optional[StrategyDomain]
                 "Specializes in developing strategies for organizational security, "
                 "risk management, resilience, and threat mitigation across all domains."
             ),
-            tags=["security", "risk", "resilience", "threats"],
+            tags=specialization_domain.tags + ["risk", "threats"],
             examples=[
                 "Develop cybersecurity strategy for digital transformation",
                 "Create crisis response and business continuity plan",
@@ -108,7 +108,7 @@ def create_follower_agent_skills(specialization_domain: Optional[StrategyDomain]
                 "Specializes in developing strategies for value creation, innovation, "
                 "stakeholder engagement, and sustainable competitive advantage."
             ),
-            tags=["value", "innovation", "stakeholders", "advantage", "value-catalysis"],
+            tags=specialization_domain.tags + ["innovation", "advantage"],
             examples=[
                 "Develop customer value proposition strategy",
                 "Create innovation pipeline and R&D strategy",

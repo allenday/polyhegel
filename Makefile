@@ -71,8 +71,9 @@ lint:
 	$(PYTHON) -m black --check polyhegel tests
 
 typecheck:
-	@echo "⚠️  Type checking temporarily disabled - see issue #50"
-	@echo "✅ Type check passed (skipped)"
+	@echo "🔍 Running type checking with mypy..."
+	$(PYTHON) -m mypy polyhegel --config-file mypy.ini
+	@echo "✅ Type check passed"
 
 build:
 	$(PYTHON) -m build
