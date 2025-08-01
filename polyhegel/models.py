@@ -24,18 +24,18 @@ class GenesisStrategy(BaseModel):
     title: str = Field(description="Short title for this strategy approach")
     steps: List[StrategyStep] = Field(description="Sequential steps to execute the strategy")
     alignment_score: Dict[str, float] = Field(
-        description="How well this aligns with strategic mandates and constraints"
+        description="How well this aligns with strategic domains and constraints"
     )
     estimated_timeline: str = Field(description="Estimated timeline for execution")
     resource_requirements: List[str] = Field(description="Key resources needed")
 
 
 class ThemeCategory(str, Enum):
-    """Strategic theme categories aligned with Strategic mandates"""
+    """Strategic theme categories aligned with strategic domains"""
     RESOURCE_ACQUISITION = "resource_acquisition"
     STRATEGIC_SECURITY = "strategic_security"
     VALUE_CATALYSIS = "value_catalysis"
-    CROSS_CUTTING = "cross_cutting"  # Themes that span multiple mandates
+    CROSS_CUTTING = "cross_cutting"  # Themes that span multiple domains
     FOUNDATIONAL = "foundational"    # Core infrastructure themes
 
 
@@ -62,8 +62,8 @@ class StrategicTheme(BaseModel):
         max_length=500
     )
     
-    clm_alignment: Dict[str, float] = Field(
-        description="Alignment scores with Strategic mandates (2.1, 2.2, 2.3) on 1-5 scale",
+    domain_alignment: Dict[str, float] = Field(
+        description="Alignment scores with strategic domains (2.1, 2.2, 2.3) on 1-5 scale",
         default_factory=dict
     )
     
@@ -98,13 +98,13 @@ class StrategicTheme(BaseModel):
         description="Additional context about why this theme is strategically important"
     )
     
-    @validator('clm_alignment')
-    def validate_clm_alignment(cls, v):
-        """Validate Strategic alignment scores"""
-        valid_mandates = {"2.1", "2.2", "2.3"}
-        for mandate, score in v.items():
-            if mandate not in valid_mandates:
-                raise ValueError(f"Invalid Strategic mandate: {mandate}. Must be one of {valid_mandates}")
+    @validator('domain_alignment')
+    def validate_domain_alignment(cls, v):
+        """Validate Strategic domain alignment scores"""
+        valid_domains = {"2.1", "2.2", "2.3"}
+        for domain, score in v.items():
+            if domain not in valid_domains:
+                raise ValueError(f"Invalid strategic domain: {domain}. Must be one of {valid_domains}")
             if not (1.0 <= score <= 5.0):
                 raise ValueError(f"Strategic alignment score must be between 1.0 and 5.0, got {score}")
         return v
@@ -123,31 +123,31 @@ class StrategicTheme(BaseModel):
             raise ValueError("At least one success criterion is required")
         return [criterion.strip() for criterion in v if criterion.strip()]
     
-    def get_primary_mandate(self) -> Optional[str]:
-        """Get the Strategic mandate with highest alignment score"""
-        if not self.clm_alignment:
+    def get_primary_domain(self) -> Optional[str]:
+        """Get the strategic domain with highest alignment score"""
+        if not self.domain_alignment:
             return None
-        return max(self.clm_alignment.items(), key=lambda x: x[1])[0]
+        return max(self.domain_alignment.items(), key=lambda x: x[1])[0]
     
     def is_cross_cutting(self) -> bool:
-        """Check if theme spans multiple Strategic mandates (scores > 3.0 in multiple)"""
-        high_scores = [mandate for mandate, score in self.clm_alignment.items() if score > 3.0]
+        """Check if theme spans multiple strategic domains (scores > 3.0 in multiple)"""
+        high_scores = [domain for domain, score in self.domain_alignment.items() if score > 3.0]
         return len(high_scores) > 1
     
     def get_alignment_summary(self) -> str:
         """Get human-readable alignment summary"""
-        if not self.clm_alignment:
-            return "No Strategic alignment specified"
+        if not self.domain_alignment:
+            return "No strategic alignment specified"
         
-        mandate_names = {
+        domain_names = {
             "2.1": "Resource Acquisition",
             "2.2": "Strategic Security", 
             "2.3": "Value Catalysis"
         }
         
         summaries = []
-        for mandate, score in self.clm_alignment.items():
-            name = mandate_names.get(mandate, mandate)
+        for domain, score in self.domain_alignment.items():
+            name = domain_names.get(domain, domain)
             summaries.append(f"{name}: {score}/5.0")
         
         return " | ".join(summaries)
@@ -166,4 +166,4 @@ class StrategyChain:
     graph: Optional[nx.DiGraph] = None
     # Technique-guided generation metadata
     technique_name: Optional[str] = None
-    technique_mandate: Optional[str] = None
+    technique_domain: Optional[str] = None
