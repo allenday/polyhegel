@@ -7,7 +7,7 @@ from pathlib import Path
 from polyhegel.strategic_techniques import (
     StrategyDomain,
     get_technique_by_name,
-    get_techniques_for_mandate,
+    get_techniques_for_domain,
     RESOURCE_ACQUISITION_TECHNIQUES
 )
 
@@ -56,7 +56,7 @@ class TestStrategicTechniquePrompts:
         formatted_prompt = template.format(
             strategic_challenge="Build a sustainable funding model for an AI research initiative",
             key_technique=technique.name,
-            clm_mandate=technique.mandate.value,
+            clm_mandate=technique.domain.value,
             technique_description=technique.description,
             technique_use_cases=use_cases_text
         )
@@ -64,7 +64,7 @@ class TestStrategicTechniquePrompts:
         # Verify formatting worked
         assert technique.name in formatted_prompt
         assert technique.description in formatted_prompt
-        assert technique.mandate.value in formatted_prompt
+        assert technique.domain.value in formatted_prompt
         assert "Build a sustainable funding model" in formatted_prompt
         
         # Check that all placeholders were replaced
@@ -101,8 +101,8 @@ class TestStrategicTechniquePrompts:
         clm_references = template_content.count("{clm_mandate}")
         assert clm_references >= 2, "Should reference Strategic mandate at least twice"
         
-        # Should mention alignment with Strategic mandate
-        assert "alignment with" in template_content.lower() and "clm mandate" in template_content.lower()
+        # Should mention alignment with strategy domain
+        assert "alignment with" in template_content.lower() and "strategy domain" in template_content.lower()
 
     def test_template_with_different_mandates(self):
         """Test template formatting with different Strategic mandates"""
@@ -111,7 +111,7 @@ class TestStrategicTechniquePrompts:
         
         # Test with each mandate
         for mandate in StrategyDomain:
-            techniques = get_techniques_for_mandate(mandate)
+            techniques = get_techniques_for_domain(mandate)
             if techniques:
                 technique = techniques[0]
                 use_cases_text = "\n".join([f"- {use_case}" for use_case in technique.use_cases])
@@ -119,13 +119,13 @@ class TestStrategicTechniquePrompts:
                 formatted_prompt = template.format(
                     strategic_challenge="Test strategic challenge",
                     key_technique=technique.name,
-                    clm_mandate=technique.mandate.value,
+                    clm_mandate=technique.domain.value,
                     technique_description=technique.description,
                     technique_use_cases=use_cases_text
                 )
                 
                 # Should contain mandate-specific content
-                assert technique.mandate.value in formatted_prompt
+                assert technique.domain.value in formatted_prompt
                 assert technique.name in formatted_prompt
 
     def test_template_output_format(self):
@@ -194,7 +194,7 @@ def test_prompt_template_integration():
     formatted_prompt = template.format(
         strategic_challenge="Develop a strategy to build consensus around hotdog taxonomy classification",
         key_technique=technique.name,
-        clm_mandate=technique.mandate.value,
+        clm_mandate=technique.domain.value,
         technique_description=technique.description,
         technique_use_cases=use_cases_text
     )
@@ -203,7 +203,7 @@ def test_prompt_template_integration():
     assert len(formatted_prompt) > 500  # Should be substantial
     assert "hotdog taxonomy" in formatted_prompt
     assert "Stakeholder Alignment Matrix" in formatted_prompt
-    assert "2.1" in formatted_prompt  # Strategic mandate
+    assert "resource_acquisition" in formatted_prompt  # Strategic domain
     assert "Strategic Plan Title:" in formatted_prompt
     
 
