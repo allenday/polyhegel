@@ -45,6 +45,7 @@ dev = [
     "safety>=3.0.0",
     "bandit>=1.7.0",
     "pip-audit>=2.6.0",
+    "pre-commit>=3.0.0",
 ]
 
 [project.scripts]
@@ -83,4 +84,14 @@ markers = [
     "llm: marks tests that make real LLM API calls",
     "web: marks tests that make web requests",
     "git: marks tests that interact with git repositories",
+]
+
+[tool.pre-commit]
+default_stages = ["commit"]
+
+[[tool.pre-commit.repos]]
+repo = "local"
+hooks = [
+    { id = "black", name = "black", entry = "python -m black", language = "system", types = ["python"], args = ["--check"] },
+    { id = "ruff", name = "ruff", entry = "python -m ruff check", language = "system", types = ["python"] }
 ]

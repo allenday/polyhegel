@@ -195,10 +195,10 @@ class StrategyEvaluator:
     def format_strategy_for_comparison(self, strategy: StrategyChain) -> str:
         """
         Public method to format a strategy for comparison
-        
+
         Args:
             strategy: Strategy chain to format
-            
+
         Returns:
             Formatted strategy text
         """
