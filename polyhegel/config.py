@@ -15,7 +15,6 @@ class Config:
     """Configuration settings for Polyhegel"""
     
     DEFAULT_MODEL = "claude-3-haiku-20240307"
-    DEFAULT_TARGET_USERS = 10000
     DEFAULT_OUTPUT_DIR = "results"
     
     # Sampling defaults (based on LLM-As-Hierarchical-Policy research)
@@ -50,17 +49,12 @@ class Config:
     
     @staticmethod
     def get_provider_from_model(model_name: str) -> str:
-        """Get the provider from model name."""
-        if model_name.startswith('gpt-'):
-            return 'openai'
-        elif model_name.startswith('claude-'):
-            return 'anthropic'
-        elif model_name.startswith('gemini-'):
-            return 'google'
-        elif model_name.startswith('mistral-'):
-            return 'mistral'
-        else:
-            return 'openai'  # Default
+        """Get the provider from model name using pydantic-ai model inference."""
+        # Delegate to pydantic-ai for model provider detection
+        # This is called rarely so expense is acceptable
+        from pydantic_ai import infer_model
+        model = infer_model(model_name)
+        return model.__class__.__module__.split('.')[-1]  # Extract provider from module
     
     @staticmethod
     def set_api_key_for_provider(provider: str, api_key: str):
