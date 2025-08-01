@@ -16,6 +16,8 @@ from .embedder import StrategyEmbedder
 from .clusterer import StrategyClusterer
 from .summarizer import StrategySummarizer
 from .strategic_techniques import StrategyDomain
+from .tournament import StrategyTournament
+from .strategy_evaluator import StrategyEvaluator
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +103,8 @@ class PolyhegelSimulator:
                            temperature_counts: Optional[List[Tuple[float, int]]] = None,
                            system_prompt: Optional[str] = None,
                            user_prompt: Optional[str] = None,
-                           mode: str = "temperature") -> Dict:
+                           mode: str = "temperature",
+                           selection_method: str = "clustering") -> Dict:
         """
         Run the complete simulation pipeline
         
@@ -110,6 +113,7 @@ class PolyhegelSimulator:
             system_prompt: Optional custom system prompt
             user_prompt: Optional custom user prompt
             mode: Generation mode - "temperature" or "hierarchical"
+            selection_method: Method for trunk selection - "clustering" or "tournament"
             
         Returns:
             Dictionary with simulation results
@@ -145,11 +149,34 @@ class PolyhegelSimulator:
             logger.info("Step 3: Creating strategy embeddings...")
             self.embedder.embed_strategies(self.chains)
             
-            # Step 4: Cluster strategies
-            logger.info("Step 4: Clustering strategies...")
-            self.cluster_results = self.clusterer.cluster_strategies(self.chains)
-            self.trunk = self.cluster_results.get('trunk')
-            self.twigs = self.cluster_results.get('twigs', [])
+            # Step 4: Select trunk strategy using chosen method
+            if selection_method == "tournament":
+                logger.info("Step 4: Running tournament to select best strategy...")
+                evaluator = StrategyEvaluator(self.model)
+                tournament = StrategyTournament(evaluator)
+                
+                context = user_prompt or "Strategic planning situation requiring optimal approach selection"
+                self.trunk, tournament_results = await tournament.run_tournament(
+                    self.chains, 
+                    context,
+                    num_comparisons=1,
+                    save_results=False
+                )
+                
+                # Create compatible result structure for downstream processing
+                self.cluster_results = {
+                    'trunk': self.trunk,
+                    'twigs': [chain for chain in self.chains if chain != self.trunk],
+                    'tournament_results': tournament_results,
+                    'selection_method': 'tournament'
+                }
+                self.twigs = self.cluster_results['twigs']
+                
+            else:  # clustering method (default)
+                logger.info("Step 4: Clustering strategies...")
+                self.cluster_results = self.clusterer.cluster_strategies(self.chains)
+                self.trunk = self.cluster_results.get('trunk')
+                self.twigs = self.cluster_results.get('twigs', [])
             
             # Step 5: Generate summary
             logger.info("Step 5: Generating summary...")

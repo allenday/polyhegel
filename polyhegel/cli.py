@@ -65,6 +65,9 @@ Examples:
   # Use custom system and user prompts from files
   python -m polyhegel simulate --output results/ --system-prompt-file system-prompt.md --user-prompt-file user-query.md
   
+  # Use tournament selection instead of clustering
+  python -m polyhegel simulate --output results/ --selection-method tournament --user-prompt-file strategic-challenge.md
+  
   # List available models
   python -m polyhegel models
 
@@ -120,6 +123,12 @@ Environment Variables:
         '--agent-endpoints',
         nargs='+',
         help='A2A agent endpoints for hierarchical mode (format: role=url). Example: --agent-endpoints leader=http://localhost:8001 resource=http://localhost:8002'
+    )
+    simulate_parser.add_argument(
+        '--selection-method',
+        choices=['clustering', 'tournament'],
+        default='clustering',
+        help='Method for selecting trunk strategy: clustering or tournament (default: clustering)'
     )
     
     # Models command
@@ -224,7 +233,8 @@ Environment Variables:
                 temperature_counts=temperature_counts,
                 system_prompt=system_prompt,
                 user_prompt=user_prompt,
-                mode=args.mode
+                mode=args.mode,
+                selection_method=args.selection_method
             ))
             
             # Create output directory
