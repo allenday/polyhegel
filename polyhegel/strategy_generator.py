@@ -17,6 +17,7 @@ from .strategic_techniques import (
     get_technique_by_name,
     get_recommended_techniques
 )
+from .prompts import get_system_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class StrategyGenerator:
             system_prompt: Optional custom system prompt
         """
         self.model = model
-        self.system_prompt = system_prompt or Config.get_default_system_prompt()
+        self.system_prompt = system_prompt or get_system_prompt('strategic', 'generator')
         # Temporarily disable tools to focus on basic simulation
         # all_tools = WEB_TOOLS + GIT_TOOLS
         self.agent = Agent(

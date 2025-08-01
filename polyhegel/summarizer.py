@@ -7,6 +7,7 @@ from typing import List, Optional
 from pydantic_ai import Agent
 
 from .models import StrategyChain
+from .prompts import get_system_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ class StrategySummarizer:
         self.agent = Agent(
             self.model,
             output_type=str,
-            system_prompt="You are a concise strategic analyst specializing in swarm AI systems."
+            system_prompt=get_system_prompt('strategic', 'summarizer')
         )
     
     async def summarize_results(self,

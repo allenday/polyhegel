@@ -8,7 +8,7 @@ from typing import Dict, Any, Optional
 from pydantic_ai import Agent
 
 from .models import StrategyChain
-from .prompts import load_prompt
+from .prompts import get_system_prompt, get_template
 
 logger = logging.getLogger(__name__)
 
@@ -25,15 +25,15 @@ class StrategyEvaluator:
             system_prompt: Optional custom system prompt for evaluation
         """
         self.model = model
-        self.system_prompt = system_prompt or self._get_default_evaluator_prompt()
+        self.system_prompt = system_prompt or get_system_prompt('strategic', 'evaluator')
         self.agent = Agent(
             self.model,
             output_type=str,
             system_prompt=self.system_prompt
         )
         
-        # Load comparison template
-        self.comparison_template = load_prompt("strategic_compare.txt")
+        # Load comparison template using new centralized system
+        # Template will be loaded dynamically when needed
     
     async def compare_strategies(self, 
                                strategy1: StrategyChain, 
@@ -55,8 +55,9 @@ class StrategyEvaluator:
             strategy1_text = self._format_strategy_for_comparison(strategy1)
             strategy2_text = self._format_strategy_for_comparison(strategy2)
             
-            # Create comparison prompt
-            comparison_prompt = self.comparison_template.format(
+            # Create comparison prompt using centralized template
+            comparison_prompt = get_template(
+                'strategic_compare',
                 question=context or "Strategic planning situation requiring optimal approach selection",
                 solution1=strategy1_text,
                 solution2=strategy2_text
@@ -175,15 +176,3 @@ Format your response with clear scores and reasoning.
             logger.warning(f"Failed to parse preference, defaulting to strategy 1: {e}")
             return 1
     
-    def _get_default_evaluator_prompt(self) -> str:
-        """Get default system prompt for strategic evaluation"""
-        return """You are a strategic analysis expert specializing in evaluating and comparing strategic plans.
-
-Your evaluation focuses on:
-- Strategic viability and feasibility given available resources
-- Logical coherence and clear dependencies between steps  
-- Comprehensive risk identification and mitigation
-- Efficient use of resources and capabilities
-- Alignment with core strategic objectives
-
-Provide thorough, objective analysis with clear reasoning for your assessments. Be decisive in your preferences while explaining the rationale."""

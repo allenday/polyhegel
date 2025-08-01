@@ -1,0 +1,35 @@
+prompts:
+  strategic:
+    evaluator:
+      file: strategic/evaluate.md
+      description: System prompt for strategic plan evaluation and comparison
+    generator:
+      file: strategic/generate.md  
+      description: System prompt for strategic plan generation
+    summarizer:
+      file: strategic/summarize.md
+      description: System prompt for simulation results summarization
+  
+  general:
+    default:
+      file: general/default_system.md
+      description: Default hierarchical strategic planning prompt
+
+templates:
+  strategic_compare:
+    file: strategic/compare.md
+    description: Strategic comparison template
+    parameters: ["question", "solution1", "solution2"]
+  strategic_techniques:
+    file: strategic/techniques.md
+    description: Strategic techniques template
+    parameters: ["strategic_challenge", "key_technique", "clm_mandate", "technique_description", "technique_use_cases"]
+  theme_generation:
+    file: theme_generation.txt
+    description: Theme generation template
+  use_techniques:
+    file: use_techniques.txt
+    description: Use techniques template
+    
+version: "1.0"
+schema_version: "1.0"

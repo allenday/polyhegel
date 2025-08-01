@@ -1,16 +1,25 @@
 """
-Prompt templates for strategic reasoning and evaluation
+Centralized prompt loading utilities for Polyhegel
+
+This module provides a pydantic-ai compatible prompt management system with:
+- Type-safe prompt loading
+- Configuration-driven prompt organization
+- Template parameter validation
+- Version management
 """
 
-from pathlib import Path
+from .loader import (
+    PromptLoader,
+    get_prompt_loader,
+    get_system_prompt,
+    get_template,
+    load_prompt  # Legacy compatibility
+)
 
-PROMPTS_DIR = Path(__file__).parent
-
-def load_prompt(filename: str) -> str:
-    """Load a prompt template from file"""
-    prompt_path = PROMPTS_DIR / filename
-    if not prompt_path.exists():
-        raise FileNotFoundError(f"Prompt template not found: {filename}")
-    
-    with open(prompt_path, 'r', encoding='utf-8') as f:
-        return f.read()
+__all__ = [
+    'PromptLoader',
+    'get_prompt_loader', 
+    'get_system_prompt',
+    'get_template',
+    'load_prompt'
+]
