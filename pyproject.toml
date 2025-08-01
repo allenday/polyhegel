@@ -30,6 +30,7 @@ dependencies = [
     "duckduckgo-search>=4.0.0",
     "a2a-sdk>=0.2.16",
     "git2md>=1.1.0",
+    "PyJWT>=2.8.0",
 ]
 
 [project.optional-dependencies]
