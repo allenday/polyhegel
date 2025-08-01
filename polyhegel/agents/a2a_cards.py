@@ -227,7 +227,7 @@ def create_follower_agent_card(
             streaming=True,
             state_transition_history=True
         ),
-        skills=create_follower_agent_skills(specialization_mandate),
+        skills=create_follower_agent_skills(specialization_domain),
         supports_authenticated_extended_card=False
     )
 
