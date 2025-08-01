@@ -43,7 +43,7 @@ class TestTechniqueGuidance:
         
         # Check technique metadata
         assert chain.technique_name == technique_name
-        assert chain.technique_mandate == "2.1"  # Resource Acquisition
+        assert chain.technique_domain == "2.1"  # Resource Acquisition
         
         # Check strategy content
         assert isinstance(chain.strategy.title, str)
@@ -89,8 +89,8 @@ class TestTechniqueGuidance:
         technique_names_used = [chain.technique_name for chain in chains]
         assert set(technique_names_used) == set(technique_names)
         
-        # All should be from Resource Acquisition mandate
-        assert all(chain.technique_mandate == "2.1" for chain in chains)
+        # All should be from Resource Acquisition domain
+        assert all(chain.technique_domain == "2.1" for chain in chains)
 
     @pytest.mark.asyncio
     async def test_compare_technique_vs_temperature_generation(self):
@@ -120,29 +120,29 @@ class TestTechniqueGuidance:
         
         # Technique-guided should have technique metadata
         assert technique_chain.technique_name == "Layered Defense Architecture"
-        assert technique_chain.technique_mandate == "2.2"  # Strategic Security
+        assert technique_chain.technique_domain == "2.2"  # Strategic Security
         
         # Temperature-only should not have technique metadata
         assert temp_chain.technique_name is None
-        assert temp_chain.technique_mandate is None
+        assert temp_chain.technique_domain is None
         
         # Both should have valid strategies
         assert len(technique_chain.strategy.steps) > 0
         assert len(temp_chain.strategy.steps) > 0
 
     @pytest.mark.asyncio
-    async def test_technique_guidance_different_mandates(self):
-        """Test technique guidance across different Strategic mandates"""
+    async def test_technique_guidance_different_domains(self):
+        """Test technique guidance across different Strategic domains"""
         strategic_challenge = "Build a thriving ecosystem for collaborative innovation"
         
-        # Test one technique from each mandate
+        # Test one technique from each domain
         technique_tests = [
             ("Stakeholder Alignment Matrix", "2.1"),  # Resource Acquisition
             ("Community-Based Security", "2.2"),      # Strategic Security
             ("Cross-Pollination Innovation", "2.3")   # Value Catalysis
         ]
         
-        for technique_name, expected_mandate in technique_tests:
+        for technique_name, expected_domain in technique_tests:
             chains = await self.generator.generate_with_technique(
                 strategic_challenge=strategic_challenge,
                 technique_name=technique_name,
@@ -153,16 +153,16 @@ class TestTechniqueGuidance:
             assert len(chains) == 1
             chain = chains[0]
             assert chain.technique_name == technique_name
-            assert chain.technique_mandate == expected_mandate
+            assert chain.technique_domain == expected_domain
             
-            # Strategy should reflect the mandate focus
+            # Strategy should reflect the domain focus
             strategy_text = f"{chain.strategy.title} {' '.join(step.action for step in chain.strategy.steps)}"
             
-            if expected_mandate == "2.1":  # Resource Acquisition
+            if expected_domain == "2.1":  # Resource Acquisition
                 assert any(keyword in strategy_text.lower() for keyword in ["resource", "stakeholder", "fund", "partner"])
-            elif expected_mandate == "2.2":  # Strategic Security
+            elif expected_domain == "2.2":  # Strategic Security
                 assert any(keyword in strategy_text.lower() for keyword in ["security", "risk", "protect", "safe"])
-            elif expected_mandate == "2.3":  # Value Catalysis
+            elif expected_domain == "2.3":  # Value Catalysis
                 assert any(keyword in strategy_text.lower() for keyword in ["value", "innovation", "catalys", "growth"])
 
     @pytest.mark.asyncio
@@ -234,12 +234,12 @@ class TestTechniqueGuidance:
             source_sample=0,
             temperature=0.7,
             technique_name="Test Technique",
-            technique_mandate="2.1"
+            technique_domain="2.1"
         )
         
         # Verify metadata is properly stored
         assert chain.technique_name == "Test Technique"
-        assert chain.technique_mandate == "2.1"
+        assert chain.technique_domain == "2.1"
         assert chain.strategy.title == "Test Strategy"
 
 

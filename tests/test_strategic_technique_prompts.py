@@ -33,7 +33,7 @@ class TestStrategicTechniquePrompts:
         required_placeholders = [
             "{strategic_challenge}",
             "{key_technique}",
-            "{clm_mandate}",
+            "{domain}",
             "{technique_description}",
             "{technique_use_cases}"
         ]
@@ -56,7 +56,7 @@ class TestStrategicTechniquePrompts:
         formatted_prompt = template.format(
             strategic_challenge="Build a sustainable funding model for an AI research initiative",
             key_technique=technique.name,
-            clm_mandate=technique.domain.value,
+            domain=technique.domain.value,
             technique_description=technique.description,
             technique_use_cases=use_cases_text
         )
@@ -81,7 +81,7 @@ class TestStrategicTechniquePrompts:
             "Strategic Steps:",
             "Alignment Scores",
             "Strategic Coherence:",
-            "Strategic Mandate Alignment:",
+            "Strategic Domain Alignment:",
             "Implementation Feasibility:",
             "Risk Management:",
             "Stakeholder Value:",
@@ -92,26 +92,26 @@ class TestStrategicTechniquePrompts:
         for element in strategic_elements:
             assert element in template_content, f"Missing strategic element: {element}"
 
-    def test_template_clm_integration(self):
-        """Test that template properly integrates Strategic mandates"""
+    def test_template_domain_integration(self):
+        """Test that template properly integrates strategic domains"""
         with open(self.techniques_template, 'r') as f:
             template_content = f.read()
         
-        # Should reference Strategic mandate multiple times
-        clm_references = template_content.count("{clm_mandate}")
-        assert clm_references >= 2, "Should reference Strategic mandate at least twice"
+        # Should reference strategic domain multiple times
+        domain_references = template_content.count("{domain}")
+        assert domain_references >= 2, "Should reference strategic domain at least twice"
         
         # Should mention alignment with strategy domain
         assert "alignment with" in template_content.lower() and "strategy domain" in template_content.lower()
 
-    def test_template_with_different_mandates(self):
-        """Test template formatting with different Strategic mandates"""
+    def test_template_with_different_domains(self):
+        """Test template formatting with different strategic domains"""
         with open(self.techniques_template, 'r') as f:
             template = f.read()
         
-        # Test with each mandate
-        for mandate in StrategyDomain:
-            techniques = get_techniques_for_domain(mandate)
+        # Test with each domain
+        for domain in StrategyDomain:
+            techniques = get_techniques_for_domain(domain)
             if techniques:
                 technique = techniques[0]
                 use_cases_text = "\n".join([f"- {use_case}" for use_case in technique.use_cases])
@@ -119,12 +119,12 @@ class TestStrategicTechniquePrompts:
                 formatted_prompt = template.format(
                     strategic_challenge="Test strategic challenge",
                     key_technique=technique.name,
-                    clm_mandate=technique.domain.value,
+                    domain=technique.domain.value,
                     technique_description=technique.description,
                     technique_use_cases=use_cases_text
                 )
                 
-                # Should contain mandate-specific content
+                # Should contain domain-specific content
                 assert technique.domain.value in formatted_prompt
                 assert technique.name in formatted_prompt
 
@@ -194,7 +194,7 @@ def test_prompt_template_integration():
     formatted_prompt = template.format(
         strategic_challenge="Develop a strategy to build consensus around hotdog taxonomy classification",
         key_technique=technique.name,
-        clm_mandate=technique.domain.value,
+        domain=technique.domain.value,
         technique_description=technique.description,
         technique_use_cases=use_cases_text
     )

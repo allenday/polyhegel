@@ -23,10 +23,10 @@ class TestStrategicTechniques:
 
     def test_all_techniques_loaded(self):
         """Test that all techniques are properly loaded"""
-        assert len(ALL_TECHNIQUES) == 15  # 5 per mandate * 3 mandates
+        assert len(ALL_TECHNIQUES) == 15  # 5 per domain * 3 domains
         assert len(TECHNIQUE_REGISTRY) == 15
         
-        # Verify each mandate has 5 techniques
+        # Verify each domain has 5 techniques
         resource_techniques = get_techniques_for_domain(StrategyDomain.RESOURCE_ACQUISITION)
         security_techniques = get_techniques_for_domain(StrategyDomain.STRATEGIC_SECURITY)
         value_techniques = get_techniques_for_domain(StrategyDomain.VALUE_CATALYSIS)
@@ -107,7 +107,7 @@ class TestStrategicTechniques:
 
     def test_get_recommended_techniques_filtering(self):
         """Test multi-criteria filtering"""
-        # Filter by mandate and complexity
+        # Filter by domain and complexity
         resource_medium = get_recommended_techniques(
             domain=StrategyDomain.RESOURCE_ACQUISITION,
             complexity="medium"
@@ -162,12 +162,12 @@ class TestStrategicTechniques:
         )
         assert "No techniques match" in no_match_prompt
 
-    def test_clm_mandate_coverage(self):
-        """Test that all Strategic domains are covered"""
-        mandates_covered = set(t.domain for t in ALL_TECHNIQUES)
-        expected_mandates = set(StrategyDomain)
+    def test_domain_coverage(self):
+        """Test that all strategic domains are covered"""
+        domains_covered = set(t.domain for t in ALL_TECHNIQUES)
+        expected_domains = set(StrategyDomain)
         
-        assert mandates_covered == expected_mandates
+        assert domains_covered == expected_domains
 
     def test_technique_diversity(self):
         """Test that techniques have good diversity in complexity and timeframe"""

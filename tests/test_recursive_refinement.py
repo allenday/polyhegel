@@ -176,7 +176,7 @@ class TestFeedbackLoop:
             ),
             improvement_score=0.1,
             convergence_indicator=0.3,
-            clm_compliance_score=0.7
+            strategic_compliance_score=0.7
         )
     
     @pytest.mark.asyncio

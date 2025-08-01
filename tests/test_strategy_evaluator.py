@@ -53,7 +53,7 @@ class TestStrategyEvaluator:
         strategy = GenesisStrategy(
             title="Test Strategy",
             steps=steps,
-            alignment_score={"mandate1": 8.5, "mandate2": 7.0},
+            alignment_score={"domain1": 8.5, "domain2": 7.0},
             estimated_timeline="2 weeks",
             resource_requirements=["Resource 1", "Resource 2"]
         )
@@ -158,7 +158,7 @@ class TestStrategyEvaluator:
         strategy = GenesisStrategy(
             title=title,
             steps=steps,
-            alignment_score={"test_mandate": 8.0},
+            alignment_score={"test_domain": 8.0},
             estimated_timeline="1 week",
             resource_requirements=["Test resource"]
         )

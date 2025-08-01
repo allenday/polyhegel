@@ -97,7 +97,7 @@ class TestStrategicTheme:
             title="Multi-Stakeholder Platform Strategy",
             category=ThemeCategory.VALUE_CATALYSIS,
             description="Develop a platform that enables multiple stakeholders to collaborate and create shared value through coordinated strategic initiatives.",
-            clm_alignment={"2.1": 3.5, "2.2": 2.8, "2.3": 4.8},
+            domain_alignment={"2.1": 3.5, "2.2": 2.8, "2.3": 4.8},
             priority_level="high",
             complexity_estimate="complex",
             key_concepts=["collaboration", "value creation", "platform", "stakeholders"],
@@ -116,7 +116,7 @@ class TestStrategicTheme:
         assert theme.title == "Multi-Stakeholder Platform Strategy"
         assert theme.category == ThemeCategory.VALUE_CATALYSIS
         assert len(theme.description) > 50
-        assert theme.clm_alignment["2.3"] == 4.8
+        assert theme.domain_alignment["2.3"] == 4.8
         assert theme.priority_level == "high"
         assert theme.complexity_estimate == "complex"
         assert len(theme.key_concepts) == 4
@@ -137,7 +137,7 @@ class TestStrategicTheme:
         assert theme.complexity_estimate == "moderate"
         assert theme.potential_risks == []
         assert theme.strategic_context is None
-        assert theme.clm_alignment == {}
+        assert theme.domain_alignment == {}
 
     def test_theme_validation_title_length(self):
         """Test title length validation"""
@@ -173,15 +173,15 @@ class TestStrategicTheme:
                 success_criteria=["Success"]
             )
 
-    def test_clm_alignment_validation(self):
+    def test_domain_alignment_validation(self):
         """Test Strategic alignment validation"""
-        # Invalid mandate
+        # Invalid domain
         with pytest.raises(ValidationError):
             StrategicTheme(
                 title="Test Theme",
                 category=ThemeCategory.FOUNDATIONAL,
                 description="A description that meets the minimum length requirement for validation.",
-                clm_alignment={"2.4": 4.0},  # Invalid mandate
+                domain_alignment={"2.4": 4.0},  # Invalid domain
                 key_concepts=["test"],
                 success_criteria=["Success"]
             )
@@ -192,7 +192,7 @@ class TestStrategicTheme:
                 title="Test Theme",
                 category=ThemeCategory.FOUNDATIONAL,
                 description="A description that meets the minimum length requirement for validation.",
-                clm_alignment={"2.1": 6.0},  # Score too high
+                domain_alignment={"2.1": 6.0},  # Score too high
                 key_concepts=["test"],
                 success_criteria=["Success"]
             )
@@ -203,7 +203,7 @@ class TestStrategicTheme:
                 title="Test Theme",
                 category=ThemeCategory.FOUNDATIONAL,
                 description="A description that meets the minimum length requirement for validation.",
-                clm_alignment={"2.1": 0.5},  # Score too low
+                domain_alignment={"2.1": 0.5},  # Score too low
                 key_concepts=["test"],
                 success_criteria=["Success"]
             )
@@ -232,29 +232,29 @@ class TestStrategicTheme:
                 success_criteria=[]  # Empty
             )
 
-    def test_get_primary_mandate(self):
-        """Test getting primary Strategic mandate"""
+    def test_get_primary_domain(self):
+        """Test getting primary strategic domain"""
         theme = StrategicTheme(
             title="Test Theme",
             category=ThemeCategory.CROSS_CUTTING,
-            description="A theme that spans multiple Strategic mandates with varying alignment scores.",
-            clm_alignment={"2.1": 3.0, "2.2": 4.5, "2.3": 2.8},
+            description="A theme that spans multiple strategic domains with varying alignment scores.",
+            domain_alignment={"2.1": 3.0, "2.2": 4.5, "2.3": 2.8},
             key_concepts=["cross-cutting"],
-            success_criteria=["Success across mandates"]
+            success_criteria=["Success across domains"]
         )
         
-        assert theme.get_primary_mandate() == "2.2"  # Highest score
+        assert theme.get_primary_domain() == "2.2"  # Highest score
         
         # Test with no alignment
         theme_no_alignment = StrategicTheme(
             title="No Alignment Theme",
             category=ThemeCategory.FOUNDATIONAL,
-            description="A theme without Strategic alignment scores specified for testing purposes.",
+            description="A theme without strategic alignment scores specified for testing purposes.",
             key_concepts=["foundation"],
             success_criteria=["Basic success"]
         )
         
-        assert theme_no_alignment.get_primary_mandate() is None
+        assert theme_no_alignment.get_primary_domain() is None
 
     def test_is_cross_cutting(self):
         """Test cross-cutting theme detection"""
@@ -262,25 +262,25 @@ class TestStrategicTheme:
         cross_cutting_theme = StrategicTheme(
             title="Cross-Cutting Theme",
             category=ThemeCategory.CROSS_CUTTING,
-            description="A strategic theme that spans multiple Strategic mandates with high alignment.",
-            clm_alignment={"2.1": 4.0, "2.2": 4.2, "2.3": 2.5},
+            description="A strategic theme that spans multiple strategic domains with high alignment.",
+            domain_alignment={"2.1": 4.0, "2.2": 4.2, "2.3": 2.5},
             key_concepts=["cross-cutting"],
-            success_criteria=["Multi-mandate success"]
+            success_criteria=["Multi-domain success"]
         )
         
         assert cross_cutting_theme.is_cross_cutting() is True
         
-        # Single-mandate theme
-        single_mandate_theme = StrategicTheme(
-            title="Single Mandate Theme",
+        # Single-domain theme
+        single_domain_theme = StrategicTheme(
+            title="Single Domain Theme",
             category=ThemeCategory.RESOURCE_ACQUISITION,
             description="A strategic theme focused primarily on resource acquisition activities.",
-            clm_alignment={"2.1": 4.5, "2.2": 2.0, "2.3": 1.8},
+            domain_alignment={"2.1": 4.5, "2.2": 2.0, "2.3": 1.8},
             key_concepts=["resources"],
             success_criteria=["Resource acquisition success"]
         )
         
-        assert single_mandate_theme.is_cross_cutting() is False
+        assert single_domain_theme.is_cross_cutting() is False
 
     def test_get_alignment_summary(self):
         """Test alignment summary generation"""
@@ -288,7 +288,7 @@ class TestStrategicTheme:
             title="Test Theme",
             category=ThemeCategory.VALUE_CATALYSIS,
             description="A theme for testing alignment summary generation functionality.",
-            clm_alignment={"2.1": 3.5, "2.2": 4.0, "2.3": 4.8},
+            domain_alignment={"2.1": 3.5, "2.2": 4.0, "2.3": 4.8},
             key_concepts=["testing"],
             success_criteria=["Summary generated correctly"]
         )
@@ -399,14 +399,14 @@ class TestStrategyChain:
             source_sample=1,
             temperature=0.8,
             technique_name="Test Technique",
-            technique_mandate="2.1"
+            technique_domain="resource_acquisition"
         )
         
         assert chain.strategy.title == "Test Strategy"
         assert chain.source_sample == 1
         assert chain.temperature == 0.8
         assert chain.technique_name == "Test Technique"
-        assert chain.technique_mandate == "2.1"
+        assert chain.technique_domain == "resource_acquisition"
         assert chain.cluster_label == -1  # Default
         assert chain.is_trunk is False  # Default
         assert chain.is_twig is False  # Default

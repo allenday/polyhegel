@@ -294,7 +294,7 @@ class TestTournamentRunner:
         """Test technique-specific tournament"""
         # Create strategies with technique metadata
         technique_strategies = []
-        for i, mandate in enumerate(["2.1", "2.2", "2.1"]):  # Two 2.1, one 2.2
+        for i, domain in enumerate(["2.1", "2.2", "2.1"]):  # Two 2.1, one 2.2
             strategy = GenesisStrategy(
                 title=f"Technique Strategy {i+1}",
                 steps=[StrategyStep(
@@ -314,7 +314,7 @@ class TestTournamentRunner:
                 source_sample=i,
                 temperature=0.7,
                 technique_name=f"Technique {i+1}",
-                technique_mandate=mandate
+                technique_domain=domain
             )
             technique_strategies.append(chain)
         
@@ -329,10 +329,10 @@ class TestTournamentRunner:
             "Test context"
         )
         
-        # Should group by mandate
-        assert "by_mandate" in results
-        assert "2.1" in results["by_mandate"]
-        assert "2.2" in results["by_mandate"]
+        # Should group by domain
+        assert "by_domain" in results
+        assert "2.1" in results["by_domain"]
+        assert "2.2" in results["by_domain"]
         
         # Should have overall winner
         assert "overall_winner" in results
