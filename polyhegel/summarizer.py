@@ -7,7 +7,7 @@ from typing import List, Optional
 from pydantic_ai import Agent
 
 from .models import StrategyChain
-from .prompts import get_system_prompt
+from .prompts import get_system_prompt, get_template
 
 logger = logging.getLogger(__name__)
 
@@ -66,26 +66,14 @@ class StrategySummarizer:
         trunk_details = self._format_strategy_details(trunk)
         twig_summaries = [self._format_strategy_brief(t) for t in twigs[:5]]  # Top 5 twigs
         
-        prompt = f"""Analyze these swarm AI Genesis simulation results:
-
-TRUNK STRATEGY (Primary Path):
-{trunk_details}
-
-ALTERNATIVE STRATEGIES (Twigs):
-{chr(10).join(twig_summaries)}
-
-CLUSTERING METRICS:
-- Total strategies analyzed: {cluster_metrics.get('total_chains', 'N/A') if cluster_metrics else 'N/A'}
-- Cluster count: {cluster_metrics.get('cluster_count', 'N/A') if cluster_metrics else 'N/A'}
-- Noise/outliers: {cluster_metrics.get('noise_count', 'N/A') if cluster_metrics else 'N/A'}
-
-Provide a strategic analysis that includes:
-1. Why the trunk strategy represents the most viable path
-2. Key execution risks and mitigation strategies
-3. How the alternative approaches differ and their trade-offs
-4. Recommended next steps for implementation
-
-Keep the analysis concise but insightful, focusing on actionable intelligence."""
+        prompt = get_template(
+            'strategic_summarize_results',
+            trunk_details=trunk_details,
+            twig_summaries=chr(10).join(twig_summaries),
+            total_chains=cluster_metrics.get('total_chains', 'N/A') if cluster_metrics else 'N/A',
+            cluster_count=cluster_metrics.get('cluster_count', 'N/A') if cluster_metrics else 'N/A',
+            noise_count=cluster_metrics.get('noise_count', 'N/A') if cluster_metrics else 'N/A'
+        )
         
         return prompt
     
@@ -150,13 +138,12 @@ The primary strategy should be implemented with careful attention to resource re
         
         focus_areas = focus_areas or ["timeline", "resources", "risks", "alignment"]
         
-        prompt = f"""Compare these {len(strategies)} swarm AI genesis strategies:
-
-{chr(10).join([f"{i+1}. {s.strategy.title}" for i, s in enumerate(strategies)])}
-
-Focus on these aspects: {', '.join(focus_areas)}
-
-Provide a structured comparison that helps decision-makers understand the trade-offs."""
+        prompt = get_template(
+            'strategic_compare_strategies',
+            strategy_count=len(strategies),
+            strategy_list=chr(10).join([f"{i+1}. {s.strategy.title}" for i, s in enumerate(strategies)]),
+            focus_areas=', '.join(focus_areas)
+        )
         
         try:
             result = await self.agent.run(prompt)

@@ -17,7 +17,7 @@ from .strategic_techniques import (
     get_technique_by_name,
     get_recommended_techniques
 )
-from .prompts import get_system_prompt
+from .prompts import get_system_prompt, get_template
 
 logger = logging.getLogger(__name__)
 
@@ -153,22 +153,15 @@ class StrategyGenerator:
         if not technique:
             raise ValueError(f"Unknown technique: {technique_name}")
         
-        # Load the strategic techniques template
-        template_path = Path(__file__).parent / "prompts" / "strategic_techniques.txt"
-        if not template_path.exists():
-            raise FileNotFoundError(f"Strategic techniques template not found: {template_path}")
-        
-        with open(template_path, 'r') as f:
-            template = f.read()
-        
         # Format use cases as bullet points
         use_cases_text = "\n".join([f"- {use_case}" for use_case in technique.use_cases])
         
-        # Format the prompt with technique details
-        technique_prompt = template.format(
+        # Get technique prompt from centralized template system
+        technique_prompt = get_template(
+            'strategic_techniques',
             strategic_challenge=strategic_challenge,
             key_technique=technique.name,
-            clm_mandate=technique.mandate.value,
+            clm_mandate=technique.domain.value,  # Updated from mandate to domain
             technique_description=technique.description,
             technique_use_cases=use_cases_text
         )
@@ -179,7 +172,7 @@ class StrategyGenerator:
         technique_agent = Agent(
             self.model,
             output_type=GenesisStrategy,
-            system_prompt=f"You are a strategic planning expert specializing in {technique.mandate.value} techniques."
+            system_prompt=get_system_prompt('strategic', 'generator')
         )
         
         # Generate strategies using the technique-guided prompt
@@ -197,7 +190,7 @@ class StrategyGenerator:
                 )
                 # Mark this chain as technique-guided
                 chain.technique_name = technique_name
-                chain.technique_mandate = technique.mandate.value
+                chain.technique_mandate = technique.domain.value
                 chains.append(chain)
                 sample_id += 1
                 
@@ -245,11 +238,4 @@ class StrategyGenerator:
 
     def _create_default_prompt(self) -> str:
         """Create a default user prompt for strategy generation"""
-        return """Generate a strategic plan.
-
-Requirements:
-1. Provide a clear, actionable title
-2. Break down into 4-8 concrete steps
-3. Each step should have clear prerequisites, outcomes, and risks
-4. Include resource requirements and timeline
-5. Ensure steps are practical and achievable"""
+        return get_template('default_user')

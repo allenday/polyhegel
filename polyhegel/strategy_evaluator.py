@@ -96,23 +96,11 @@ class StrategyEvaluator:
         try:
             strategy_text = self._format_strategy_for_comparison(strategy)
             
-            evaluation_prompt = f"""
-Evaluate this strategic approach:
-
-Context: {context or "General strategic planning situation"}
-
-Strategy:
-{strategy_text}
-
-Provide analysis on:
-1. Strategic Viability (0-10 score)
-2. Coherence (0-10 score) 
-3. Risk Management (0-10 score)
-4. Resource Efficiency (0-10 score)
-5. Overall Assessment
-
-Format your response with clear scores and reasoning.
-"""
+            evaluation_prompt = get_template(
+                'strategic_evaluate_single',
+                context=context or "General strategic planning situation",
+                strategy_text=strategy_text
+            )
             
             result = await self.agent.run(evaluation_prompt)
             

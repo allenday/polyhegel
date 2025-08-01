@@ -1,9 +1,6 @@
 [submodule "third_party/git2md"]
 	path = third_party/git2md
 	url = https://github.com/xpos587/git2md.git
-[submodule "third_party/sliday-git2md"]
-	path = third_party/sliday-git2md
-	url = https://github.com/sliday/git2md.git
 [submodule "third_party/LLM-As-Hierarchical-Policy"]
 	path = third_party/LLM-As-Hierarchical-Policy
 	url = https://github.com/lz1oceani/LLM-As-Hierarchical-Policy.git

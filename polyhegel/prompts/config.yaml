@@ -24,6 +24,21 @@ templates:
     file: strategic/techniques.md
     description: Strategic techniques template
     parameters: ["strategic_challenge", "key_technique", "clm_mandate", "technique_description", "technique_use_cases"]
+  strategic_evaluate_single:
+    file: strategic/evaluate_single.md
+    description: Single strategy evaluation template
+    parameters: ["context", "strategy_text"]
+  strategic_summarize_results:
+    file: strategic/summarize_results.md
+    description: Simulation results summary template
+    parameters: ["trunk_details", "twig_summaries", "total_chains", "cluster_count", "noise_count"]
+  strategic_compare_strategies:
+    file: strategic/compare_strategies.md
+    description: Multiple strategy comparison template
+    parameters: ["strategy_count", "strategy_list", "focus_areas"]
+  default_user:
+    file: general/default_user.md
+    description: Default user prompt for strategy generation
   theme_generation:
     file: theme_generation.txt
     description: Theme generation template
