@@ -1,4 +1,4 @@
-.PHONY: test test-unit test-integration test-slow test-all test-quick test-no-llm test-coverage clean help agents agents-start agents-stop agents-status agents-restart
+.PHONY: test test-unit test-integration test-slow test-all test-quick test-no-llm test-coverage clean help agents agents-start agents-stop agents-status agents-restart typecheck build docs install-dev
 
 # Default target
 help:
@@ -22,6 +22,10 @@ help:
 	@echo "  make clean         - Remove cache and temporary files"
 	@echo "  make format        - Format code with black"
 	@echo "  make lint          - Run linting checks"
+	@echo "  make typecheck     - Run type checking with mypy"
+	@echo "  make build         - Build Python package"
+	@echo "  make docs          - Build documentation"
+	@echo "  make install-dev   - Install development dependencies"
 
 # Default test target
 test: test-unit
@@ -61,7 +65,20 @@ format:
 
 lint:
 	source .venv/bin/activate && ruff check polyhegel tests
+	source .venv/bin/activate && black --check polyhegel tests
+
+typecheck:
 	source .venv/bin/activate && mypy polyhegel --ignore-missing-imports
+
+build:
+	source .venv/bin/activate && python -m build
+
+docs:
+	@echo "📚 Building documentation..."
+	@echo "Documentation target not yet implemented - placeholder for future docs build"
+
+install-dev:
+	source .venv/bin/activate && pip install -e .[dev]
 
 # A2A Agent management
 agents-start:

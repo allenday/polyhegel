@@ -1,0 +1,41 @@
+name: Dev Branch CI
+
+on:
+  push:
+    branches: [ dev ]
+
+env:
+  PYTHONPATH: ${{ github.workspace }}
+  PYTEST_ADDOPTS: "-v --tb=short"
+
+jobs:
+  fast-checks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .[dev]
+    
+    - name: Run linting
+      run: make lint
+    
+    - name: Run type checking
+      run: make typecheck
+    
+    - name: Run unit tests (no LLM)
+      run: make test-no-llm
+    
+    - name: Build verification
+      run: |
+        python -m pip install build
+        make build
+        echo "✅ Build verification passed"
