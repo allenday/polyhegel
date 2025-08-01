@@ -206,5 +206,7 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-.venv
-.claude
+.venv/
+.claude/
+md/
+uq_pipeline/

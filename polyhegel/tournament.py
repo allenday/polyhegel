@@ -408,7 +408,7 @@ class TournamentRunner:
             if len(group_strategies) > 1:
                 winner, tournament_results = await self.find_best_strategy(
                     group_strategies,
-                    f"{context} (CLM Mandate {mandate})",
+                    f"{context} (Strategic Mandate {mandate})",
                     tournament_type="round_robin"
                 )
                 results["by_mandate"][mandate] = {
