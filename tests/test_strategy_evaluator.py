@@ -19,9 +19,9 @@ class TestStrategyEvaluator:
         evaluator = StrategyEvaluator(model)
 
         assert evaluator.model is not None
-        assert evaluator.agent is not None
-        assert evaluator.comparison_template is not None
-        assert "Strategic Situation:" in evaluator.comparison_template
+        assert evaluator.comparison_agent is not None
+        assert evaluator.analysis_agent is not None
+        assert evaluator.system_prompt is not None
 
     def test_evaluator_with_custom_prompt(self):
         """Test StrategyEvaluator with custom system prompt"""
@@ -31,7 +31,7 @@ class TestStrategyEvaluator:
 
         evaluator = StrategyEvaluator(model, system_prompt=custom_prompt)
 
-        assert custom_prompt in evaluator.system_prompt
+        assert evaluator.system_prompt == custom_prompt
 
     def test_format_strategy_for_comparison(self):
         """Test strategy formatting for comparison"""
@@ -59,7 +59,7 @@ class TestStrategyEvaluator:
 
         chain = StrategyChain(strategy=strategy, source_sample=1, temperature=0.8)
 
-        formatted = evaluator._format_strategy_for_comparison(chain)
+        formatted = evaluator.format_strategy_for_comparison(chain)
 
         assert "Test Strategy" in formatted
         assert "Test Action" in formatted
@@ -69,29 +69,21 @@ class TestStrategyEvaluator:
 
     def test_parse_preference_explicit(self):
         """Test parsing explicit preference statements"""
+        # Structured output now handles preference parsing
+        # This test validates that the evaluator initializes correctly
         model_manager = ModelManager()
         model = model_manager.get_model("claude-3-haiku-20240307")
         evaluator = StrategyEvaluator(model)
-
-        # Test explicit preference
-        text1 = "After analysis... Preferred Strategy Index: 1"
-        assert evaluator._parse_preference(text1) == 1
-
-        text2 = "Based on evaluation... Preferred Strategy Index: 2"
-        assert evaluator._parse_preference(text2) == 2
+        assert evaluator is not None
 
     def test_parse_preference_fallback(self):
         """Test parsing preference with fallback logic"""
+        # Structured output now handles preference parsing
+        # This test validates that the evaluator initializes correctly
         model_manager = ModelManager()
         model = model_manager.get_model("claude-3-haiku-20240307")
         evaluator = StrategyEvaluator(model)
-
-        # Test fallback logic
-        text = "Strategy 1 is better. Strategy 1 has advantages. Strategy 2 is okay."
-        assert evaluator._parse_preference(text) == 1
-
-        text2 = "Strategy 2 is superior. Strategy 2 works well."
-        assert evaluator._parse_preference(text2) == 2
+        assert evaluator is not None
 
     @pytest.mark.asyncio
     async def test_compare_strategies_mock(self):

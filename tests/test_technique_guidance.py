@@ -34,7 +34,7 @@ class TestTechniqueGuidance:
 
         # Check technique metadata
         assert chain.technique_name == technique_name
-        assert chain.technique_domain == "2.1"  # Resource Acquisition
+        assert chain.technique_domain == "resource_acquisition"  # Resource Acquisition
 
         # Check strategy content
         assert isinstance(chain.strategy.title, str)
@@ -75,7 +75,7 @@ class TestTechniqueGuidance:
         assert set(technique_names_used) == set(technique_names)
 
         # All should be from Resource Acquisition domain
-        assert all(chain.technique_domain == "2.1" for chain in chains)
+        assert all(chain.technique_domain == "resource_acquisition" for chain in chains)
 
     @pytest.mark.asyncio
     async def test_compare_technique_vs_temperature_generation(self):
@@ -104,7 +104,7 @@ class TestTechniqueGuidance:
 
         # Technique-guided should have technique metadata
         assert technique_chain.technique_name == "Layered Defense Architecture"
-        assert technique_chain.technique_domain == "2.2"  # Strategic Security
+        assert technique_chain.technique_domain == "strategic_security"  # Strategic Security
 
         # Temperature-only should not have technique metadata
         assert temp_chain.technique_name is None
@@ -215,7 +215,7 @@ class TestTechniqueGuidance:
 
         # Verify metadata is properly stored
         assert chain.technique_name == "Test Technique"
-        assert chain.technique_domain == "2.1"
+        assert chain.technique_domain == "resource_acquisition"
         assert chain.strategy.title == "Test Strategy"
 
 

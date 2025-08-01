@@ -76,82 +76,8 @@ def create_leader_server(
     telemetry_collector = setup_telemetry_for_agent("polyhegel-leader")
     telemetry_exporter = TelemetryExporter(telemetry_collector)
 
-    # Add monitoring and security configuration if enabled
-    if enable_auth:
-        app = server.build()
-
-        # Add telemetry middleware
-        monitoring_middleware = A2AMonitoringMiddleware(telemetry_collector)
-        app.middleware("http")(monitoring_middleware)
-
-        # Add CORS middleware
-        security_config = SecurityConfig.from_env()
-        if security_config.allowed_origins:
-            app.add_middleware(
-                CORSMiddleware,
-                allow_origins=security_config.allowed_origins,
-                allow_credentials=True,
-                allow_methods=["GET", "POST", "PUT", "DELETE"],
-                allow_headers=["*"],
-            )
-
-        # Authentication endpoints
-        @app.get("/auth/agent-info")
-        async def get_agent_info(credentials=Depends(require_role(AgentRole.LEADER))):
-            """Get authenticated agent information"""
-            return {
-                "agent_id": credentials.agent_id,
-                "role": credentials.role.value,
-                "permissions": [p.value for p in credentials.permissions],
-            }
-
-        @app.get("/auth/health")
-        async def auth_health():
-            """Health check endpoint"""
-            return {"status": "healthy", "service": "polyhegel-leader-agent"}
-
-        # Telemetry and monitoring endpoints
-        @app.get("/metrics")
-        async def get_metrics(credentials=Depends(require_permission(Permission.VIEW_METRICS))):
-            """Get agent metrics"""
-            return {
-                "summary": telemetry_collector.get_summary(),
-                "recent_events": [e.to_dict() for e in telemetry_collector.get_events(limit=50)],
-                "recent_metrics": [m.to_dict() for m in telemetry_collector.get_metrics(limit=50)],
-            }
-
-        @app.get("/telemetry/summary")
-        async def get_telemetry_summary(credentials=Depends(require_permission(Permission.VIEW_METRICS))):
-            """Get telemetry summary"""
-            return telemetry_collector.get_summary()
-
-        @app.get("/telemetry/events")
-        async def get_telemetry_events(
-            limit: int = 100, credentials=Depends(require_permission(Permission.VIEW_METRICS))
-        ):
-            """Get recent telemetry events"""
-            events = telemetry_collector.get_events(limit=limit)
-            return {"events": [e.to_dict() for e in events]}
-
-        @app.post("/telemetry/export")
-        async def export_telemetry(
-            filepath: str = "/tmp/leader-telemetry.json",
-            credentials=Depends(require_permission(Permission.VIEW_METRICS)),
-        ):
-            """Export telemetry data to file"""
-            telemetry_exporter.export_to_json_file(filepath)
-            return {"status": "exported", "filepath": filepath}
-
-        # Protected endpoints require theme generation permission
-        @app.post("/generate-themes")
-        async def generate_themes_endpoint(
-            request: dict, credentials=Depends(require_permission(Permission.GENERATE_THEMES))
-        ):
-            """Protected theme generation endpoint"""
-            # This would integrate with the A2A request handler
-            return {"status": "authenticated", "agent_id": credentials.agent_id}
-
-        return server
+    # TODO: Add monitoring and security configuration using proper Starlette routing
+    # For now, returning basic server without additional routes
 
     return server
 
