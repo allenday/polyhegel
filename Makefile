@@ -1,5 +1,8 @@
 .PHONY: test test-unit test-integration test-slow test-all test-quick test-no-llm test-coverage clean help agents agents-start agents-stop agents-status agents-restart typecheck build docs install-dev
 
+# Python executable - detect if we're in CI or local dev
+PYTHON := $(shell if [ -f .venv/bin/python ]; then echo ".venv/bin/python"; else echo "python"; fi)
+
 # Default target
 help:
 	@echo "Available test targets:"
@@ -32,25 +35,25 @@ test: test-unit
 
 # Test targets
 test-unit:
-	source .venv/bin/activate && pytest -m "unit" -v --tb=short
+	$(PYTHON) -m pytest -m "unit" -v --tb=short
 
 test-integration:
-	source .venv/bin/activate && pytest -m "integration" -v --tb=short
+	$(PYTHON) -m pytest -m "integration" -v --tb=short
 
 test-slow:
-	source .venv/bin/activate && pytest -m "slow" -v --tb=short
+	$(PYTHON) -m pytest -m "slow" -v --tb=short
 
 test-all:
-	source .venv/bin/activate && pytest -v --tb=short
+	$(PYTHON) -m pytest -v --tb=short
 
 test-quick:
-	source .venv/bin/activate && pytest -m "unit and not slow" -v --tb=short
+	$(PYTHON) -m pytest -m "unit and not slow" -v --tb=short
 
 test-no-llm:
-	source .venv/bin/activate && pytest -m "not llm" -v --tb=short
+	$(PYTHON) -m pytest -m "not llm" -v --tb=short
 
 test-coverage:
-	source .venv/bin/activate && pytest --cov=polyhegel --cov-report=html --cov-report=term -v
+	$(PYTHON) -m pytest --cov=polyhegel --cov-report=html --cov-report=term -v
 
 # Utility targets
 clean:
@@ -61,24 +64,24 @@ clean:
 	find . -type d -name "htmlcov" -exec rm -rf {} +
 
 format:
-	source .venv/bin/activate && black polyhegel tests
+	$(PYTHON) -m black polyhegel tests
 
 lint:
-	source .venv/bin/activate && ruff check polyhegel tests
-	source .venv/bin/activate && black --check polyhegel tests
+	$(PYTHON) -m ruff check polyhegel tests
+	$(PYTHON) -m black --check polyhegel tests
 
 typecheck:
-	source .venv/bin/activate && mypy polyhegel --ignore-missing-imports
+	$(PYTHON) -m mypy polyhegel --ignore-missing-imports
 
 build:
-	source .venv/bin/activate && python -m build
+	$(PYTHON) -m build
 
 docs:
 	@echo "📚 Building documentation..."
 	@echo "Documentation target not yet implemented - placeholder for future docs build"
 
 install-dev:
-	source .venv/bin/activate && pip install -e .[dev]
+	$(PYTHON) -m pip install -e .[dev]
 
 # A2A Agent management
 agents-start:

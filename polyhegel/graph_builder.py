@@ -134,7 +134,7 @@ class GraphBuilder:
                         for node, depth in lengths.items():
                             depth_counts[depth] = depth_counts.get(depth, 0) + 1
                         max_parallelism_sum += max(depth_counts.values())
-                    except:
+                    except Exception:
                         max_parallelism_sum += 1
                 
                 # Check if chain is linear

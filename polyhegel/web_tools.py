@@ -2,7 +2,6 @@
 Web access tools for pydantic-ai agents in Polyhegel
 """
 
-import asyncio
 import logging
 from typing import Optional
 from pydantic import BaseModel, Field
@@ -90,7 +89,6 @@ async def web_fetch_tool(ctx, request: WebFetchRequest) -> str:
     """
     try:
         import aiohttp
-        import asyncio
         
         async with aiohttp.ClientSession() as session:
             async with session.get(

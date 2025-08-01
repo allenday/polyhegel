@@ -2,20 +2,19 @@
 Main simulator class for Polyhegel
 """
 
-import asyncio
 import logging
 from typing import List, Dict, Tuple, Optional
 import numpy as np
+import networkx as nx
 
 from .config import Config
-from .models import StrategyChain, GenesisStrategy
+from .models import StrategyChain
 from .model_manager import ModelManager
 from .strategy_generator import StrategyGenerator
 from .graph_builder import GraphBuilder
 from .embedder import StrategyEmbedder
 from .clusterer import StrategyClusterer
 from .summarizer import StrategySummarizer
-from .strategic_techniques import StrategyDomain
 from .tournament import StrategyTournament
 from .strategy_evaluator import StrategyEvaluator
 

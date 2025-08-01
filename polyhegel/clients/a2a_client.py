@@ -4,18 +4,14 @@ Polyhegel A2A Client
 Client for connecting to distributed polyhegel A2A agents.
 """
 
-import asyncio
-import json
 import logging
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Any
-from urllib.parse import urljoin
 
 import httpx
 from a2a.client import A2AClient, create_text_message_object
 
 from ..models import StrategyChain, GenesisStrategy, StrategyStep
-from ..strategic_techniques import StrategyDomain
 from ..telemetry import get_telemetry_collector, EventType, time_operation
 
 logger = logging.getLogger(__name__)
@@ -162,8 +158,8 @@ class PolyhegelA2AClient:
             message = create_text_message_object(strategic_challenge)
             
             # Simple request-response pattern for now
-            response = await client.message_send(message)
-            logger.info(f"Received response from leader agent")
+            await client.message_send(message)
+            logger.info("Received response from leader agent")
             
             # Parse themes from response (simplified)
             themes = [
@@ -213,8 +209,8 @@ class PolyhegelA2AClient:
             message = create_text_message_object(theme_text)
             
             # Simple request-response pattern
-            response = await client.message_send(message)
-            logger.info(f"Received response from follower agent")
+            await client.message_send(message)
+            logger.info("Received response from follower agent")
             
             # Return basic strategy structure
             strategy = {
