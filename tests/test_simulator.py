@@ -225,7 +225,7 @@ class TestPolyhegelSimulatorIntegration:
             ),
         ]
 
-        with patch("polyhegel.simulator.AgentCoordinator") as mock_coordinator_class:
+        with patch("polyhegel.hierarchical_agent.AgentCoordinator") as mock_coordinator_class:
             with patch("polyhegel.simulator.LeaderAgent"):
                 with patch("polyhegel.simulator.FollowerAgent"):
 
