@@ -161,7 +161,7 @@ class StrategyGenerator:
             'strategic_techniques',
             strategic_challenge=strategic_challenge,
             key_technique=technique.name,
-            clm_mandate=technique.domain.value,  # Updated from mandate to domain
+            domain=technique.domain.value,
             technique_description=technique.description,
             technique_use_cases=use_cases_text
         )
@@ -190,7 +190,7 @@ class StrategyGenerator:
                 )
                 # Mark this chain as technique-guided
                 chain.technique_name = technique_name
-                chain.technique_mandate = technique.domain.value
+                chain.technique_domain = technique.domain.value
                 chains.append(chain)
                 sample_id += 1
                 

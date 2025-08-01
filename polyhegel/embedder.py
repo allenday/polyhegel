@@ -68,8 +68,8 @@ class StrategyEmbedder:
             ])
         
         # Add alignment scores as text
-        for mandate, score in chain.strategy.alignment_score.items():
-            text_parts.append(f"{mandate}: {score}")
+        for domain, score in chain.strategy.alignment_score.items():
+            text_parts.append(f"{domain}: {score}")
         
         return ' '.join(filter(None, text_parts))
     

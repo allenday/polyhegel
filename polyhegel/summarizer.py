@@ -100,8 +100,8 @@ class StrategySummarizer:
             "Strategic Alignment:"
         ])
         
-        for mandate, score in list(strategy.strategy.alignment_score.items())[:3]:
-            lines.append(f"- {mandate}: {score:.1f}")
+        for domain, score in list(strategy.strategy.alignment_score.items())[:3]:
+            lines.append(f"- {domain}: {score:.1f}")
         
         return "\n".join(lines)
     

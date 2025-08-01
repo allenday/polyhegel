@@ -141,8 +141,8 @@ class StrategyEvaluator:
             "**Strategic Alignment Scores:**"
         ])
         
-        for mandate, score in list(strategy.strategy.alignment_score.items())[:3]:
-            lines.append(f"- {mandate}: {score:.1f}/10")
+        for domain, score in list(strategy.strategy.alignment_score.items())[:3]:
+            lines.append(f"- {domain}: {score:.1f}/10")
         
         return "\n".join(lines)
     
