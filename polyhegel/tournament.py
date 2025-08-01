@@ -393,49 +393,49 @@ class TournamentRunner:
             context: Strategic context
             
         Returns:
-            Results organized by technique mandate
+            Results organized by technique domain
         """
-        # Group strategies by technique mandate
-        mandate_groups = defaultdict(list)
+        # Group strategies by technique domain
+        domain_groups = defaultdict(list)
         for strategy in strategies:
-            mandate = getattr(strategy, 'technique_mandate', 'unknown')
-            mandate_groups[mandate].append(strategy)
+            domain = getattr(strategy, 'technique_domain', 'unknown')
+            domain_groups[domain].append(strategy)
         
-        results = {"by_mandate": {}, "overall_winner": None}
+        results = {"by_domain": {}, "overall_winner": None}
         
-        # Run tournament within each mandate group
-        for mandate, group_strategies in mandate_groups.items():
+        # Run tournament within each domain group
+        for domain, group_strategies in domain_groups.items():
             if len(group_strategies) > 1:
                 winner, tournament_results = await self.find_best_strategy(
                     group_strategies,
-                    f"{context} (Strategic Mandate {mandate})",
+                    f"{context} (Strategic Domain {domain})",
                     tournament_type="round_robin"
                 )
-                results["by_mandate"][mandate] = {
+                results["by_domain"][domain] = {
                     "winner": winner,
                     "results": tournament_results
                 }
             elif len(group_strategies) == 1:
-                results["by_mandate"][mandate] = {
+                results["by_domain"][domain] = {
                     "winner": group_strategies[0],
                     "results": {"single_strategy": True}
                 }
         
-        # If we have winners from multiple mandates, run final tournament
-        mandate_winners = [
-            result["winner"] for result in results["by_mandate"].values()
+        # If we have winners from multiple domains, run final tournament
+        domain_winners = [
+            result["winner"] for result in results["by_domain"].values()
             if result["winner"] is not None
         ]
         
-        if len(mandate_winners) > 1:
+        if len(domain_winners) > 1:
             overall_winner, final_results = await self.find_best_strategy(
-                mandate_winners,
-                f"{context} (Cross-Mandate Final)",
+                domain_winners,
+                f"{context} (Cross-Domain Final)",
                 tournament_type="elimination"
             )
             results["overall_winner"] = overall_winner
             results["final_tournament"] = final_results
-        elif len(mandate_winners) == 1:
-            results["overall_winner"] = mandate_winners[0]
+        elif len(domain_winners) == 1:
+            results["overall_winner"] = domain_winners[0]
         
         return results
