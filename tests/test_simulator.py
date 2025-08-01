@@ -3,10 +3,10 @@ Tests for PolyhegelSimulator
 """
 
 import pytest
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import AsyncMock, patch
 
 from polyhegel.simulator import PolyhegelSimulator
-from polyhegel.models import StrategyChain, GenesisStrategy, StrategyStep, StrategicTheme, ThemeCategory
+from polyhegel.models import StrategyChain, GenesisStrategy, StrategyStep
 
 
 @pytest.mark.unit
@@ -173,26 +173,6 @@ class TestPolyhegelSimulatorIntegration:
     @pytest.mark.asyncio
     async def test_hierarchical_strategy_generation(self):
         """Test hierarchical strategy generation method"""
-        # Mock themes from leader
-        mock_themes = [
-            StrategicTheme(
-                title="Resource Optimization",
-                category=ThemeCategory.RESOURCE_ACQUISITION,
-                description="Optimize resource allocation and acquisition processes for improved operational efficiency and cost reduction",
-                domain_alignment={"2.1": 4.5, "2.2": 2.0, "2.3": 2.5},
-                key_concepts=["resources", "optimization"],
-                success_criteria=["Improved efficiency"],
-            ),
-            StrategicTheme(
-                title="Security Enhancement",
-                category=ThemeCategory.STRATEGIC_SECURITY,
-                description="Enhance organizational security posture through comprehensive threat detection and protection mechanisms",
-                domain_alignment={"2.1": 2.0, "2.2": 4.5, "2.3": 2.0},
-                key_concepts=["security", "protection"],
-                success_criteria=["Enhanced security"],
-            ),
-        ]
-
         # Mock strategies from followers
         mock_strategies = [
             GenesisStrategy(
@@ -225,49 +205,29 @@ class TestPolyhegelSimulatorIntegration:
             ),
         ]
 
-        with patch("polyhegel.hierarchical_agent.AgentCoordinator") as mock_coordinator_class:
-            with patch("polyhegel.simulator.LeaderAgent"):
-                with patch("polyhegel.simulator.FollowerAgent"):
+        # Mock the a2a_simulation function directly
+        with patch(
+            "polyhegel.agents.a2a_simulation.generate_hierarchical_strategies_a2a", new_callable=AsyncMock
+        ) as mock_a2a:
+            # Create StrategyChain objects from the mock strategies
+            expected_chains = [
+                StrategyChain(strategy=mock_strategies[0], source_sample=0, temperature=0.7),
+                StrategyChain(strategy=mock_strategies[1], source_sample=1, temperature=0.7),
+            ]
+            mock_a2a.return_value = expected_chains
 
-                    # Setup coordinator mock
-                    mock_coordinator = MagicMock()
-                    mock_coordinator_class.return_value = mock_coordinator
+            # Run hierarchical generation
+            chains = await self.simulator._generate_hierarchical_strategies(user_prompt="Test strategic challenge")
 
-                    # Setup theme generation response
-                    mock_theme_response = MagicMock()
-                    mock_theme_response.success = True
-                    mock_theme_response.content = mock_themes
+            # Verify results
+            assert len(chains) == 2
+            assert all(isinstance(chain, StrategyChain) for chain in chains)
+            assert chains[0].strategy.title == "Resource Optimization Strategy"
+            assert chains[1].strategy.title == "Security Enhancement Strategy"
+            assert all(chain.temperature == 0.7 for chain in chains)
 
-                    # Setup strategy generation responses
-                    mock_strategy_responses = []
-                    for strategy in mock_strategies:
-                        mock_response = MagicMock()
-                        mock_response.success = True
-                        mock_response.content = strategy
-                        mock_strategy_responses.append(mock_response)
-
-                    # Configure coordinate_task to return appropriate responses
-                    async def mock_coordinate_task(task):
-                        if task["type"] == "generate_themes":
-                            return [mock_theme_response]
-                        elif task["type"] == "develop_strategy":
-                            # Return one strategy response for each theme
-                            return [mock_strategy_responses.pop(0)]
-                        return []
-
-                    mock_coordinator.coordinate_task = mock_coordinate_task
-
-                    # Run hierarchical generation
-                    chains = await self.simulator._generate_hierarchical_strategies(
-                        user_prompt="Test strategic challenge"
-                    )
-
-                    # Verify results
-                    assert len(chains) == 2
-                    assert all(isinstance(chain, StrategyChain) for chain in chains)
-                    assert chains[0].strategy.title == "Resource Optimization Strategy"
-                    assert chains[1].strategy.title == "Security Enhancement Strategy"
-                    assert all(chain.temperature == 0.7 for chain in chains)
+            # Verify the a2a function was called
+            mock_a2a.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_hierarchical_mode_requires_user_prompt(self):

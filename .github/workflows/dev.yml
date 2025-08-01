@@ -23,10 +23,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        # Fix sklearn_extra numpy compatibility by constraining numpy version
+        pip install "numpy<2.0" 
         pip install -e .[dev]
-        # Fix sklearn_extra numpy compatibility by rebuilding from source
-        pip uninstall -y scikit-learn-extra
-        pip install --no-cache-dir --no-binary scikit-learn-extra scikit-learn-extra
     
     - name: Run linting
       run: make lint

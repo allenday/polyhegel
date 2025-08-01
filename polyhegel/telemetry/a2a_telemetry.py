@@ -189,7 +189,8 @@ class TelemetryCollector:
             return None
 
         duration_ms = (time.time() - start_time) * 1000
-        name = timer_id.split("_")[0]
+        # Extract name by removing the timestamp suffix (last underscore and digits)
+        name = timer_id.rsplit("_", 1)[0]
         self.record_metric(name, duration_ms, MetricType.TIMER, tags)
         return duration_ms
 
