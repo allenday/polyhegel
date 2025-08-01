@@ -5,15 +5,14 @@ Strategic evaluation metrics for comparing different selection methods
 import time
 import logging
 from typing import Dict, List, Any
-from dataclasses import dataclass
 from statistics import mean, stdev
+from pydantic import BaseModel
 
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class StrategicMetrics:
+class StrategicMetrics(BaseModel):
     """Container for strategic evaluation metrics"""
 
     # Core strategic metrics
@@ -57,25 +56,7 @@ class StrategicMetrics:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert metrics to dictionary for serialization"""
-        return {
-            "strategic_scores": {
-                "coherence": self.coherence_score,
-                "feasibility": self.feasibility_score,
-                "domain_alignment": self.domain_alignment_score,
-                "risk_management": self.risk_management_score,
-                "resource_efficiency": self.resource_efficiency_score,
-                "overall": self.overall_score(),
-            },
-            "performance_metrics": {"execution_time": self.execution_time, "memory_usage": self.memory_usage},
-            "metadata": {
-                "selection_method": self.selection_method,
-                "trunk_strategy_title": self.trunk_strategy_title,
-                "total_strategies": self.total_strategies,
-                "strategy_diversity": self.strategy_diversity,
-                "confidence_variance": self.confidence_variance,
-                "timeline_realism": self.timeline_realism,
-            },
-        }
+        return self.model_dump() if hasattr(self, "model_dump") else self.dict()
 
 
 class MetricsCollector:

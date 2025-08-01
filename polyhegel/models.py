@@ -2,7 +2,6 @@
 Data models for Polyhegel
 """
 
-from dataclasses import dataclass
 from typing import List, Dict, Optional, Literal
 from enum import Enum
 import numpy as np
@@ -132,21 +131,23 @@ class StrategicTheme(BaseModel):
         return " | ".join(summaries)
 
 
-@dataclass
-class StrategyChain:
+class StrategyChain(BaseModel):
     """Internal representation of a strategy chain with metadata"""
 
     strategy: GenesisStrategy
     source_sample: int
     temperature: float
-    embedding: Optional[np.ndarray] = None
+    embedding: Optional[np.ndarray] = Field(default=None, exclude=True)  # Exclude from serialization
     cluster_label: int = -1
     is_trunk: bool = False
     is_twig: bool = False
-    graph: Optional[nx.DiGraph] = None
+    graph: Optional[nx.DiGraph] = Field(default=None, exclude=True)  # Exclude from serialization
     # Technique-guided generation metadata
     technique_name: Optional[str] = None
     technique_domain: Optional[str] = None
+
+    class Config:
+        arbitrary_types_allowed = True  # Allow numpy arrays and networkx graphs
 
 
 class StrategyEvaluationResponse(BaseModel):
@@ -157,7 +158,7 @@ class StrategyEvaluationResponse(BaseModel):
     confidence_score: float = Field(description="Confidence in the evaluation (0.0 to 1.0)", ge=0.0, le=1.0)
 
     reasoning: str = Field(
-        description="Brief explanation of why this strategy was preferred", min_length=10, max_length=1500
+        description="Brief explanation of why this strategy was preferred", min_length=10, max_length=50000
     )
 
     coherence_comparison: Dict[str, float] = Field(
@@ -198,4 +199,24 @@ class StrategyAnalysisResponse(BaseModel):
 
     recommendations: List[str] = Field(
         description="Specific recommendations for improvement", max_items=3, default_factory=list
+    )
+
+
+class FeedbackAnalysisResponse(BaseModel):
+    """Structured response for feedback loop strengths/weaknesses analysis"""
+
+    strengths: List[str] = Field(
+        description="Key strategic strengths identified from current metrics", max_items=5, default_factory=list
+    )
+
+    weaknesses: List[str] = Field(
+        description="Key strategic weaknesses or areas needing improvement", max_items=5, default_factory=list
+    )
+
+    overall_assessment: str = Field(description="Overall strategic assessment summary", min_length=20, max_length=200)
+
+    confidence_score: float = Field(description="Confidence in the analysis (0.0 to 1.0)", ge=0.0, le=1.0)
+
+    priority_areas: List[str] = Field(
+        description="Top priority areas for improvement", max_items=3, default_factory=list
     )

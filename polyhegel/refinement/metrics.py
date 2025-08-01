@@ -8,7 +8,7 @@ in-memory session data for the refinement feedback loop.
 import time
 import logging
 from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field, asdict
+from pydantic import BaseModel, Field
 from datetime import datetime
 import statistics
 
@@ -18,37 +18,45 @@ from ..evaluation.metrics import StrategicMetrics
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class RefinementMetrics:
+class RefinementMetrics(BaseModel):
     """Metrics for tracking refinement performance over time"""
 
     # Refinement metadata
     refinement_id: str
     strategy_id: str
-    generation: int  # 0 = original, 1+ = refinement iterations
-    timestamp: datetime = field(default_factory=datetime.now)
+    generation: int = Field(ge=0, description="Refinement generation (0 = original, 1+ = refinement iterations)")
+    timestamp: datetime = Field(default_factory=datetime.now)
 
     # Performance metrics
-    strategic_metrics: StrategicMetrics = field(default_factory=StrategicMetrics)
-    improvement_score: float = 0.0  # -1 to 1, negative = degradation
-    convergence_indicator: float = 0.0  # 0 to 1, higher = more converged
+    strategic_metrics: StrategicMetrics = Field(default_factory=StrategicMetrics)
+    improvement_score: float = Field(
+        default=0.0, ge=-1.0, le=1.0, description="Improvement score, negative = degradation"
+    )
+    convergence_indicator: float = Field(
+        default=0.0, ge=0.0, le=1.0, description="Convergence level, higher = more converged"
+    )
 
     # Strategic compliance metrics
-    strategic_compliance_score: float = 0.0  # 0 to 1
-    recursive_depth: int = 0  # How many refinement levels deep
-    evolution_velocity: float = 0.0  # Rate of improvement per iteration
+    strategic_compliance_score: float = Field(default=0.0, ge=0.0, le=1.0, description="Strategic compliance score")
+    recursive_depth: int = Field(default=0, ge=0, description="How many refinement levels deep")
+    evolution_velocity: float = Field(default=0.0, ge=-1.0, le=1.0, description="Rate of improvement per iteration")
 
     # Trend analysis
-    performance_trend: str = "stable"  # "improving", "degrading", "stable", "oscillating"
-    trend_confidence: float = 0.0  # 0 to 1
+    performance_trend: str = Field(
+        default="stable", description="Performance trend: improving, degrading, stable, oscillating"
+    )
+    trend_confidence: float = Field(default=0.0, ge=0.0, le=1.0, description="Confidence in trend analysis")
 
     # Resource efficiency
-    refinement_cost: float = 0.0  # Time/compute cost for this refinement
-    roi_estimate: float = 0.0  # Return on investment for refinement effort
+    refinement_cost: float = Field(default=0.0, ge=0.0, description="Time/compute cost for this refinement")
+    roi_estimate: float = Field(default=0.0, description="Return on investment for refinement effort")
+
+    class Config:
+        arbitrary_types_allowed = True
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for storage"""
-        data = asdict(self)
+        data = self.model_dump() if hasattr(self, "model_dump") else self.dict()
         data["timestamp"] = self.timestamp.isoformat()
         data["strategic_metrics"] = self.strategic_metrics.to_dict()
         return data
@@ -58,7 +66,11 @@ class RefinementMetrics:
         """Create from dictionary"""
         data = data.copy()
         data["timestamp"] = datetime.fromisoformat(data["timestamp"])
-        data["strategic_metrics"] = StrategicMetrics(**data["strategic_metrics"])
+        data["strategic_metrics"] = (
+            StrategicMetrics.model_validate(data["strategic_metrics"])
+            if hasattr(StrategicMetrics, "model_validate")
+            else StrategicMetrics.parse_obj(data["strategic_metrics"])
+        )
         return cls(**data)
 
 

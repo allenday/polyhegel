@@ -7,14 +7,14 @@ generate automated strategy improvement suggestions.
 
 import logging
 from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
+from pydantic import BaseModel, Field
 from enum import Enum
 import statistics
 
 from pydantic_ai import Agent
 from pydantic_ai.models.test import TestModel
 
-from ..models import StrategyChain, GenesisStrategy, StrategyStep
+from ..models import StrategyChain, GenesisStrategy, StrategyStep, FeedbackAnalysisResponse
 from ..prompts import get_system_prompt
 from .metrics import RefinementMetrics, PerformanceTracker
 
@@ -33,39 +33,27 @@ class ImprovementCategory(Enum):
     STAKEHOLDER_ALIGNMENT = "stakeholder_alignment"
 
 
-@dataclass
-class ImprovementSuggestion:
+class ImprovementSuggestion(BaseModel):
     """A specific suggestion for improving a strategy"""
 
     category: ImprovementCategory
-    priority: float  # 0.0 to 1.0, higher = more important
+    priority: float = Field(ge=0.0, le=1.0, description="Priority level, higher = more important")
     description: str
     specific_changes: List[str]
-    expected_impact: float  # Expected improvement in overall score
-    implementation_effort: float  # 0.0 to 1.0, higher = more effort
-    confidence: float  # 0.0 to 1.0, confidence in suggestion
+    expected_impact: float = Field(ge=0.0, le=1.0, description="Expected improvement in overall score")
+    implementation_effort: float = Field(ge=0.0, le=1.0, description="Implementation effort, higher = more effort")
+    confidence: float = Field(ge=0.0, le=1.0, description="Confidence in suggestion")
 
     # Strategic alignment factors
-    strategic_alignment: Dict[str, float] = field(default_factory=dict)
-    risk_mitigation: List[str] = field(default_factory=list)
+    strategic_alignment: Dict[str, float] = Field(default_factory=dict)
+    risk_mitigation: List[str] = Field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
-        return {
-            "category": self.category.value,
-            "priority": self.priority,
-            "description": self.description,
-            "specific_changes": self.specific_changes,
-            "expected_impact": self.expected_impact,
-            "implementation_effort": self.implementation_effort,
-            "confidence": self.confidence,
-            "strategic_alignment": self.strategic_alignment,
-            "risk_mitigation": self.risk_mitigation,
-        }
+        return self.model_dump() if hasattr(self, "model_dump") else self.dict()
 
 
-@dataclass
-class FeedbackAnalysis:
+class FeedbackAnalysis(BaseModel):
     """Analysis of strategy performance with improvement recommendations"""
 
     strategy_id: str
@@ -73,19 +61,22 @@ class FeedbackAnalysis:
     historical_performance: List[RefinementMetrics]
 
     # Analysis results
-    strengths: List[str] = field(default_factory=list)
-    weaknesses: List[str] = field(default_factory=list)
-    improvement_suggestions: List[ImprovementSuggestion] = field(default_factory=list)
+    strengths: List[str] = Field(default_factory=list)
+    weaknesses: List[str] = Field(default_factory=list)
+    improvement_suggestions: List[ImprovementSuggestion] = Field(default_factory=list)
 
     # Performance insights
-    convergence_analysis: Dict[str, Any] = field(default_factory=dict)
-    trend_analysis: Dict[str, Any] = field(default_factory=dict)
-    strategic_compliance_analysis: Dict[str, Any] = field(default_factory=dict)
+    convergence_analysis: Dict[str, Any] = Field(default_factory=dict)
+    trend_analysis: Dict[str, Any] = Field(default_factory=dict)
+    strategic_compliance_analysis: Dict[str, Any] = Field(default_factory=dict)
 
     # Recommendations
     should_continue_refinement: bool = True
-    refinement_priority: float = 0.5  # 0.0 to 1.0
-    next_steps: List[str] = field(default_factory=list)
+    refinement_priority: float = Field(default=0.5, ge=0.0, le=1.0, description="Refinement priority level")
+    next_steps: List[str] = Field(default_factory=list)
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class FeedbackLoop:
@@ -101,6 +92,20 @@ class FeedbackLoop:
         """
         self.performance_tracker = performance_tracker
         self.model_name = model_name
+
+        # Initialize pydantic-ai agent for structured feedback analysis
+        model = TestModel() if model_name is None else model_name  # Use TestModel for tests
+        system_prompt = """You are a strategic analysis expert. Analyze the provided strategic metrics and provide structured feedback.
+
+Focus on:
+- Identifying specific strengths based on high-performing metrics (>7.5/10)
+- Highlighting weaknesses in low-performing areas (<5.0/10) 
+- Providing actionable insights
+- Prioritizing the most critical improvement areas
+
+Be specific and actionable in your analysis."""
+
+        self.analysis_agent = Agent(model=model, output_type=FeedbackAnalysisResponse, system_prompt=system_prompt)
 
         # Thresholds for feedback decisions
         self.convergence_threshold = 0.8  # Stop refining if highly converged
@@ -151,35 +156,61 @@ class FeedbackLoop:
         return analysis
 
     async def _analyze_strengths_weaknesses(self, analysis: FeedbackAnalysis):
-        """Identify strategy strengths and weaknesses"""
+        """Identify strategy strengths and weaknesses using AI-powered analysis"""
 
         current = analysis.current_metrics.strategic_metrics
 
-        # Define score thresholds
-        strong_threshold = 7.5
-        weak_threshold = 5.0
+        # Format metrics for analysis
+        metrics_summary = f"""Strategic Performance Metrics Analysis:
 
-        # Analyze each metric
-        metrics_analysis = {
-            "coherence": current.coherence_score,
-            "feasibility": current.feasibility_score,
-            "domain_alignment": current.domain_alignment_score,
-            "risk_management": current.risk_management_score,
-            "resource_efficiency": current.resource_efficiency_score,
-        }
+Coherence Score: {current.coherence_score:.1f}/10 - How well strategy steps flow logically
+Feasibility Score: {current.feasibility_score:.1f}/10 - Implementation practicality  
+Domain Alignment Score: {current.domain_alignment_score:.1f}/10 - Strategic objective alignment
+Risk Management Score: {current.risk_management_score:.1f}/10 - Risk identification and mitigation
+Resource Efficiency Score: {current.resource_efficiency_score:.1f}/10 - Resource utilization effectiveness
 
-        for metric_name, score in metrics_analysis.items():
-            if score >= strong_threshold:
-                analysis.strengths.append(f"Strong {metric_name.replace('_', ' ')}: {score:.1f}/10")
-            elif score <= weak_threshold:
-                analysis.weaknesses.append(f"Weak {metric_name.replace('_', ' ')}: {score:.1f}/10")
+Overall Score: {current.overall_score():.1f}/10
 
-        # Overall performance assessment
-        overall_score = current.overall_score()
-        if overall_score >= strong_threshold:
-            analysis.strengths.append(f"Excellent overall strategic quality: {overall_score:.1f}/10")
-        elif overall_score <= weak_threshold:
-            analysis.weaknesses.append(f"Low overall strategic quality: {overall_score:.1f}/10")
+Historical Context:
+- Current Generation: {analysis.current_metrics.generation}
+- Improvement Trend: {analysis.current_metrics.performance_trend}
+- Evolution Velocity: {analysis.current_metrics.evolution_velocity:.2f}
+"""
+
+        try:
+            # Get structured AI analysis
+            result = await self.analysis_agent.run(metrics_summary)
+            ai_analysis = result.output
+
+            # Update analysis with AI-generated insights
+            analysis.strengths.extend(ai_analysis.strengths)
+            analysis.weaknesses.extend(ai_analysis.weaknesses)
+
+            # Store additional insights for later use
+            analysis.convergence_analysis["ai_assessment"] = ai_analysis.overall_assessment
+            analysis.convergence_analysis["confidence"] = ai_analysis.confidence_score
+            analysis.next_steps.extend(ai_analysis.priority_areas)
+
+        except Exception as e:
+            logger.warning(f"AI analysis failed, falling back to threshold-based analysis: {e}")
+
+            # Fallback to simple threshold-based analysis
+            strong_threshold = 7.5
+            weak_threshold = 5.0
+
+            metrics_analysis = {
+                "coherence": current.coherence_score,
+                "feasibility": current.feasibility_score,
+                "domain_alignment": current.domain_alignment_score,
+                "risk_management": current.risk_management_score,
+                "resource_efficiency": current.resource_efficiency_score,
+            }
+
+            for metric_name, score in metrics_analysis.items():
+                if score >= strong_threshold:
+                    analysis.strengths.append(f"Strong {metric_name.replace('_', ' ')}: {score:.1f}/10")
+                elif score <= weak_threshold:
+                    analysis.weaknesses.append(f"Weak {metric_name.replace('_', ' ')}: {score:.1f}/10")
 
     async def _analyze_convergence(self, analysis: FeedbackAnalysis):
         """Analyze convergence patterns"""

@@ -8,7 +8,7 @@ using systematic optimization protocols and performance feedback loops.
 import logging
 import time
 from typing import Dict, List, Any, Optional, Tuple
-from dataclasses import dataclass, field
+from pydantic import BaseModel, Field
 from pathlib import Path
 import json
 from datetime import datetime
@@ -22,61 +22,65 @@ from .feedback import FeedbackLoop, StrategyImprover, FeedbackAnalysis, Improvem
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class RefinementConfiguration:
+class RefinementConfiguration(BaseModel):
     """Configuration for recursive refinement process"""
 
     # Core parameters
     max_generations: int = 10
-    convergence_threshold: float = 0.8
-    improvement_threshold: float = 0.05
-    quality_target: float = 8.5  # Target overall score
+    convergence_threshold: float = Field(default=0.8, ge=0.0, le=1.0)
+    improvement_threshold: float = Field(default=0.05, ge=0.0)
+    quality_target: float = Field(default=8.5, description="Target overall score")
 
     # Resource limits
-    max_refinement_time_minutes: int = 60
-    max_concurrent_refinements: int = 3
+    max_refinement_time_minutes: int = Field(default=60, gt=0)
+    max_concurrent_refinements: int = Field(default=3, gt=0)
 
     # Model configuration
     model_name: str = "claude-3-haiku-20240307"
-    temperature_counts: List[Tuple[float, int]] = field(default_factory=lambda: [(0.7, 3)])
+    temperature_counts: List[Tuple[float, int]] = Field(default_factory=lambda: [(0.7, 3)])
 
     # Strategic compliance
-    strategic_compliance_target: float = 0.8
+    strategic_compliance_target: float = Field(default=0.8, ge=0.0, le=1.0)
     require_strategic_compliance: bool = True
 
     # Focus areas for improvement
-    improvement_priorities: List[ImprovementCategory] = field(default_factory=list)
+    improvement_priorities: List[ImprovementCategory] = Field(default_factory=list)
 
     # Output configuration
     save_intermediate_results: bool = True
     output_directory: Optional[Path] = None
 
+    class Config:
+        arbitrary_types_allowed = True
 
-@dataclass
-class RefinementSession:
+
+class RefinementSession(BaseModel):
     """Represents a complete refinement session"""
 
     session_id: str
     original_strategy: StrategyChain
     configuration: RefinementConfiguration
-    start_time: datetime = field(default_factory=datetime.now)
+    start_time: datetime = Field(default_factory=datetime.now)
 
     # Results tracking
-    generations: List[StrategyChain] = field(default_factory=list)
-    performance_history: List[RefinementMetrics] = field(default_factory=list)
-    feedback_analyses: List[FeedbackAnalysis] = field(default_factory=list)
+    generations: List[StrategyChain] = Field(default_factory=list)
+    performance_history: List[RefinementMetrics] = Field(default_factory=list)
+    feedback_analyses: List[FeedbackAnalysis] = Field(default_factory=list)
 
     # Session state
-    current_generation: int = 0
+    current_generation: int = Field(default=0, ge=0)
     is_complete: bool = False
     completion_reason: str = ""
     best_strategy: Optional[StrategyChain] = None
-    best_score: float = 0.0
+    best_score: float = Field(default=0.0, ge=0.0)
 
     # Resource tracking
-    total_execution_time: float = 0.0
-    total_llm_calls: int = 0
-    total_cost_estimate: float = 0.0
+    total_execution_time: float = Field(default=0.0, ge=0.0)
+    total_llm_calls: int = Field(default=0, ge=0)
+    total_cost_estimate: float = Field(default=0.0, ge=0.0)
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class RecursiveRefinementEngine:
