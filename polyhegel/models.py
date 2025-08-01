@@ -156,7 +156,7 @@ class StrategyEvaluationResponse(BaseModel):
     confidence_score: float = Field(description="Confidence in the evaluation (0.0 to 1.0)", ge=0.0, le=1.0)
 
     reasoning: str = Field(
-        description="Brief explanation of why this strategy was preferred", min_length=10, max_length=500
+        description="Brief explanation of why this strategy was preferred", min_length=10, max_length=1500
     )
 
     coherence_comparison: Dict[str, float] = Field(
