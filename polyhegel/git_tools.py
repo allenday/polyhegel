@@ -43,11 +43,8 @@ async def git_repo_to_md_tool(ctx, request: GitRepoRequest) -> str:
         Repository content as markdown string
     """
     try:
-        # Use sliday/git2md for LLM-friendly output or xpos587/git2md for standard
-        if request.output_format == "llm":
-            return await _use_sliday_git2md(request.repo_url)
-        else:
-            return await _use_xpos_git2md(request.repo_url, request.max_file_size)
+        # Use git2md for all formats
+        return await _use_git2md(request.repo_url, request.max_file_size)
             
     except Exception as e:
         logger.error(f"Git repo conversion failed for {request.repo_url}: {e}")
@@ -73,22 +70,16 @@ async def local_repo_to_md_tool(ctx, request: LocalRepoRequest) -> str:
         if not (repo_path / ".git").exists():
             return f"Not a git repository: {request.repo_path}"
         
-        # Use xpos587/git2md for local repositories
-        return await _use_xpos_git2md_local(str(repo_path), request.max_file_size)
+        # Use git2md for local repositories
+        return await _use_git2md_local(str(repo_path), request.max_file_size)
             
     except Exception as e:
         logger.error(f"Local repo conversion failed for {request.repo_path}: {e}")
         return f"Local repository conversion failed for {request.repo_path}: {str(e)}"
 
 
-async def _use_sliday_git2md(repo_url: str) -> str:
-    """Fallback for LLM format - use standard git2md"""
-    logger.info("LLM format requested, falling back to standard git2md")
-    return f"LLM format not available for remote repos, using standard git2md\n[Use local repo analysis for enhanced output]"
-
-
-async def _use_xpos_git2md(repo_url: str, max_file_size: int) -> str:
-    """Use xpos587/git2md for remote repositories"""
+async def _use_git2md(repo_url: str, max_file_size: int) -> str:
+    """Use git2md for remote repositories"""
     try:
         with tempfile.TemporaryDirectory() as temp_dir:
             # Clone repository
@@ -105,24 +96,24 @@ async def _use_xpos_git2md(repo_url: str, max_file_size: int) -> str:
                 return f"Failed to clone repository: {repo_url}"
             
             repo_path = Path(temp_dir) / "repo"
-            return await _use_xpos_git2md_local(str(repo_path), max_file_size)
+            return await _use_git2md_local(str(repo_path), max_file_size)
             
     except Exception as e:
         return f"Repository cloning failed for {repo_url}: {str(e)}"
 
 
-async def _use_xpos_git2md_local(repo_path: str, max_file_size: int) -> str:
-    """Use git2md library for local repositories"""
+async def _use_git2md_local(repo_path: str, max_file_size: int) -> str:
+    """Use git2md for local repositories"""
     try:
-        # Use git2md as a command line tool (it's installed as a console script)
-        return await _fallback_git2md_command(repo_path, max_file_size)
+        # Use git2md command line tool
+        return await _run_git2md_command(repo_path, max_file_size)
                 
     except Exception as e:
         return f"Local repository conversion failed for {repo_path}: {str(e)}"
 
 
-async def _fallback_git2md_command(repo_path: str, max_file_size: int) -> str:
-    """Fallback to using git2md as command line tool"""
+async def _run_git2md_command(repo_path: str, max_file_size: int) -> str:
+    """Run git2md as command line tool"""
     try:
         with tempfile.NamedTemporaryFile(mode='w+', suffix='.md', delete=False) as temp_file:
             cmd = ["git2md", repo_path, "-o", temp_file.name]
