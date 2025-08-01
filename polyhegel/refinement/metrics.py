@@ -263,7 +263,7 @@ class PerformanceTracker:
         risk_score = strategic_metrics.risk_management_score / 10.0
         compliance_factors.append(risk_score)
         
-        # Factor 3: Domain alignment (mandate alignment)
+        # Factor 3: Domain alignment (strategic domain alignment)
         domain_score = strategic_metrics.domain_alignment_score / 10.0
         compliance_factors.append(domain_score)
         

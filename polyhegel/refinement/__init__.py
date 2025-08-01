@@ -1,9 +1,8 @@
 """
 Recursive refinement system for continuous strategy optimization
 
-This module implements the recursive refinement mechanisms described in
-CLM Section 4: Protocol of Recursive Evolution for continuous strategy
-improvement based on performance feedback.
+This module implements recursive refinement mechanisms for continuous strategy
+improvement based on performance feedback and systematic optimization protocols.
 """
 
 from .recursive import RecursiveRefinementEngine, RefinementConfiguration

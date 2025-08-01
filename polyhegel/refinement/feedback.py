@@ -346,14 +346,14 @@ class FeedbackLoop:
                 priority=0.75,
                 description="Better align strategy with domain requirements and constraints",
                 specific_changes=[
-                    "Review alignment with strategic mandates",
+                    "Review alignment with strategic domains",
                     "Ensure activities support core objectives",
                     "Align resource allocation with strategic priorities"
                 ],
                 expected_impact=0.6,
                 implementation_effort=0.4,
                 confidence=0.7,
-                strategic_alignment={"mandate_alignment": 0.9},
+                strategic_alignment={"domain_alignment": 0.9},
                 risk_mitigation=["Improves strategic focus"]
             ))
         
@@ -501,7 +501,7 @@ class StrategyImprover:
                 'strengths': feedback_analysis.strengths,
                 'weaknesses': feedback_analysis.weaknesses,
                 'overall_score': feedback_analysis.current_metrics.strategic_metrics.overall_score(),
-                'clm_compliance': feedback_analysis.current_metrics.clm_compliance_score
+                'strategic_compliance': feedback_analysis.current_metrics.strategic_compliance_score
             },
             'improvement_suggestions': [s.to_dict() for s in suggestions]
         }
@@ -561,7 +561,7 @@ class StrategyImprover:
             "",
             "Current Performance:",
             f"- Overall Score: {analysis['overall_score']:.1f}/10",
-            f"- CLM Compliance: {analysis['clm_compliance']:.1f}",
+            f"- Strategic Compliance: {analysis['strategic_compliance']:.1f}",
             "",
             "Strengths:",
         ]
@@ -591,7 +591,7 @@ class StrategyImprover:
         
         prompt_parts.extend([
             "Please generate an improved strategy that addresses these suggestions while maintaining the core strategic intent.",
-            "Focus on the highest priority improvements and ensure CLM Section 4 compliance."
+            "Focus on the highest priority improvements and ensure strategic compliance."
         ])
         
         return "\n".join(prompt_parts)

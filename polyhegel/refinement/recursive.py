@@ -2,7 +2,7 @@
 Recursive refinement engine for continuous strategy optimization
 
 Implements the main orchestration system for recursive strategy refinement
-as described in CLM Section 4: Protocol of Recursive Evolution.
+using systematic optimization protocols and performance feedback loops.
 """
 
 import asyncio
@@ -498,7 +498,7 @@ class RecursiveRefinementEngine:
         report_lines.extend([
             "## Performance Evolution",
             "",
-            "| Generation | Score | Improvement | Convergence | CLM Compliance |",
+            "| Generation | Score | Improvement | Convergence | Strategic Compliance |",
             "|------------|-------|-------------|-------------|----------------|"
         ])
         
@@ -506,10 +506,10 @@ class RecursiveRefinementEngine:
             score = metrics.strategic_metrics.overall_score()
             improvement = metrics.improvement_score
             convergence = metrics.convergence_indicator
-            clm = metrics.clm_compliance_score
+            strategic_compliance = metrics.strategic_compliance_score
             
             report_lines.append(
-                f"| {i} | {score:.2f} | {improvement:+.3f} | {convergence:.3f} | {clm:.3f} |"
+                f"| {i} | {score:.2f} | {improvement:+.3f} | {convergence:.3f} | {strategic_compliance:.3f} |"
             )
         
         # Key insights
