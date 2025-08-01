@@ -1,0 +1,515 @@
+"""
+Performance tracking and metrics collection for recursive refinement
+
+Tracks strategy performance over time and collects metrics for the
+refinement feedback loop.
+"""
+
+import time
+import logging
+import sqlite3
+import json
+from typing import Dict, List, Any, Optional, Tuple
+from dataclasses import dataclass, field, asdict
+from pathlib import Path
+from datetime import datetime, timedelta
+import statistics
+import numpy as np
+
+from ..models import StrategyChain, GenesisStrategy
+from ..evaluation.metrics import StrategicMetrics
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class RefinementMetrics:
+    """Metrics for tracking refinement performance over time"""
+    
+    # Refinement metadata
+    refinement_id: str
+    strategy_id: str
+    generation: int  # 0 = original, 1+ = refinement iterations
+    timestamp: datetime = field(default_factory=datetime.now)
+    
+    # Performance metrics
+    strategic_metrics: StrategicMetrics = field(default_factory=StrategicMetrics)
+    improvement_score: float = 0.0  # -1 to 1, negative = degradation
+    convergence_indicator: float = 0.0  # 0 to 1, higher = more converged
+    
+    # Strategic compliance metrics
+    strategic_compliance_score: float = 0.0  # 0 to 1
+    recursive_depth: int = 0  # How many refinement levels deep
+    evolution_velocity: float = 0.0  # Rate of improvement per iteration
+    
+    # Trend analysis
+    performance_trend: str = "stable"  # "improving", "degrading", "stable", "oscillating"
+    trend_confidence: float = 0.0  # 0 to 1
+    
+    # Resource efficiency
+    refinement_cost: float = 0.0  # Time/compute cost for this refinement
+    roi_estimate: float = 0.0  # Return on investment for refinement effort
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for storage"""
+        data = asdict(self)
+        data['timestamp'] = self.timestamp.isoformat()
+        data['strategic_metrics'] = self.strategic_metrics.to_dict()
+        return data
+    
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'RefinementMetrics':
+        """Create from dictionary"""
+        data = data.copy()
+        data['timestamp'] = datetime.fromisoformat(data['timestamp'])
+        data['strategic_metrics'] = StrategicMetrics(**data['strategic_metrics'])
+        return cls(**data)
+
+
+class PerformanceTracker:
+    """Tracks strategy performance over time for refinement analysis"""
+    
+    def __init__(self, db_path: Optional[Path] = None):
+        """
+        Initialize performance tracker
+        
+        Args:
+            db_path: Path to SQLite database for persistent storage
+        """
+        self.db_path = db_path or Path.home() / ".polyhegel" / "refinement.db"
+        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Initialize database
+        self._init_database()
+        
+        # In-memory cache for recent metrics
+        self.recent_metrics: Dict[str, List[RefinementMetrics]] = {}
+        self.cache_size = 100  # Keep last 100 metrics per strategy in memory
+    
+    def _init_database(self):
+        """Initialize SQLite database for performance tracking"""
+        conn = sqlite3.connect(self.db_path)
+        try:
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS refinement_metrics (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    refinement_id TEXT NOT NULL,
+                    strategy_id TEXT NOT NULL,
+                    generation INTEGER NOT NULL,
+                    timestamp TEXT NOT NULL,
+                    metrics_data TEXT NOT NULL,
+                    UNIQUE(refinement_id, generation)
+                )
+            """)
+            
+            conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_strategy_id 
+                ON refinement_metrics(strategy_id)
+            """)
+            
+            conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_timestamp 
+                ON refinement_metrics(timestamp)
+            """)
+            
+            conn.commit()
+        finally:
+            conn.close()
+    
+    def record_performance(self, 
+                         strategy: StrategyChain,
+                         strategic_metrics: StrategicMetrics,
+                         generation: int = 0,
+                         refinement_id: Optional[str] = None) -> RefinementMetrics:
+        """
+        Record performance metrics for a strategy
+        
+        Args:
+            strategy: Strategy to track
+            strategic_metrics: Evaluated strategic metrics
+            generation: Refinement generation (0 = original)
+            refinement_id: Unique refinement session ID
+            
+        Returns:
+            RefinementMetrics object with calculated metrics
+        """
+        
+        # Generate IDs if not provided
+        strategy_id = getattr(strategy, 'id', None) or f"strategy_{hash(str(strategy))}"
+        refinement_id = refinement_id or f"refinement_{int(time.time())}"
+        
+        # Calculate improvement score vs previous generation
+        improvement_score = self._calculate_improvement_score(
+            strategy_id, strategic_metrics, generation
+        )
+        
+        # Calculate convergence indicator
+        convergence_indicator = self._calculate_convergence_indicator(
+            strategy_id, strategic_metrics
+        )
+        
+        # Calculate strategic compliance score
+        strategic_compliance_score = self._calculate_strategic_compliance(strategy, strategic_metrics)
+        
+        # Calculate evolution velocity
+        evolution_velocity = self._calculate_evolution_velocity(
+            strategy_id, improvement_score, generation
+        )
+        
+        # Analyze performance trend
+        trend_info = self._analyze_performance_trend(strategy_id, strategic_metrics)
+        
+        # Calculate refinement ROI
+        roi_estimate = self._calculate_refinement_roi(
+            improvement_score, strategic_metrics.execution_time
+        )
+        
+        # Create refinement metrics
+        metrics = RefinementMetrics(
+            refinement_id=refinement_id,
+            strategy_id=strategy_id,
+            generation=generation,
+            strategic_metrics=strategic_metrics,
+            improvement_score=improvement_score,
+            convergence_indicator=convergence_indicator,
+            strategic_compliance_score=strategic_compliance_score,
+            recursive_depth=generation,
+            evolution_velocity=evolution_velocity,
+            performance_trend=trend_info['trend'],
+            trend_confidence=trend_info['confidence'],
+            refinement_cost=strategic_metrics.execution_time,
+            roi_estimate=roi_estimate
+        )
+        
+        # Store in database
+        self._store_metrics(metrics)
+        
+        # Update in-memory cache
+        if strategy_id not in self.recent_metrics:
+            self.recent_metrics[strategy_id] = []
+        
+        self.recent_metrics[strategy_id].append(metrics)
+        
+        # Trim cache if too large
+        if len(self.recent_metrics[strategy_id]) > self.cache_size:
+            self.recent_metrics[strategy_id] = self.recent_metrics[strategy_id][-self.cache_size:]
+        
+        logger.info(f"Recorded performance for {strategy_id} generation {generation}: "
+                   f"improvement={improvement_score:.3f}, convergence={convergence_indicator:.3f}")
+        
+        return metrics
+    
+    def _calculate_improvement_score(self,
+                                   strategy_id: str,
+                                   current_metrics: StrategicMetrics,
+                                   generation: int) -> float:
+        """Calculate improvement score vs previous generation"""
+        
+        if generation == 0:
+            return 0.0  # Baseline, no improvement to measure
+        
+        # Get previous generation metrics
+        previous_metrics = self.get_metrics_by_generation(strategy_id, generation - 1)
+        if not previous_metrics:
+            return 0.0
+        
+        previous = previous_metrics[-1].strategic_metrics  # Most recent of previous gen
+        current = current_metrics
+        
+        # Compare overall scores
+        prev_score = previous.overall_score()
+        curr_score = current.overall_score()
+        
+        if prev_score == 0:
+            return 1.0 if curr_score > 0 else 0.0
+        
+        # Calculate relative improvement (-1 to 1)
+        improvement = (curr_score - prev_score) / prev_score
+        return max(-1.0, min(1.0, improvement))
+    
+    def _calculate_convergence_indicator(self,
+                                       strategy_id: str,
+                                       current_metrics: StrategicMetrics) -> float:
+        """Calculate how much the strategy is converging"""
+        
+        recent_metrics = self.get_recent_metrics(strategy_id, limit=5)
+        if len(recent_metrics) < 3:
+            return 0.0
+        
+        # Look at variance in recent scores - lower variance = more convergence
+        recent_scores = [m.strategic_metrics.overall_score() for m in recent_metrics]
+        if all(score == recent_scores[0] for score in recent_scores):
+            return 1.0  # Perfect convergence
+        
+        variance = statistics.variance(recent_scores)
+        max_possible_variance = 25.0  # Assume max score range of 10
+        
+        # Convert variance to convergence (0 = high variance, 1 = low variance)
+        convergence = max(0.0, 1.0 - (variance / max_possible_variance))
+        return convergence
+    
+    def _calculate_strategic_compliance(self,
+                                strategy: StrategyChain,
+                                strategic_metrics: StrategicMetrics) -> float:
+        """Calculate strategic compliance score"""
+        
+        compliance_factors = []
+        
+        # Factor 1: Strategic coherence (requirement for logical flow)
+        coherence_score = strategic_metrics.coherence_score / 10.0
+        compliance_factors.append(coherence_score)
+        
+        # Factor 2: Risk management (requirement for risk awareness)
+        risk_score = strategic_metrics.risk_management_score / 10.0
+        compliance_factors.append(risk_score)
+        
+        # Factor 3: Domain alignment (mandate alignment)
+        domain_score = strategic_metrics.domain_alignment_score / 10.0
+        compliance_factors.append(domain_score)
+        
+        # Factor 4: Resource efficiency (requirement for efficiency)
+        resource_score = strategic_metrics.resource_efficiency_score / 10.0
+        compliance_factors.append(resource_score)
+        
+        # Factor 5: Implementation feasibility (requirement for practicality)
+        feasibility_score = strategic_metrics.feasibility_score / 10.0
+        compliance_factors.append(feasibility_score)
+        
+        # Weighted average with emphasis on coherence and risk management
+        weights = [0.25, 0.25, 0.2, 0.15, 0.15]
+        compliance_score = sum(factor * weight for factor, weight in zip(compliance_factors, weights))
+        
+        return compliance_score
+    
+    def _calculate_evolution_velocity(self,
+                                    strategy_id: str,
+                                    improvement_score: float,
+                                    generation: int) -> float:
+        """Calculate rate of evolution/improvement over time"""
+        
+        if generation == 0:
+            return 0.0
+        
+        # Get historical improvement scores
+        all_metrics = self.get_all_metrics(strategy_id)
+        if len(all_metrics) < 2:
+            return improvement_score  # Only current improvement to go on
+        
+        # Calculate moving average of improvement scores
+        recent_improvements = [m.improvement_score for m in all_metrics[-5:]]  # Last 5
+        avg_improvement = statistics.mean(recent_improvements)
+        
+        # Factor in time - faster improvements have higher velocity
+        time_factor = 1.0 / max(1, generation)  # Velocity decreases with more generations
+        
+        velocity = avg_improvement * (1.0 + time_factor)
+        return max(-1.0, min(1.0, velocity))
+    
+    def _analyze_performance_trend(self,
+                                 strategy_id: str,
+                                 current_metrics: StrategicMetrics) -> Dict[str, Any]:
+        """Analyze performance trend over recent history"""
+        
+        recent_metrics = self.get_recent_metrics(strategy_id, limit=10)
+        if len(recent_metrics) < 3:
+            return {'trend': 'stable', 'confidence': 0.0}
+        
+        # Extract overall scores
+        scores = [m.strategic_metrics.overall_score() for m in recent_metrics]
+        
+        # Calculate trend using linear regression
+        x = list(range(len(scores)))
+        if len(scores) > 1:
+            slope = statistics.correlation(x, scores) if statistics.variance(x) > 0 and statistics.variance(scores) > 0 else 0
+        else:
+            slope = 0
+        
+        # Classify trend
+        if abs(slope) < 0.05:
+            trend = "stable"
+        elif slope > 0.15:
+            trend = "improving"
+        elif slope < -0.15:
+            trend = "degrading"
+        else:
+            # Check for oscillation
+            ups = sum(1 for i in range(1, len(scores)) if scores[i] > scores[i-1])
+            downs = sum(1 for i in range(1, len(scores)) if scores[i] < scores[i-1])
+            
+            if abs(ups - downs) <= 1:  # Equal ups and downs
+                trend = "oscillating"
+            elif slope > 0:
+                trend = "improving"
+            else:
+                trend = "degrading"
+        
+        # Calculate confidence based on consistency
+        score_variance = statistics.variance(scores) if len(scores) > 1 else 0
+        confidence = max(0.0, min(1.0, 1.0 - (score_variance / 10.0)))
+        
+        return {
+            'trend': trend,
+            'confidence': confidence,
+            'slope': slope,
+            'variance': score_variance
+        }
+    
+    def _calculate_refinement_roi(self,
+                                improvement_score: float,
+                                refinement_cost: float) -> float:
+        """Calculate return on investment for refinement effort"""
+        
+        if refinement_cost <= 0:
+            return improvement_score * 10  # High ROI if no cost
+        
+        # ROI = (improvement * impact_factor) / cost
+        impact_factor = 100  # Assume 100 "value units" for full improvement
+        roi = (improvement_score * impact_factor) / refinement_cost
+        
+        return max(-10.0, min(10.0, roi))  # Cap ROI between -10 and 10
+    
+    def _store_metrics(self, metrics: RefinementMetrics):
+        """Store metrics in database"""
+        
+        conn = sqlite3.connect(self.db_path)
+        try:
+            conn.execute("""
+                INSERT OR REPLACE INTO refinement_metrics 
+                (refinement_id, strategy_id, generation, timestamp, metrics_data)
+                VALUES (?, ?, ?, ?, ?)
+            """, (
+                metrics.refinement_id,
+                metrics.strategy_id,
+                metrics.generation,
+                metrics.timestamp.isoformat(),
+                json.dumps(metrics.to_dict())
+            ))
+            conn.commit()
+        except Exception as e:
+            logger.error(f"Failed to store metrics: {e}")
+        finally:
+            conn.close()
+    
+    def get_metrics_by_generation(self,
+                                strategy_id: str,
+                                generation: int) -> List[RefinementMetrics]:
+        """Get all metrics for a specific generation of a strategy"""
+        
+        conn = sqlite3.connect(self.db_path)
+        try:
+            cursor = conn.execute("""
+                SELECT metrics_data FROM refinement_metrics
+                WHERE strategy_id = ? AND generation = ?
+                ORDER BY timestamp
+            """, (strategy_id, generation))
+            
+            results = []
+            for row in cursor:
+                data = json.loads(row[0])
+                results.append(RefinementMetrics.from_dict(data))
+            
+            return results
+        finally:
+            conn.close()
+    
+    def get_recent_metrics(self,
+                         strategy_id: str,
+                         limit: int = 10) -> List[RefinementMetrics]:
+        """Get recent metrics for a strategy"""
+        
+        # Check in-memory cache first
+        if strategy_id in self.recent_metrics:
+            cached = self.recent_metrics[strategy_id][-limit:]
+            if len(cached) >= limit:
+                return cached
+        
+        # Fall back to database
+        conn = sqlite3.connect(self.db_path)
+        try:
+            cursor = conn.execute("""
+                SELECT metrics_data FROM refinement_metrics
+                WHERE strategy_id = ?
+                ORDER BY timestamp DESC
+                LIMIT ?
+            """, (strategy_id, limit))
+            
+            results = []
+            for row in cursor:
+                data = json.loads(row[0])
+                results.append(RefinementMetrics.from_dict(data))
+            
+            return list(reversed(results))  # Return in chronological order
+        finally:
+            conn.close()
+    
+    def get_all_metrics(self, strategy_id: str) -> List[RefinementMetrics]:
+        """Get all metrics for a strategy"""
+        
+        conn = sqlite3.connect(self.db_path)
+        try:
+            cursor = conn.execute("""
+                SELECT metrics_data FROM refinement_metrics
+                WHERE strategy_id = ?
+                ORDER BY timestamp
+            """, (strategy_id,))
+            
+            results = []
+            for row in cursor:
+                data = json.loads(row[0])
+                results.append(RefinementMetrics.from_dict(data))
+            
+            return results
+        finally:
+            conn.close()
+    
+    def get_performance_summary(self, strategy_id: str) -> Dict[str, Any]:
+        """Get performance summary for a strategy"""
+        
+        all_metrics = self.get_all_metrics(strategy_id)
+        if not all_metrics:
+            return {}
+        
+        latest = all_metrics[-1]
+        
+        # Calculate summary statistics
+        overall_scores = [m.strategic_metrics.overall_score() for m in all_metrics]
+        improvement_scores = [m.improvement_score for m in all_metrics]
+        
+        summary = {
+            'strategy_id': strategy_id,
+            'total_generations': len(set(m.generation for m in all_metrics)),
+            'total_refinements': len(all_metrics),
+            'latest_generation': latest.generation,
+            'latest_score': latest.strategic_metrics.overall_score(),
+            'best_score': max(overall_scores),
+            'average_score': statistics.mean(overall_scores),
+            'score_trend': latest.performance_trend,
+            'trend_confidence': latest.trend_confidence,
+            'convergence_level': latest.convergence_indicator,
+            'strategic_compliance': latest.strategic_compliance_score,
+            'evolution_velocity': latest.evolution_velocity,
+            'average_improvement': statistics.mean(improvement_scores) if improvement_scores else 0.0,
+            'refinement_efficiency': latest.roi_estimate,
+            'time_span_hours': (all_metrics[-1].timestamp - all_metrics[0].timestamp).total_seconds() / 3600
+        }
+        
+        return summary
+    
+    def cleanup_old_metrics(self, days_to_keep: int = 30):
+        """Clean up old metrics to prevent database bloat"""
+        
+        cutoff_date = datetime.now() - timedelta(days=days_to_keep)
+        
+        conn = sqlite3.connect(self.db_path)
+        try:
+            cursor = conn.execute("""
+                DELETE FROM refinement_metrics
+                WHERE timestamp < ?
+            """, (cutoff_date.isoformat(),))
+            
+            deleted_count = cursor.rowcount
+            conn.commit()
+            
+            logger.info(f"Cleaned up {deleted_count} old refinement metrics")
+        finally:
+            conn.close()

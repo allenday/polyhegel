@@ -9,6 +9,9 @@ prompts:
     summarizer:
       file: strategic/summarize.md
       description: System prompt for simulation results summarization
+    refine:
+      file: strategic/refine.md
+      description: System prompt for recursive strategy refinement
   
   general:
     default:
