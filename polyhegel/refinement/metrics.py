@@ -1,20 +1,16 @@
 """
 Performance tracking and metrics collection for recursive refinement
 
-Tracks strategy performance over time and collects metrics for the
-refinement feedback loop.
+Tracks strategy performance over time using structured logging and 
+in-memory session data for the refinement feedback loop.
 """
 
 import time
 import logging
-import sqlite3
-import json
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field, asdict
-from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime
 import statistics
-import numpy as np
 
 from ..models import StrategyChain, GenesisStrategy
 from ..evaluation.metrics import StrategicMetrics
@@ -67,54 +63,42 @@ class RefinementMetrics:
 
 
 class PerformanceTracker:
-    """Tracks strategy performance over time for refinement analysis"""
+    """Tracks strategy performance over time using structured logging and in-memory session data"""
     
-    def __init__(self, db_path: Optional[Path] = None):
+    def __init__(self, session_id: Optional[str] = None):
         """
         Initialize performance tracker
         
         Args:
-            db_path: Path to SQLite database for persistent storage
+            session_id: Optional session identifier for this refinement session
         """
-        self.db_path = db_path or Path.home() / ".polyhegel" / "refinement.db"
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self.session_id = session_id or f"session_{int(time.time())}"
         
-        # Initialize database
-        self._init_database()
-        
-        # In-memory cache for recent metrics
-        self.recent_metrics: Dict[str, List[RefinementMetrics]] = {}
-        self.cache_size = 100  # Keep last 100 metrics per strategy in memory
+        # In-memory storage for current session metrics
+        self.session_metrics: Dict[str, List[RefinementMetrics]] = {}
+        self.max_metrics_per_strategy = 100  # Limit memory usage
     
-    def _init_database(self):
-        """Initialize SQLite database for performance tracking"""
-        conn = sqlite3.connect(self.db_path)
-        try:
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS refinement_metrics (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    refinement_id TEXT NOT NULL,
-                    strategy_id TEXT NOT NULL,
-                    generation INTEGER NOT NULL,
-                    timestamp TEXT NOT NULL,
-                    metrics_data TEXT NOT NULL,
-                    UNIQUE(refinement_id, generation)
-                )
-            """)
-            
-            conn.execute("""
-                CREATE INDEX IF NOT EXISTS idx_strategy_id 
-                ON refinement_metrics(strategy_id)
-            """)
-            
-            conn.execute("""
-                CREATE INDEX IF NOT EXISTS idx_timestamp 
-                ON refinement_metrics(timestamp)
-            """)
-            
-            conn.commit()
-        finally:
-            conn.close()
+    def _log_metrics(self, metrics: RefinementMetrics):
+        """Log metrics as structured JSON for telemetry aggregation"""
+        logger.info(
+            "refinement_metrics",
+            extra={
+                "event_type": "refinement_metrics",
+                "session_id": self.session_id,
+                "refinement_id": metrics.refinement_id,
+                "strategy_id": metrics.strategy_id,
+                "generation": metrics.generation,
+                "timestamp": metrics.timestamp.isoformat(),
+                "improvement_score": metrics.improvement_score,
+                "convergence_indicator": metrics.convergence_indicator,
+                "strategic_compliance_score": metrics.strategic_compliance_score,
+                "performance_trend": metrics.performance_trend,
+                "trend_confidence": metrics.trend_confidence,
+                "evolution_velocity": metrics.evolution_velocity,
+                "roi_estimate": metrics.roi_estimate,
+                "strategic_metrics": metrics.strategic_metrics.to_dict()
+            }
+        )
     
     def record_performance(self, 
                          strategy: StrategyChain,
@@ -181,18 +165,18 @@ class PerformanceTracker:
             roi_estimate=roi_estimate
         )
         
-        # Store in database
-        self._store_metrics(metrics)
+        # Log metrics for telemetry aggregation
+        self._log_metrics(metrics)
         
-        # Update in-memory cache
-        if strategy_id not in self.recent_metrics:
-            self.recent_metrics[strategy_id] = []
+        # Store in session memory
+        if strategy_id not in self.session_metrics:
+            self.session_metrics[strategy_id] = []
         
-        self.recent_metrics[strategy_id].append(metrics)
+        self.session_metrics[strategy_id].append(metrics)
         
-        # Trim cache if too large
-        if len(self.recent_metrics[strategy_id]) > self.cache_size:
-            self.recent_metrics[strategy_id] = self.recent_metrics[strategy_id][-self.cache_size:]
+        # Trim memory if too large
+        if len(self.session_metrics[strategy_id]) > self.max_metrics_per_strategy:
+            self.session_metrics[strategy_id] = self.session_metrics[strategy_id][-self.max_metrics_per_strategy:]
         
         logger.info(f"Recorded performance for {strategy_id} generation {generation}: "
                    f"improvement={improvement_score:.3f}, convergence={convergence_indicator:.3f}")
@@ -368,99 +352,33 @@ class PerformanceTracker:
         
         return max(-10.0, min(10.0, roi))  # Cap ROI between -10 and 10
     
-    def _store_metrics(self, metrics: RefinementMetrics):
-        """Store metrics in database"""
-        
-        conn = sqlite3.connect(self.db_path)
-        try:
-            conn.execute("""
-                INSERT OR REPLACE INTO refinement_metrics 
-                (refinement_id, strategy_id, generation, timestamp, metrics_data)
-                VALUES (?, ?, ?, ?, ?)
-            """, (
-                metrics.refinement_id,
-                metrics.strategy_id,
-                metrics.generation,
-                metrics.timestamp.isoformat(),
-                json.dumps(metrics.to_dict())
-            ))
-            conn.commit()
-        except Exception as e:
-            logger.error(f"Failed to store metrics: {e}")
-        finally:
-            conn.close()
-    
     def get_metrics_by_generation(self,
                                 strategy_id: str,
                                 generation: int) -> List[RefinementMetrics]:
-        """Get all metrics for a specific generation of a strategy"""
+        """Get all metrics for a specific generation of a strategy from current session"""
         
-        conn = sqlite3.connect(self.db_path)
-        try:
-            cursor = conn.execute("""
-                SELECT metrics_data FROM refinement_metrics
-                WHERE strategy_id = ? AND generation = ?
-                ORDER BY timestamp
-            """, (strategy_id, generation))
-            
-            results = []
-            for row in cursor:
-                data = json.loads(row[0])
-                results.append(RefinementMetrics.from_dict(data))
-            
-            return results
-        finally:
-            conn.close()
+        if strategy_id not in self.session_metrics:
+            return []
+        
+        return [
+            metrics for metrics in self.session_metrics[strategy_id]
+            if metrics.generation == generation
+        ]
     
     def get_recent_metrics(self,
                          strategy_id: str,
                          limit: int = 10) -> List[RefinementMetrics]:
-        """Get recent metrics for a strategy"""
+        """Get recent metrics for a strategy from current session"""
         
-        # Check in-memory cache first
-        if strategy_id in self.recent_metrics:
-            cached = self.recent_metrics[strategy_id][-limit:]
-            if len(cached) >= limit:
-                return cached
+        if strategy_id not in self.session_metrics:
+            return []
         
-        # Fall back to database
-        conn = sqlite3.connect(self.db_path)
-        try:
-            cursor = conn.execute("""
-                SELECT metrics_data FROM refinement_metrics
-                WHERE strategy_id = ?
-                ORDER BY timestamp DESC
-                LIMIT ?
-            """, (strategy_id, limit))
-            
-            results = []
-            for row in cursor:
-                data = json.loads(row[0])
-                results.append(RefinementMetrics.from_dict(data))
-            
-            return list(reversed(results))  # Return in chronological order
-        finally:
-            conn.close()
+        return self.session_metrics[strategy_id][-limit:]
     
     def get_all_metrics(self, strategy_id: str) -> List[RefinementMetrics]:
-        """Get all metrics for a strategy"""
+        """Get all metrics for a strategy from current session"""
         
-        conn = sqlite3.connect(self.db_path)
-        try:
-            cursor = conn.execute("""
-                SELECT metrics_data FROM refinement_metrics
-                WHERE strategy_id = ?
-                ORDER BY timestamp
-            """, (strategy_id,))
-            
-            results = []
-            for row in cursor:
-                data = json.loads(row[0])
-                results.append(RefinementMetrics.from_dict(data))
-            
-            return results
-        finally:
-            conn.close()
+        return self.session_metrics.get(strategy_id, [])
     
     def get_performance_summary(self, strategy_id: str) -> Dict[str, Any]:
         """Get performance summary for a strategy"""
@@ -495,21 +413,27 @@ class PerformanceTracker:
         
         return summary
     
-    def cleanup_old_metrics(self, days_to_keep: int = 30):
-        """Clean up old metrics to prevent database bloat"""
+    def clear_session_metrics(self, strategy_id: Optional[str] = None):
+        """Clear metrics from current session"""
         
-        cutoff_date = datetime.now() - timedelta(days=days_to_keep)
+        if strategy_id:
+            if strategy_id in self.session_metrics:
+                del self.session_metrics[strategy_id]
+                logger.info(f"Cleared session metrics for strategy {strategy_id}")
+        else:
+            cleared_count = len(self.session_metrics)
+            self.session_metrics.clear()
+            logger.info(f"Cleared all session metrics ({cleared_count} strategies)")
+    
+    def get_session_summary(self) -> Dict[str, Any]:
+        """Get summary of current session metrics"""
         
-        conn = sqlite3.connect(self.db_path)
-        try:
-            cursor = conn.execute("""
-                DELETE FROM refinement_metrics
-                WHERE timestamp < ?
-            """, (cutoff_date.isoformat(),))
-            
-            deleted_count = cursor.rowcount
-            conn.commit()
-            
-            logger.info(f"Cleaned up {deleted_count} old refinement metrics")
-        finally:
-            conn.close()
+        total_strategies = len(self.session_metrics)
+        total_metrics = sum(len(metrics) for metrics in self.session_metrics.values())
+        
+        return {
+            "session_id": self.session_id,
+            "strategies_tracked": total_strategies,
+            "total_metrics_recorded": total_metrics,
+            "strategies": list(self.session_metrics.keys())
+        }

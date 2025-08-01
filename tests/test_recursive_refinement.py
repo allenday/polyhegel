@@ -33,8 +33,7 @@ class TestPerformanceTracker:
     def setup_method(self):
         """Set up test environment"""
         self.temp_dir = tempfile.mkdtemp()
-        self.db_path = Path(self.temp_dir) / "test_refinement.db"
-        self.tracker = PerformanceTracker(self.db_path)
+        self.tracker = PerformanceTracker(session_id="test_session")
         self.sample_strategy = self._create_sample_strategy()
     
     def _create_sample_strategy(self) -> StrategyChain:
@@ -63,9 +62,8 @@ class TestPerformanceTracker:
     
     def test_tracker_initialization(self):
         """Test performance tracker initialization"""
-        assert self.tracker.db_path == self.db_path
-        assert self.db_path.exists()
-        assert isinstance(self.tracker.recent_metrics, dict)
+        assert self.tracker.session_id == "test_session"
+        assert isinstance(self.tracker.session_metrics, dict)
     
     def test_record_performance_initial(self):
         """Test recording initial performance"""
@@ -158,8 +156,7 @@ class TestFeedbackLoop:
     def setup_method(self):
         """Set up test environment"""
         self.temp_dir = tempfile.mkdtemp()
-        self.db_path = Path(self.temp_dir) / "test_refinement.db"
-        self.tracker = PerformanceTracker(self.db_path)
+        self.tracker = PerformanceTracker(session_id="feedback_test_session")
         self.feedback_loop = FeedbackLoop(self.tracker)
         
         # Create sample metrics
