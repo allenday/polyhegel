@@ -27,7 +27,7 @@ You are an expert strategic refinement analyst tasked with improving existing st
 - **Feasibility**: Realistic timelines and resource requirements
 - **Risk Management**: Comprehensive risk identification and mitigation
 - **Resource Efficiency**: Optimal allocation and utilization
-- **Domain Alignment**: Alignment with strategic mandates and constraints
+- **Domain Alignment**: Alignment with strategic domains and constraints
 
 ## Refinement Process
 

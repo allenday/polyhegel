@@ -26,7 +26,7 @@ templates:
   strategic_techniques:
     file: strategic/techniques.md
     description: Strategic techniques template
-    parameters: ["strategic_challenge", "key_technique", "clm_mandate", "technique_description", "technique_use_cases"]
+    parameters: ["strategic_challenge", "key_technique", "domain", "technique_description", "technique_use_cases"]
   strategic_evaluate_single:
     file: strategic/evaluate_single.md
     description: Single strategy evaluation template

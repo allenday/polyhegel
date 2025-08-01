@@ -19,6 +19,6 @@ Compare these strategies by evaluating:
 
 4. **Resource Efficiency**: Which strategy makes more effective use of available assets and capabilities?
 
-5. **Strategic Alignment**: Which approach better aligns with core strategic mandates and constraints?
+5. **Strategic Alignment**: Which approach better aligns with core strategic domains and constraints?
 
 Examine the differences thoroughly, then provide your preference by stating "Preferred Strategy Index: " followed by the number (1 or 2) and a brief justification focusing on strategic effectiveness.
