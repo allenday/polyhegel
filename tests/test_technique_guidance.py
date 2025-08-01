@@ -139,13 +139,13 @@ class TestTechniqueGuidance:
             # Strategy should reflect the domain focus
             strategy_text = f"{chain.strategy.title} {' '.join(step.action for step in chain.strategy.steps)}"
 
-            if expected_domain == "2.1":  # Resource Acquisition
+            if expected_domain == "resource_acquisition":  # Resource Acquisition
                 assert any(
                     keyword in strategy_text.lower() for keyword in ["resource", "stakeholder", "fund", "partner"]
                 )
-            elif expected_domain == "2.2":  # Strategic Security
+            elif expected_domain == "strategic_security":  # Strategic Security
                 assert any(keyword in strategy_text.lower() for keyword in ["security", "risk", "protect", "safe"])
-            elif expected_domain == "2.3":  # Value Catalysis
+            elif expected_domain == "value_catalysis":  # Value Catalysis
                 assert any(keyword in strategy_text.lower() for keyword in ["value", "innovation", "catalys", "growth"])
 
     @pytest.mark.asyncio

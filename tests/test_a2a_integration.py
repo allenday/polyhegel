@@ -64,7 +64,7 @@ class TestA2AAgentCards:
         """Test simulation agent card creation"""
         card = create_simulation_agent_card("http://localhost:8000")
 
-        assert "Simulation Orchestrator" in card.name
+        assert "Strategic Simulation Agent" in card.name
         assert card.url == "http://localhost:8000"
         assert len(card.skills) > 0
 
