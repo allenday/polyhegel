@@ -8,6 +8,7 @@ from enum import Enum
 import numpy as np
 import networkx as nx
 from pydantic import BaseModel, Field, validator
+from .strategic_techniques import StrategyDomain
 
 
 class StrategyStep(BaseModel):
@@ -33,9 +34,9 @@ class GenesisStrategy(BaseModel):
 class ThemeCategory(str, Enum):
     """Strategic theme categories aligned with strategic domains"""
 
-    RESOURCE_ACQUISITION = "resource_acquisition"
-    STRATEGIC_SECURITY = "strategic_security"
-    VALUE_CATALYSIS = "value_catalysis"
+    RESOURCE_ACQUISITION = StrategyDomain.RESOURCE_ACQUISITION.value
+    STRATEGIC_SECURITY = StrategyDomain.STRATEGIC_SECURITY.value
+    VALUE_CATALYSIS = StrategyDomain.VALUE_CATALYSIS.value
     CROSS_CUTTING = "cross_cutting"  # Themes that span multiple domains
     FOUNDATIONAL = "foundational"  # Core infrastructure themes
 

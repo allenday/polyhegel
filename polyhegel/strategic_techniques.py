@@ -21,6 +21,41 @@ class StrategyDomain(Enum):
     STRATEGIC_SECURITY = "strategic_security"
     VALUE_CATALYSIS = "value_catalysis"
 
+    @property
+    def display_name(self) -> str:
+        """Human-readable display name for the domain"""
+        return DOMAIN_METADATA[self]["display_name"]
+
+    @property
+    def tags(self) -> List[str]:
+        """Tags associated with this domain"""
+        return DOMAIN_METADATA[self]["tags"]
+
+    @property
+    def description(self) -> str:
+        """Description of this domain"""
+        return DOMAIN_METADATA[self]["description"]
+
+
+# Domain metadata dictionary
+DOMAIN_METADATA: Dict[StrategyDomain, Dict[str, any]] = {
+    StrategyDomain.RESOURCE_ACQUISITION: {
+        "display_name": "Resource Acquisition",
+        "description": "Obtaining and optimizing necessary resources",
+        "tags": ["resources", "funding", "optimization", "acquisition"],
+    },
+    StrategyDomain.STRATEGIC_SECURITY: {
+        "display_name": "Strategic Security",
+        "description": "Maintaining operational integrity and resilience",
+        "tags": ["security", "resilience", "defense", "protection"],
+    },
+    StrategyDomain.VALUE_CATALYSIS: {
+        "display_name": "Value Catalysis",
+        "description": "Accelerating value creation and stakeholder benefit",
+        "tags": ["value", "catalysis", "acceleration", "stakeholders"],
+    },
+}
+
 
 @dataclass
 class StrategicTechnique:

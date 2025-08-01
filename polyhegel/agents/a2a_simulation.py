@@ -7,6 +7,7 @@ Minimal implementation for A2A protocol integration.
 import logging
 from typing import List, Dict
 from ..models import StrategyChain, GenesisStrategy, StrategyStep
+from ..strategic_techniques import StrategyDomain
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +81,11 @@ async def generate_hierarchical_strategies_a2a(
                     risks=["Resource constraints"],
                 ),
             ],
-            alignment_score={"resource_acquisition": 3.0, "strategic_security": 2.5, "value_catalysis": 4.0},
+            alignment_score={
+                StrategyDomain.RESOURCE_ACQUISITION.value: 3.0,
+                StrategyDomain.STRATEGIC_SECURITY.value: 2.5,
+                StrategyDomain.VALUE_CATALYSIS.value: 4.0,
+            },
             estimated_timeline="2-4 weeks",
             resource_requirements=["Team coordination", "Technical resources"],
         )
