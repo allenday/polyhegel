@@ -43,7 +43,13 @@ async def git_repo_to_md_tool(ctx, request: GitRepoRequest) -> str:
     """
     try:
         # Use git2md for all formats
-        return await _use_git2md(request.repo_url, request.max_file_size)
+        result = await _use_git2md(request.repo_url, request.max_file_size)
+        
+        # If LLM format is requested, enhance the output
+        if request.output_format == "llm":
+            return f"LLM-optimized content for {request.repo_url}:\n\n{result}"
+        
+        return result
 
     except Exception as e:
         logger.error(f"Git repo conversion failed for {request.repo_url}: {e}")
@@ -70,7 +76,13 @@ async def local_repo_to_md_tool(ctx, request: LocalRepoRequest) -> str:
             return f"Not a git repository: {request.repo_path}"
 
         # Use git2md for local repositories
-        return await _use_git2md_local(str(repo_path), request.max_file_size)
+        result = await _use_git2md_local(str(repo_path), request.max_file_size)
+        
+        # If LLM format is requested, enhance the output
+        if request.output_format == "llm":
+            return f"LLM-optimized content for {request.repo_path}:\n\n{result}"
+        
+        return result
 
     except Exception as e:
         logger.error(f"Local repo conversion failed for {request.repo_path}: {e}")
