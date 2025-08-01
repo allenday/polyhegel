@@ -64,9 +64,11 @@ class TestThemeCategory:
 
     def test_theme_categories(self):
         """Test all theme category values"""
-        assert ThemeCategory.RESOURCE_ACQUISITION == "resource_acquisition"
-        assert ThemeCategory.STRATEGIC_SECURITY == "strategic_security"
-        assert ThemeCategory.VALUE_CATALYSIS == "value_catalysis"
+        from polyhegel.strategic_techniques import StrategyDomain
+
+        assert ThemeCategory.RESOURCE_ACQUISITION == StrategyDomain.RESOURCE_ACQUISITION.value
+        assert ThemeCategory.STRATEGIC_SECURITY == StrategyDomain.STRATEGIC_SECURITY.value
+        assert ThemeCategory.VALUE_CATALYSIS == StrategyDomain.VALUE_CATALYSIS.value
         assert ThemeCategory.CROSS_CUTTING == "cross_cutting"
         assert ThemeCategory.FOUNDATIONAL == "foundational"
 

@@ -190,6 +190,7 @@ class TestTechniqueGuidance:
     def test_technique_metadata_integration(self):
         """Test that technique metadata integrates properly with StrategyChain"""
         from polyhegel.models import StrategyChain, GenesisStrategy, StrategyStep
+        from polyhegel.strategic_techniques import StrategyDomain
 
         # Create a test strategy
         strategy = GenesisStrategy(
@@ -208,14 +209,18 @@ class TestTechniqueGuidance:
             resource_requirements=["Test Resource"],
         )
 
-        # Create StrategyChain with technique metadata
+        # Create StrategyChain with technique metadata using enum constants
         chain = StrategyChain(
-            strategy=strategy, source_sample=0, temperature=0.7, technique_name="Test Technique", technique_domain="2.1"
+            strategy=strategy,
+            source_sample=0,
+            temperature=0.7,
+            technique_name="Test Technique",
+            technique_domain=StrategyDomain.RESOURCE_ACQUISITION.value,
         )
 
         # Verify metadata is properly stored
         assert chain.technique_name == "Test Technique"
-        assert chain.technique_domain == "resource_acquisition"
+        assert chain.technique_domain == StrategyDomain.RESOURCE_ACQUISITION.value
         assert chain.strategy.title == "Test Strategy"
 
 
