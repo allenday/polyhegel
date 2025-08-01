@@ -17,15 +17,14 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
-from fastapi import Depends
-from fastapi.middleware.cors import CORSMiddleware
 
 from polyhegel.agents.a2a_cards import create_leader_agent_card
 from polyhegel.agents.a2a_executors import LeaderAgentExecutor
 from polyhegel.model_manager import ModelManager
 from polyhegel.strategic_techniques import StrategyDomain
-from polyhegel.security import AgentRole, Permission, SecurityConfig, get_auth_manager, require_permission, require_role
-from polyhegel.telemetry import setup_telemetry_for_agent, A2AMonitoringMiddleware, TelemetryExporter
+from polyhegel.security import get_auth_manager
+
+# from polyhegel.telemetry import setup_telemetry_for_agent  # TODO: Use when auth routes are added
 
 
 def create_leader_server(
@@ -73,8 +72,8 @@ def create_leader_server(
     )
 
     # Setup telemetry
-    telemetry_collector = setup_telemetry_for_agent("polyhegel-leader")
-    telemetry_exporter = TelemetryExporter(telemetry_collector)
+    # telemetry_collector = setup_telemetry_for_agent("polyhegel-leader")
+    # telemetry_exporter = TelemetryExporter(telemetry_collector)  # TODO: Use when auth routes are added
 
     # TODO: Add monitoring and security configuration using proper Starlette routing
     # For now, returning basic server without additional routes

@@ -166,7 +166,12 @@ class TestServerEnvironmentConfiguration:
 
                 # Verify server was created with env config
                 mock_create_server.assert_called_once_with(
-                    host="0.0.0.0", port=7001, model_name="claude-3-sonnet-20240229", focus_domains=[], max_themes=7, enable_auth=True
+                    host="0.0.0.0",
+                    port=7001,
+                    model_name="claude-3-sonnet-20240229",
+                    focus_domains=[],
+                    max_themes=7,
+                    enable_auth=True,
                 )
 
     @patch.dict(
