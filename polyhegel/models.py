@@ -167,3 +167,81 @@ class StrategyChain:
     # Technique-guided generation metadata
     technique_name: Optional[str] = None
     technique_domain: Optional[str] = None
+
+
+class StrategyEvaluationResponse(BaseModel):
+    """Structured response for strategy evaluation and comparison"""
+    
+    preferred_strategy_index: int = Field(
+        description="Index of preferred strategy (1 or 2)",
+        ge=1, le=2
+    )
+    
+    confidence_score: float = Field(
+        description="Confidence in the evaluation (0.0 to 1.0)",
+        ge=0.0, le=1.0
+    )
+    
+    reasoning: str = Field(
+        description="Brief explanation of why this strategy was preferred",
+        min_length=10, max_length=500
+    )
+    
+    coherence_comparison: Dict[str, float] = Field(
+        description="Coherence scores for both strategies (1-10 scale)",
+        default_factory=dict
+    )
+    
+    feasibility_comparison: Dict[str, float] = Field(
+        description="Feasibility scores for both strategies (1-10 scale)", 
+        default_factory=dict
+    )
+    
+    risk_management_comparison: Dict[str, float] = Field(
+        description="Risk management scores for both strategies (1-10 scale)",
+        default_factory=dict
+    )
+
+
+class StrategyAnalysisResponse(BaseModel):
+    """Structured response for single strategy analysis"""
+    
+    overall_score: float = Field(
+        description="Overall strategy effectiveness score (1-10 scale)",
+        ge=1.0, le=10.0
+    )
+    
+    coherence_score: float = Field(
+        description="Logical flow and consistency score (1-10 scale)",
+        ge=1.0, le=10.0
+    )
+    
+    feasibility_score: float = Field(
+        description="Implementation feasibility score (1-10 scale)",
+        ge=1.0, le=10.0
+    )
+    
+    risk_management_score: float = Field(
+        description="Risk identification and mitigation score (1-10 scale)",
+        ge=1.0, le=10.0
+    )
+    
+    strategic_alignment_score: float = Field(
+        description="Alignment with strategic objectives score (1-10 scale)",
+        ge=1.0, le=10.0
+    )
+    
+    strengths: List[str] = Field(
+        description="Key strengths of the strategy",
+        min_items=1, max_items=5
+    )
+    
+    weaknesses: List[str] = Field(
+        description="Key weaknesses or areas for improvement",
+        max_items=5, default_factory=list
+    )
+    
+    recommendations: List[str] = Field(
+        description="Specific recommendations for improvement",
+        max_items=3, default_factory=list
+    )

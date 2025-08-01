@@ -2,16 +2,22 @@
 
 Evaluate this strategic approach:
 
-Context: {{context}}
+Context: {context}
 
 Strategy:
-{{strategy_text}}
+{strategy_text}
 
-Provide analysis on:
-1. Strategic Viability (0-10 score)
-2. Coherence (0-10 score) 
-3. Risk Management (0-10 score)
-4. Resource Efficiency (0-10 score)
-5. Overall Assessment
+Provide a comprehensive analysis including:
 
-Format your response with clear scores and reasoning.
+1. **Overall Score** (1-10 scale): Rate the strategy's overall effectiveness
+2. **Coherence Score** (1-10 scale): Logical flow and consistency between steps
+3. **Feasibility Score** (1-10 scale): Realistic implementation given resources and constraints
+4. **Risk Management Score** (1-10 scale): How well risks are identified and mitigated
+5. **Strategic Alignment Score** (1-10 scale): Alignment with strategic objectives
+
+Additionally, identify:
+- **Key Strengths**: What makes this strategy effective (1-5 points)
+- **Key Weaknesses**: Areas that need improvement (0-5 points) 
+- **Recommendations**: Specific suggestions for enhancement (0-3 points)
+
+Provide structured, actionable feedback for each area.

@@ -6,8 +6,9 @@ import asyncio
 import logging
 from typing import Dict, Any, Optional
 from pydantic_ai import Agent
+from pydantic import ValidationError
 
-from .models import StrategyChain
+from .models import StrategyChain, StrategyEvaluationResponse, StrategyAnalysisResponse
 from .prompts import get_system_prompt, get_template
 
 logger = logging.getLogger(__name__)
@@ -26,9 +27,18 @@ class StrategyEvaluator:
         """
         self.model = model
         self.system_prompt = system_prompt or get_system_prompt('strategic', 'evaluator')
-        self.agent = Agent(
+        
+        # Agent for structured strategy comparison
+        self.comparison_agent = Agent(
             self.model,
-            output_type=str,
+            output_type=StrategyEvaluationResponse,
+            system_prompt=self.system_prompt
+        )
+        
+        # Agent for structured strategy analysis  
+        self.analysis_agent = Agent(
+            self.model,
+            output_type=StrategyAnalysisResponse,
             system_prompt=self.system_prompt
         )
         
@@ -50,37 +60,55 @@ class StrategyEvaluator:
         Returns:
             Dictionary with comparison results including preferred strategy
         """
-        try:
-            # Format strategies for comparison
-            strategy1_text = self._format_strategy_for_comparison(strategy1)
-            strategy2_text = self._format_strategy_for_comparison(strategy2)
-            
-            # Create comparison prompt using centralized template
-            comparison_prompt = get_template(
-                'strategic_compare',
-                question=context or "Strategic planning situation requiring optimal approach selection",
-                solution1=strategy1_text,
-                solution2=strategy2_text
-            )
-            
-            # Get LLM evaluation
-            result = await self.agent.run(comparison_prompt)
-            
-            # Parse the result to extract preference
-            preferred_index = self._parse_preference(result.output)
-            
-            return {
-                'preferred_strategy': 1 if preferred_index == 1 else 2,
-                'preferred_chain': strategy1 if preferred_index == 1 else strategy2,
-                'evaluation_text': result.output,
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                # Format strategies for comparison
+                strategy1_text = self._format_strategy_for_comparison(strategy1)
+                strategy2_text = self._format_strategy_for_comparison(strategy2)
+                
+                # Create comparison prompt using centralized template
+                comparison_prompt = get_template(
+                    'strategic_compare',
+                    question=context or "Strategic planning situation requiring optimal approach selection",
+                    solution1=strategy1_text,
+                    solution2=strategy2_text
+                )
+                
+                # Get structured LLM evaluation with retry logic
+                result = await self.comparison_agent.run(comparison_prompt)
+                evaluation = result.output
+                
+                # If we get here, validation succeeded
+                break
+                
+            except ValidationError as e:
+                logger.warning(f"Structured output validation failed (attempt {attempt + 1}/{max_retries}): {e}")
+                if attempt == max_retries - 1:
+                    # Last attempt failed, fall back to basic response
+                    logger.error("All structured output attempts failed, using fallback response")
+                    evaluation = StrategyEvaluationResponse(
+                        preferred_strategy_index=1,  # Default fallback
+                        confidence_score=0.5,
+                        reasoning="Structured output validation failed, defaulting to strategy 1"
+                    )
+                    break
+                # Wait briefly before retry
+                await asyncio.sleep(0.5)
+        
+        return {
+                'preferred_strategy': evaluation.preferred_strategy_index,
+                'preferred_chain': strategy1 if evaluation.preferred_strategy_index == 1 else strategy2,
+                'confidence_score': evaluation.confidence_score,
+                'reasoning': evaluation.reasoning,
+                'coherence_scores': evaluation.coherence_comparison,
+                'feasibility_scores': evaluation.feasibility_comparison,
+                'risk_scores': evaluation.risk_management_comparison,
+                'evaluation_text': evaluation.reasoning,  # For backward compatibility
                 'strategy1_formatted': strategy1_text,
                 'strategy2_formatted': strategy2_text,
                 'comparison_prompt': comparison_prompt
             }
-            
-        except Exception as e:
-            logger.error(f"Strategy comparison failed: {e}")
-            raise
     
     async def evaluate_strategy(self, strategy: StrategyChain, context: str = "") -> Dict[str, Any]:
         """
@@ -93,27 +121,54 @@ class StrategyEvaluator:
         Returns:
             Dictionary with evaluation metrics and analysis
         """
-        try:
-            strategy_text = self._format_strategy_for_comparison(strategy)
-            
-            evaluation_prompt = get_template(
-                'strategic_evaluate_single',
-                context=context or "General strategic planning situation",
-                strategy_text=strategy_text
-            )
-            
-            result = await self.agent.run(evaluation_prompt)
-            
-            return {
-                'strategy': strategy,
-                'evaluation_text': result.output,
-                'strategy_formatted': strategy_text,
-                'context': context
-            }
-            
-        except Exception as e:
-            logger.error(f"Strategy evaluation failed: {e}")
-            raise
+        max_retries = 3
+        strategy_text = self._format_strategy_for_comparison(strategy)
+        
+        evaluation_prompt = get_template(
+            'strategic_evaluate_single',
+            context=context or "General strategic planning situation",
+            strategy_text=strategy_text
+        )
+        
+        for attempt in range(max_retries):
+            try:
+                # Get structured evaluation with retry logic
+                result = await self.analysis_agent.run(evaluation_prompt)
+                analysis = result.output
+                break
+                
+            except ValidationError as e:
+                logger.warning(f"Analysis validation failed (attempt {attempt + 1}/{max_retries}): {e}")
+                if attempt == max_retries - 1:
+                    # Last attempt failed, create fallback response
+                    logger.error("All analysis attempts failed, using fallback response")
+                    analysis = StrategyAnalysisResponse(
+                        overall_score=5.0,
+                        coherence_score=5.0,
+                        feasibility_score=5.0,
+                        risk_management_score=5.0,
+                        strategic_alignment_score=5.0,
+                        strengths=["Structured output validation failed"],
+                        weaknesses=["Unable to perform detailed analysis"],
+                        recommendations=["Retry evaluation with different model settings"]
+                    )
+                    break
+                await asyncio.sleep(0.5)
+        
+        return {
+            'strategy': strategy,
+            'overall_score': analysis.overall_score,
+            'coherence_score': analysis.coherence_score,
+            'feasibility_score': analysis.feasibility_score,
+            'risk_management_score': analysis.risk_management_score,
+            'strategic_alignment_score': analysis.strategic_alignment_score,
+            'strengths': analysis.strengths,
+            'weaknesses': analysis.weaknesses,
+            'recommendations': analysis.recommendations,
+            'evaluation_text': f"Score: {analysis.overall_score}/10. Strengths: {', '.join(analysis.strengths)}",  # For backward compatibility
+            'strategy_formatted': strategy_text,
+            'context': context
+        }
     
     def _format_strategy_for_comparison(self, strategy: StrategyChain) -> str:
         """Format a strategy for comparison prompt"""
@@ -146,21 +201,4 @@ class StrategyEvaluator:
         
         return "\n".join(lines)
     
-    def _parse_preference(self, evaluation_text: str) -> int:
-        """Parse the preferred strategy index from evaluation text"""
-        try:
-            # Look for "Preferred Strategy Index: N" pattern
-            if "Preferred Strategy Index: 1" in evaluation_text:
-                return 1
-            elif "Preferred Strategy Index: 2" in evaluation_text:
-                return 2
-            else:
-                # Fallback: count mentions of "Strategy 1" vs "Strategy 2" in positive context
-                strategy1_mentions = evaluation_text.lower().count("strategy 1")
-                strategy2_mentions = evaluation_text.lower().count("strategy 2")
-                return 1 if strategy1_mentions >= strategy2_mentions else 2
-                
-        except Exception as e:
-            logger.warning(f"Failed to parse preference, defaulting to strategy 1: {e}")
-            return 1
     
