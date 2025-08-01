@@ -48,10 +48,6 @@ class ImprovementSuggestion(BaseModel):
     strategic_alignment: Dict[str, float] = Field(default_factory=dict)
     risk_mitigation: List[str] = Field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary"""
-        return self.model_dump() if hasattr(self, "model_dump") else self.dict()
-
 
 class FeedbackAnalysis(BaseModel):
     """Analysis of strategy performance with improvement recommendations"""
@@ -535,7 +531,7 @@ class StrategyImprover:
                 "overall_score": feedback_analysis.current_metrics.strategic_metrics.overall_score(),
                 "strategic_compliance": feedback_analysis.current_metrics.strategic_compliance_score,
             },
-            "improvement_suggestions": [s.to_dict() for s in suggestions],
+            "improvement_suggestions": [s.model_dump(mode="json") for s in suggestions],
         }
 
     async def _generate_improved_strategy_llm(

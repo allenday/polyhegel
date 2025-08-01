@@ -311,7 +311,16 @@ pydantic>=1.8.0
         local_request = LocalRepoRequest(repo_path="/test/path", output_format="markdown")
 
         mock_local_content = "Mock local repository content from /test/path"
-        with patch("polyhegel.git_tools._use_git2md_local", return_value=mock_local_content):
+        with (
+            patch("polyhegel.git_tools._use_git2md_local", return_value=mock_local_content),
+            patch("pathlib.Path.exists", return_value=True),
+            patch("pathlib.Path.__truediv__") as mock_truediv,
+        ):
+            # Mock the .git directory check
+            mock_git_path = Mock()
+            mock_git_path.exists.return_value = True
+            mock_truediv.return_value = mock_git_path
+
             result = await LOCAL_REPO_TOOL.function(mock_context, local_request)
             assert "Mock local repository content" in result
 

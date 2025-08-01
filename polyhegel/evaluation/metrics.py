@@ -54,10 +54,6 @@ class StrategicMetrics(BaseModel):
             + self.resource_efficiency_score * weights["resource_efficiency"]
         )
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert metrics to dictionary for serialization"""
-        return self.model_dump() if hasattr(self, "model_dump") else self.dict()
-
 
 class MetricsCollector:
     """Collects and analyzes strategic metrics from simulation results"""

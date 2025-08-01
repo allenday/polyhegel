@@ -56,8 +56,8 @@ class ComparisonResult:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization"""
         return {
-            "clustering_metrics": [m.to_dict() for m in self.clustering_metrics],
-            "tournament_metrics": [m.to_dict() for m in self.tournament_metrics],
+            "clustering_metrics": [m.model_dump(mode="json") for m in self.clustering_metrics],
+            "tournament_metrics": [m.model_dump(mode="json") for m in self.tournament_metrics],
             "comparative_analysis": self.comparative_analysis,
             "test_configuration": asdict(self.test_configuration),
             "execution_summary": self.execution_summary,

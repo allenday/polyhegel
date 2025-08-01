@@ -423,13 +423,13 @@ class RecursiveRefinementEngine:
                 "estimated_timeline": session.best_strategy.strategy.estimated_timeline,
                 "resource_requirements": session.best_strategy.strategy.resource_requirements,
             },
-            "performance_history": [metrics.to_dict() for metrics in session.performance_history],
+            "performance_history": [metrics.model_dump(mode="json") for metrics in session.performance_history],
             "feedback_analyses": [
                 {
                     "generation": i,
                     "strengths": analysis.strengths,
                     "weaknesses": analysis.weaknesses,
-                    "improvement_suggestions": [s.to_dict() for s in analysis.improvement_suggestions],
+                    "improvement_suggestions": [s.model_dump(mode="json") for s in analysis.improvement_suggestions],
                     "should_continue": analysis.should_continue_refinement,
                     "refinement_priority": analysis.refinement_priority,
                 }

@@ -382,23 +382,27 @@ class TestStrategicMetrics:
 
         assert abs(metrics.overall_score() - expected) < 0.01
 
-    def test_metrics_to_dict(self):
-        """Test metrics conversion to dictionary"""
+    def test_metrics_pydantic_serialization(self):
+        """Test metrics Pydantic serialization"""
         metrics = StrategicMetrics(
             coherence_score=8.0, feasibility_score=7.5, selection_method="tournament", execution_time=45.0
         )
 
-        data = metrics.to_dict()
+        # Test Pydantic serialization
+        data = metrics.model_dump()
 
-        assert "strategic_scores" in data
-        assert "performance_metrics" in data
-        assert "metadata" in data
+        assert "coherence_score" in data
+        assert "feasibility_score" in data
+        assert "selection_method" in data
+        assert "execution_time" in data
 
-        assert data["strategic_scores"]["coherence"] == 8.0
-        assert data["strategic_scores"]["feasibility"] == 7.5
-        assert data["performance_metrics"]["execution_time"] == 45.0
-        assert data["metadata"]["selection_method"] == "tournament"
-        assert "overall" in data["strategic_scores"]
+        assert data["coherence_score"] == 8.0
+        assert data["feasibility_score"] == 7.5
+        assert data["execution_time"] == 45.0
+        assert data["selection_method"] == "tournament"
+
+        # Test overall score calculation
+        assert metrics.overall_score() > 0
 
 
 class TestIntegration:

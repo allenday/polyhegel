@@ -58,7 +58,7 @@ class RefinementMetrics(BaseModel):
         """Convert to dictionary for storage"""
         data = self.model_dump() if hasattr(self, "model_dump") else self.dict()
         data["timestamp"] = self.timestamp.isoformat()
-        data["strategic_metrics"] = self.strategic_metrics.to_dict()
+        data["strategic_metrics"] = self.strategic_metrics.model_dump(mode="json")
         return data
 
     @classmethod
@@ -108,7 +108,7 @@ class PerformanceTracker:
                 "trend_confidence": metrics.trend_confidence,
                 "evolution_velocity": metrics.evolution_velocity,
                 "roi_estimate": metrics.roi_estimate,
-                "strategic_metrics": metrics.strategic_metrics.to_dict(),
+                "strategic_metrics": metrics.strategic_metrics.model_dump(mode="json"),
             },
         )
 
