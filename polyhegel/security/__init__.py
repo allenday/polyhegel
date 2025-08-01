@@ -16,12 +16,12 @@ from .a2a_auth import (
     require_role,
     RateLimiter,
     get_rate_limiter,
-    rate_limit_dependency
+    rate_limit_dependency,
 )
 
 __all__ = [
     "AgentRole",
-    "Permission", 
+    "Permission",
     "AgentCredentials",
     "SecurityConfig",
     "A2AAuthManager",
@@ -31,5 +31,5 @@ __all__ = [
     "require_role",
     "RateLimiter",
     "get_rate_limiter",
-    "rate_limit_dependency"
+    "rate_limit_dependency",
 ]

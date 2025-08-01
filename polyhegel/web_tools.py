@@ -12,24 +12,28 @@ logger = logging.getLogger(__name__)
 
 class WebSearchRequest(BaseModel):
     """Request model for web search"""
+
     query: str = Field(description="Search query to execute")
     max_results: int = Field(default=5, description="Maximum number of results to return")
 
 
 class WebFetchRequest(BaseModel):
     """Request model for web fetch"""
+
     url: str = Field(description="URL to fetch content from")
 
 
 class WebSearchResult(BaseModel):
     """Result model for web search"""
+
     title: str
     url: str
     snippet: str
-    
+
 
 class WebFetchResult(BaseModel):
     """Result model for web fetch"""
+
     url: str
     content: str
     status_code: int
@@ -39,11 +43,11 @@ class WebFetchResult(BaseModel):
 async def web_search_tool(ctx, request: WebSearchRequest) -> str:
     """
     Search the web using DuckDuckGo
-    
+
     Args:
         ctx: Tool context
         request: Search request parameters
-        
+
     Returns:
         Formatted search results as string
     """
@@ -54,23 +58,23 @@ async def web_search_tool(ctx, request: WebSearchRequest) -> str:
         except ImportError:
             logger.warning("duckduckgo_search not available, using mock results")
             return f"Mock search results for: {request.query}\n[Install duckduckgo-search for real web search]"
-        
+
         # Perform search
         with DDGS() as ddgs:
             results = list(ddgs.text(request.query, max_results=request.max_results))
-        
+
         if not results:
             return f"No search results found for: {request.query}"
-        
+
         # Format results
         formatted_results = [f"Search results for: {request.query}\n"]
         for i, result in enumerate(results, 1):
             formatted_results.append(f"{i}. {result.get('title', 'No title')}")
             formatted_results.append(f"   URL: {result.get('href', 'No URL')}")
             formatted_results.append(f"   {result.get('body', 'No snippet')}\n")
-        
+
         return "\n".join(formatted_results)
-        
+
     except Exception as e:
         logger.error(f"Web search failed: {e}")
         return f"Web search failed: {str(e)}"
@@ -79,22 +83,22 @@ async def web_search_tool(ctx, request: WebSearchRequest) -> str:
 async def web_fetch_tool(ctx, request: WebFetchRequest) -> str:
     """
     Fetch content from a URL
-    
+
     Args:
         ctx: Tool context
         request: Fetch request parameters
-        
+
     Returns:
         Fetched content as string
     """
     try:
         import aiohttp
-        
+
         async with aiohttp.ClientSession() as session:
             async with session.get(
                 request.url,
                 timeout=aiohttp.ClientTimeout(total=30),
-                headers={'User-Agent': 'Polyhegel/1.0 Strategic Simulator'}
+                headers={"User-Agent": "Polyhegel/1.0 Strategic Simulator"},
             ) as response:
                 if response.status == 200:
                     content = await response.text()
@@ -104,7 +108,7 @@ async def web_fetch_tool(ctx, request: WebFetchRequest) -> str:
                     return f"Content from {request.url}:\n\n{content}"
                 else:
                     return f"Failed to fetch {request.url}: HTTP {response.status}"
-                    
+
     except ImportError:
         logger.warning("aiohttp not available, using mock fetch")
         return f"Mock content from {request.url}\n[Install aiohttp for real web fetch]"

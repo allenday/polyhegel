@@ -16,20 +16,22 @@ from dataclasses import dataclass
 
 class StrategyDomain(Enum):
     """Strategic domain categories"""
+
     RESOURCE_ACQUISITION = "resource_acquisition"
-    STRATEGIC_SECURITY = "strategic_security"  
+    STRATEGIC_SECURITY = "strategic_security"
     VALUE_CATALYSIS = "value_catalysis"
 
 
 @dataclass
 class StrategicTechnique:
     """Represents a strategic technique with metadata"""
+
     name: str
     description: str
     domain: StrategyDomain
     use_cases: List[str]
     complexity: str  # "low", "medium", "high"
-    timeframe: str   # "immediate", "short-term", "long-term"
+    timeframe: str  # "immediate", "short-term", "long-term"
 
 
 # Resource Acquisition Techniques
@@ -41,10 +43,10 @@ RESOURCE_ACQUISITION_TECHNIQUES = [
         use_cases=[
             "Securing funding from multiple investor types",
             "Building coalitions for resource sharing",
-            "Aligning diverse organizational priorities"
+            "Aligning diverse organizational priorities",
         ],
         complexity="medium",
-        timeframe="short-term"
+        timeframe="short-term",
     ),
     StrategicTechnique(
         name="Incremental Resource Bootstrap",
@@ -53,10 +55,10 @@ RESOURCE_ACQUISITION_TECHNIQUES = [
         use_cases=[
             "Bootstrapping with limited initial capital",
             "Building proof-of-concept before major investment",
-            "Scaling resource acquisition based on demonstrated value"
+            "Scaling resource acquisition based on demonstrated value",
         ],
         complexity="low",
-        timeframe="immediate"
+        timeframe="immediate",
     ),
     StrategicTechnique(
         name="Multi-Channel Resource Diversification",
@@ -65,10 +67,10 @@ RESOURCE_ACQUISITION_TECHNIQUES = [
         use_cases=[
             "Revenue diversification strategies",
             "Multiple funding source coordination",
-            "Resource redundancy for critical operations"
+            "Resource redundancy for critical operations",
         ],
         complexity="high",
-        timeframe="long-term"
+        timeframe="long-term",
     ),
     StrategicTechnique(
         name="Strategic Resource Pooling",
@@ -77,10 +79,10 @@ RESOURCE_ACQUISITION_TECHNIQUES = [
         use_cases=[
             "Consortium-based resource sharing",
             "Collaborative infrastructure development",
-            "Joint procurement and cost reduction"
+            "Joint procurement and cost reduction",
         ],
         complexity="medium",
-        timeframe="short-term"
+        timeframe="short-term",
     ),
     StrategicTechnique(
         name="Value-Based Resource Exchange",
@@ -89,11 +91,11 @@ RESOURCE_ACQUISITION_TECHNIQUES = [
         use_cases=[
             "Skill-based bartering arrangements",
             "Intellectual property licensing deals",
-            "Strategic partnership value exchanges"
+            "Strategic partnership value exchanges",
         ],
         complexity="medium",
-        timeframe="immediate"
-    )
+        timeframe="immediate",
+    ),
 ]
 
 # Strategic Security Techniques
@@ -105,10 +107,10 @@ STRATEGIC_SECURITY_TECHNIQUES = [
         use_cases=[
             "Information security frameworks",
             "Supply chain risk mitigation",
-            "Operational continuity planning"
+            "Operational continuity planning",
         ],
         complexity="high",
-        timeframe="long-term"
+        timeframe="long-term",
     ),
     StrategicTechnique(
         name="Transparent Accountability Systems",
@@ -117,10 +119,10 @@ STRATEGIC_SECURITY_TECHNIQUES = [
         use_cases=[
             "Governance transparency initiatives",
             "Public audit and oversight mechanisms",
-            "Stakeholder accountability frameworks"
+            "Stakeholder accountability frameworks",
         ],
         complexity="medium",
-        timeframe="short-term"
+        timeframe="short-term",
     ),
     StrategicTechnique(
         name="Distributed Authority Networks",
@@ -129,10 +131,10 @@ STRATEGIC_SECURITY_TECHNIQUES = [
         use_cases=[
             "Decentralized organizational structures",
             "Multi-party consensus mechanisms",
-            "Distributed governance models"
+            "Distributed governance models",
         ],
         complexity="high",
-        timeframe="long-term"
+        timeframe="long-term",
     ),
     StrategicTechnique(
         name="Adaptive Threat Response",
@@ -141,10 +143,10 @@ STRATEGIC_SECURITY_TECHNIQUES = [
         use_cases=[
             "Cybersecurity threat intelligence",
             "Market competition response systems",
-            "Regulatory compliance adaptation"
+            "Regulatory compliance adaptation",
         ],
         complexity="high",
-        timeframe="immediate"
+        timeframe="immediate",
     ),
     StrategicTechnique(
         name="Community-Based Security",
@@ -153,11 +155,11 @@ STRATEGIC_SECURITY_TECHNIQUES = [
         use_cases=[
             "Industry security standards cooperation",
             "Mutual aid and disaster response",
-            "Collective threat intelligence sharing"
+            "Collective threat intelligence sharing",
         ],
         complexity="medium",
-        timeframe="short-term"
-    )
+        timeframe="short-term",
+    ),
 ]
 
 # Value Catalysis Techniques
@@ -166,13 +168,9 @@ VALUE_CATALYSIS_TECHNIQUES = [
         name="Exponential Value Creation",
         description="Design systems where value creation accelerates rather than scales linearly",
         domain=StrategyDomain.VALUE_CATALYSIS,
-        use_cases=[
-            "Network effect business models",
-            "Compounding knowledge systems",
-            "Viral growth mechanisms"
-        ],
+        use_cases=["Network effect business models", "Compounding knowledge systems", "Viral growth mechanisms"],
         complexity="high",
-        timeframe="long-term"
+        timeframe="long-term",
     ),
     StrategicTechnique(
         name="Cross-Pollination Innovation",
@@ -181,10 +179,10 @@ VALUE_CATALYSIS_TECHNIQUES = [
         use_cases=[
             "Interdisciplinary research initiatives",
             "Cross-industry solution adaptation",
-            "Hybrid technology development"
+            "Hybrid technology development",
         ],
         complexity="medium",
-        timeframe="short-term"
+        timeframe="short-term",
     ),
     StrategicTechnique(
         name="Stakeholder Value Optimization",
@@ -193,10 +191,10 @@ VALUE_CATALYSIS_TECHNIQUES = [
         use_cases=[
             "Multi-stakeholder platform design",
             "Ecosystem value creation strategies",
-            "Collaborative value chain optimization"
+            "Collaborative value chain optimization",
         ],
         complexity="high",
-        timeframe="long-term"
+        timeframe="long-term",
     ),
     StrategicTechnique(
         name="Iterative Value Discovery",
@@ -205,10 +203,10 @@ VALUE_CATALYSIS_TECHNIQUES = [
         use_cases=[
             "Lean startup methodologies",
             "A/B testing for strategic decisions",
-            "Rapid prototyping and validation"
+            "Rapid prototyping and validation",
         ],
         complexity="medium",
-        timeframe="immediate"
+        timeframe="immediate",
     ),
     StrategicTechnique(
         name="Collective Intelligence Amplification",
@@ -217,44 +215,38 @@ VALUE_CATALYSIS_TECHNIQUES = [
         use_cases=[
             "Crowdsourcing and collective problem-solving",
             "Collaborative knowledge management",
-            "Swarm intelligence applications"
+            "Swarm intelligence applications",
         ],
         complexity="medium",
-        timeframe="short-term"
-    )
+        timeframe="short-term",
+    ),
 ]
 
 # All techniques combined
-ALL_TECHNIQUES = (
-    RESOURCE_ACQUISITION_TECHNIQUES + 
-    STRATEGIC_SECURITY_TECHNIQUES + 
-    VALUE_CATALYSIS_TECHNIQUES
-)
+ALL_TECHNIQUES = RESOURCE_ACQUISITION_TECHNIQUES + STRATEGIC_SECURITY_TECHNIQUES + VALUE_CATALYSIS_TECHNIQUES
 
 # Technique lookup by name
-TECHNIQUE_REGISTRY: Dict[str, StrategicTechnique] = {
-    technique.name: technique for technique in ALL_TECHNIQUES
-}
+TECHNIQUE_REGISTRY: Dict[str, StrategicTechnique] = {technique.name: technique for technique in ALL_TECHNIQUES}
 
 # Techniques by domain
 TECHNIQUES_BY_DOMAIN: Dict[StrategyDomain, List[StrategicTechnique]] = {
     StrategyDomain.RESOURCE_ACQUISITION: RESOURCE_ACQUISITION_TECHNIQUES,
     StrategyDomain.STRATEGIC_SECURITY: STRATEGIC_SECURITY_TECHNIQUES,
-    StrategyDomain.VALUE_CATALYSIS: VALUE_CATALYSIS_TECHNIQUES
+    StrategyDomain.VALUE_CATALYSIS: VALUE_CATALYSIS_TECHNIQUES,
 }
 
 # Techniques by complexity
 TECHNIQUES_BY_COMPLEXITY: Dict[str, List[StrategicTechnique]] = {
     "low": [t for t in ALL_TECHNIQUES if t.complexity == "low"],
-    "medium": [t for t in ALL_TECHNIQUES if t.complexity == "medium"], 
-    "high": [t for t in ALL_TECHNIQUES if t.complexity == "high"]
+    "medium": [t for t in ALL_TECHNIQUES if t.complexity == "medium"],
+    "high": [t for t in ALL_TECHNIQUES if t.complexity == "high"],
 }
 
 # Techniques by timeframe
 TECHNIQUES_BY_TIMEFRAME: Dict[str, List[StrategicTechnique]] = {
     "immediate": [t for t in ALL_TECHNIQUES if t.timeframe == "immediate"],
     "short-term": [t for t in ALL_TECHNIQUES if t.timeframe == "short-term"],
-    "long-term": [t for t in ALL_TECHNIQUES if t.timeframe == "long-term"]
+    "long-term": [t for t in ALL_TECHNIQUES if t.timeframe == "long-term"],
 }
 
 
@@ -282,34 +274,34 @@ def get_recommended_techniques(
     domain: Optional[StrategyDomain] = None,
     complexity: Optional[str] = None,
     timeframe: Optional[str] = None,
-    limit: Optional[int] = None
+    limit: Optional[int] = None,
 ) -> List[StrategicTechnique]:
     """
     Get recommended techniques based on filtering criteria
-    
+
     Args:
         domain: Filter by strategy domain (optional)
         complexity: Filter by complexity level (optional)
         timeframe: Filter by timeframe (optional)
         limit: Maximum number of techniques to return (optional)
-    
+
     Returns:
         List of matching strategic techniques
     """
     techniques = ALL_TECHNIQUES
-    
+
     if domain:
         techniques = [t for t in techniques if t.domain == domain]
-    
+
     if complexity:
         techniques = [t for t in techniques if t.complexity == complexity]
-        
+
     if timeframe:
         techniques = [t for t in techniques if t.timeframe == timeframe]
-    
+
     if limit:
         techniques = techniques[:limit]
-        
+
     return techniques
 
 
@@ -329,13 +321,13 @@ def get_techniques_prompt_text(
     domain: Optional[StrategyDomain] = None,
     complexity: Optional[str] = None,
     timeframe: Optional[str] = None,
-    limit: int = 3
+    limit: int = 3,
 ) -> str:
     """Generate formatted text of techniques for LLM prompts"""
     techniques = get_recommended_techniques(domain, complexity, timeframe, limit)
-    
+
     if not techniques:
         return "No techniques match the specified criteria."
-    
+
     technique_texts = [format_technique_for_prompt(t) for t in techniques]
     return "\n\n".join(technique_texts)

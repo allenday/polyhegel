@@ -6,8 +6,7 @@ both web and git tools during strategy generation workflows.
 """
 
 import pytest
-import asyncio
-from unittest.mock import Mock, patch, AsyncMock
+from unittest.mock import patch
 from pydantic_ai.models.test import TestModel
 
 from polyhegel.strategy_generator import StrategyGenerator
@@ -31,32 +30,34 @@ class TestStrategyGenerationWithTools:
         generator = StrategyGenerator(mock_model)
         # Re-enable tools for integration testing
         from pydantic_ai import Agent
+
         generator.agent = Agent(
             mock_model,
             output_type=GenesisStrategy,
             system_prompt=generator.system_prompt,
-            tools=[WEB_SEARCH_TOOL, WEB_FETCH_TOOL, GIT_REPO_TOOL, LOCAL_REPO_TOOL]
+            tools=[WEB_SEARCH_TOOL, WEB_FETCH_TOOL, GIT_REPO_TOOL, LOCAL_REPO_TOOL],
         )
         return generator
 
-    @pytest.fixture 
+    @pytest.fixture
     def enhanced_strategy_evaluator(self, mock_model):
         """Create strategy evaluator with tools enabled"""
         evaluator = StrategyEvaluator(mock_model)
         # Add tools to evaluator
         from pydantic_ai import Agent
+
         evaluator.agent = Agent(
             mock_model,
             output_type=str,
             system_prompt=evaluator.system_prompt,
-            tools=[WEB_SEARCH_TOOL, WEB_FETCH_TOOL, GIT_REPO_TOOL, LOCAL_REPO_TOOL]
+            tools=[WEB_SEARCH_TOOL, WEB_FETCH_TOOL, GIT_REPO_TOOL, LOCAL_REPO_TOOL],
         )
         return evaluator
 
     @pytest.mark.asyncio
     async def test_strategy_generation_with_web_research(self, enhanced_strategy_generator):
         """Test strategy generation that incorporates web research"""
-        
+
         # Mock web search results
         search_results = """Search results for: cloud migration best practices 2024
 
@@ -72,7 +73,7 @@ class TestStrategyGenerationWithTools:
    URL: https://example.com/security-checklist
    Essential security considerations for safe cloud migration processes
 """
-        
+
         # Mock web fetch results
         detailed_guide = """Content from https://aws.amazon.com/cloud-migration/:
 
@@ -99,49 +100,40 @@ class TestStrategyGenerationWithTools:
 - Cost optimization
 """
 
-        with patch.object(WEB_SEARCH_TOOL.function, '__call__', return_value=search_results), \
-             patch.object(WEB_FETCH_TOOL.function, '__call__', return_value=detailed_guide):
-            
+        with (
+            patch.object(WEB_SEARCH_TOOL.function, "__call__", return_value=search_results),
+            patch.object(WEB_FETCH_TOOL.function, "__call__", return_value=detailed_guide),
+        ):
+
             # Configure model to use web tools and generate strategy
-            enhanced_strategy_generator.agent.model.add_sequence([
-                {
-                    'role': 'user',
-                    'content': 'Generate a cloud migration strategy. Research current best practices first.'
-                },
-                {
-                    'role': 'assistant',
-                    'content': 'I\'ll research current cloud migration best practices.',
-                    'tool_calls': [{
-                        'tool_name': 'web_search_tool',
-                        'args': {
-                            'query': 'cloud migration best practices 2024',
-                            'max_results': 5
-                        }
-                    }]
-                },
-                {
-                    'role': 'tool',
-                    'tool_name': 'web_search_tool',
-                    'content': search_results
-                },
-                {
-                    'role': 'assistant',
-                    'content': 'Let me get more detailed information from the AWS framework.',
-                    'tool_calls': [{
-                        'tool_name': 'web_fetch_tool',
-                        'args': {
-                            'url': 'https://aws.amazon.com/cloud-migration/'
-                        }
-                    }]
-                },
-                {
-                    'role': 'tool',
-                    'tool_name': 'web_fetch_tool',
-                    'content': detailed_guide
-                },
-                {
-                    'role': 'assistant',
-                    'content': '''Based on my research of current cloud migration best practices, here's a comprehensive strategy:
+            enhanced_strategy_generator.agent.model.add_sequence(
+                [
+                    {
+                        "role": "user",
+                        "content": "Generate a cloud migration strategy. Research current best practices first.",
+                    },
+                    {
+                        "role": "assistant",
+                        "content": "I'll research current cloud migration best practices.",
+                        "tool_calls": [
+                            {
+                                "tool_name": "web_search_tool",
+                                "args": {"query": "cloud migration best practices 2024", "max_results": 5},
+                            }
+                        ],
+                    },
+                    {"role": "tool", "tool_name": "web_search_tool", "content": search_results},
+                    {
+                        "role": "assistant",
+                        "content": "Let me get more detailed information from the AWS framework.",
+                        "tool_calls": [
+                            {"tool_name": "web_fetch_tool", "args": {"url": "https://aws.amazon.com/cloud-migration/"}}
+                        ],
+                    },
+                    {"role": "tool", "tool_name": "web_fetch_tool", "content": detailed_guide},
+                    {
+                        "role": "assistant",
+                        "content": """Based on my research of current cloud migration best practices, here's a comprehensive strategy:
 
 {
   "title": "Enterprise Cloud Migration Strategy 2024",
@@ -190,16 +182,17 @@ class TestStrategyGenerationWithTools:
     "innovation_enablement": 8.0,
     "security_posture": 9.5
   }
-}'''
-                }
-            ])
-            
+}""",
+                    },
+                ]
+            )
+
             # Generate strategy using the enhanced generator
             chains = await enhanced_strategy_generator.generate_strategies(
                 temperature_counts=[(0.7, 1)],
-                user_prompt="Generate a cloud migration strategy. Research current best practices first."
+                user_prompt="Generate a cloud migration strategy. Research current best practices first.",
             )
-            
+
             assert len(chains) == 1
             strategy = chains[0].strategy
             assert "cloud migration" in strategy.title.lower()
@@ -210,7 +203,7 @@ class TestStrategyGenerationWithTools:
     @pytest.mark.asyncio
     async def test_strategy_generation_with_codebase_analysis(self, enhanced_strategy_generator):
         """Test strategy generation that analyzes existing codebases"""
-        
+
         # Mock repository analysis
         repo_analysis = """Repository content from https://github.com/company/legacy-app:
 
@@ -237,33 +230,32 @@ Large Django application with 50+ models, complex business logic.
 - Container deployment readiness assessment needed
 """
 
-        with patch.object(GIT_REPO_TOOL.function, '__call__', return_value=repo_analysis):
-            
-            enhanced_strategy_generator.agent.model.add_sequence([
-                {
-                    'role': 'user',
-                    'content': 'Generate a legacy system modernization strategy. Analyze our current codebase at https://github.com/company/legacy-app first.'
-                },
-                {
-                    'role': 'assistant',
-                    'content': 'I\'ll analyze the legacy codebase to understand the current architecture.',
-                    'tool_calls': [{
-                        'tool_name': 'git_repo_to_md_tool',
-                        'args': {
-                            'repo_url': 'https://github.com/company/legacy-app',
-                            'output_format': 'markdown',
-                            'include_structure': True
-                        }
-                    }]
-                },
-                {
-                    'role': 'tool',
-                    'tool_name': 'git_repo_to_md_tool',
-                    'content': repo_analysis
-                },
-                {
-                    'role': 'assistant',
-                    'content': '''Based on the codebase analysis, here's a modernization strategy:
+        with patch.object(GIT_REPO_TOOL.function, "__call__", return_value=repo_analysis):
+
+            enhanced_strategy_generator.agent.model.add_sequence(
+                [
+                    {
+                        "role": "user",
+                        "content": "Generate a legacy system modernization strategy. Analyze our current codebase at https://github.com/company/legacy-app first.",
+                    },
+                    {
+                        "role": "assistant",
+                        "content": "I'll analyze the legacy codebase to understand the current architecture.",
+                        "tool_calls": [
+                            {
+                                "tool_name": "git_repo_to_md_tool",
+                                "args": {
+                                    "repo_url": "https://github.com/company/legacy-app",
+                                    "output_format": "markdown",
+                                    "include_structure": True,
+                                },
+                            }
+                        ],
+                    },
+                    {"role": "tool", "tool_name": "git_repo_to_md_tool", "content": repo_analysis},
+                    {
+                        "role": "assistant",
+                        "content": """Based on the codebase analysis, here's a modernization strategy:
 
 {
   "title": "Legacy System Modernization Strategy",
@@ -312,15 +304,16 @@ Large Django application with 50+ models, complex business logic.
     "security": 9.5,
     "developer_productivity": 8.0
   }
-}'''
-                }
-            ])
-            
+}""",
+                    },
+                ]
+            )
+
             chains = await enhanced_strategy_generator.generate_strategies(
                 temperature_counts=[(0.7, 1)],
-                user_prompt="Generate a legacy system modernization strategy. Analyze our current codebase at https://github.com/company/legacy-app first."
+                user_prompt="Generate a legacy system modernization strategy. Analyze our current codebase at https://github.com/company/legacy-app first.",
             )
-            
+
             assert len(chains) == 1
             strategy = chains[0].strategy
             assert "modernization" in strategy.title.lower()
@@ -331,7 +324,7 @@ Large Django application with 50+ models, complex business logic.
     @pytest.mark.asyncio
     async def test_strategy_evaluation_with_research(self, enhanced_strategy_evaluator):
         """Test strategy evaluation that incorporates external research"""
-        
+
         # Create mock strategies for comparison
         strategy1 = StrategyChain(
             strategy=GenesisStrategy(
@@ -339,24 +332,24 @@ Large Django application with 50+ models, complex business logic.
                 steps=[],
                 estimated_timeline="6 months",
                 resource_requirements=["DevOps team", "Training"],
-                alignment_score={"scalability": 9.0, "complexity": 7.0}
+                alignment_score={"scalability": 9.0, "complexity": 7.0},
             ),
             source_sample=1,
-            temperature=0.7
+            temperature=0.7,
         )
-        
+
         strategy2 = StrategyChain(
             strategy=GenesisStrategy(
-                title="Docker Swarm Migration Strategy", 
+                title="Docker Swarm Migration Strategy",
                 steps=[],
                 estimated_timeline="3 months",
                 resource_requirements=["DevOps team"],
-                alignment_score={"scalability": 7.0, "complexity": 5.0}
+                alignment_score={"scalability": 7.0, "complexity": 5.0},
             ),
             source_sample=2,
-            temperature=0.7
+            temperature=0.7,
         )
-        
+
         # Mock research results
         k8s_research = """Search results for: kubernetes vs docker swarm 2024
 
@@ -368,7 +361,7 @@ Large Django application with 50+ models, complex business logic.
    URL: https://example.com/k8s-production
    Real-world experiences and best practices from enterprise Kubernetes deployments
 """
-        
+
         comparison_details = """Content from https://example.com/k8s-swarm-comparison:
 
 # Kubernetes vs Docker Swarm 2024
@@ -394,48 +387,39 @@ Large Django application with 50+ models, complex business logic.
 - Docker Swarm maintenance mode concerns
 """
 
-        with patch.object(WEB_SEARCH_TOOL.function, '__call__', return_value=k8s_research), \
-             patch.object(WEB_FETCH_TOOL.function, '__call__', return_value=comparison_details):
-            
-            enhanced_strategy_evaluator.agent.model.add_sequence([
-                {
-                    'role': 'user',
-                    'content': 'Compare these container orchestration strategies. Research current market trends first.'
-                },
-                {
-                    'role': 'assistant',
-                    'content': 'I\'ll research current container orchestration trends to inform the comparison.',
-                    'tool_calls': [{
-                        'tool_name': 'web_search_tool',
-                        'args': {
-                            'query': 'kubernetes vs docker swarm 2024',
-                            'max_results': 3
-                        }
-                    }]
-                },
-                {
-                    'role': 'tool',
-                    'tool_name': 'web_search_tool',
-                    'content': k8s_research
-                },
-                {
-                    'role': 'assistant',
-                    'content': 'Let me get detailed comparison information.',
-                    'tool_calls': [{
-                        'tool_name': 'web_fetch_tool',
-                        'args': {
-                            'url': 'https://example.com/k8s-swarm-comparison'
-                        }
-                    }]
-                },
-                {
-                    'role': 'tool',
-                    'tool_name': 'web_fetch_tool',
-                    'content': comparison_details
-                },
-                {
-                    'role': 'assistant',
-                    'content': '''Based on current market research and platform comparison:
+        with (
+            patch.object(WEB_SEARCH_TOOL.function, "__call__", return_value=k8s_research),
+            patch.object(WEB_FETCH_TOOL.function, "__call__", return_value=comparison_details),
+        ):
+
+            enhanced_strategy_evaluator.agent.model.add_sequence(
+                [
+                    {
+                        "role": "user",
+                        "content": "Compare these container orchestration strategies. Research current market trends first.",
+                    },
+                    {
+                        "role": "assistant",
+                        "content": "I'll research current container orchestration trends to inform the comparison.",
+                        "tool_calls": [
+                            {
+                                "tool_name": "web_search_tool",
+                                "args": {"query": "kubernetes vs docker swarm 2024", "max_results": 3},
+                            }
+                        ],
+                    },
+                    {"role": "tool", "tool_name": "web_search_tool", "content": k8s_research},
+                    {
+                        "role": "assistant",
+                        "content": "Let me get detailed comparison information.",
+                        "tool_calls": [
+                            {"tool_name": "web_fetch_tool", "args": {"url": "https://example.com/k8s-swarm-comparison"}}
+                        ],
+                    },
+                    {"role": "tool", "tool_name": "web_fetch_tool", "content": comparison_details},
+                    {
+                        "role": "assistant",
+                        "content": """Based on current market research and platform comparison:
 
 **Strategy Evaluation: Kubernetes vs Docker Swarm**
 
@@ -457,25 +441,26 @@ Large Django application with 50+ models, complex business logic.
 
 **Reasoning**: While Docker Swarm offers simplicity, current market trends strongly favor Kubernetes for enterprise deployments. The 85% market adoption rate and active ecosystem development make Kubernetes the more strategic choice despite higher initial complexity.
 
-**Preferred Strategy Index: 1**'''
-                }
-            ])
-            
-            result = await enhanced_strategy_evaluator.compare_strategies(
-                strategy1,
-                strategy2,
-                context="Container orchestration platform selection for enterprise deployment"
+**Preferred Strategy Index: 1**""",
+                    },
+                ]
             )
-            
-            assert result['preferred_strategy'] == 1
-            assert "kubernetes" in result['evaluation_text'].lower()
-            assert "market" in result['evaluation_text'].lower()
-            assert "85%" in result['evaluation_text']
+
+            result = await enhanced_strategy_evaluator.compare_strategies(
+                strategy1, strategy2, context="Container orchestration platform selection for enterprise deployment"
+            )
+
+            assert result["preferred_strategy"] == 1
+            assert "kubernetes" in result["evaluation_text"].lower()
+            assert "market" in result["evaluation_text"].lower()
+            assert "85%" in result["evaluation_text"]
 
     @pytest.mark.asyncio
-    async def test_end_to_end_strategy_workflow_with_tools(self, enhanced_strategy_generator, enhanced_strategy_evaluator):
+    async def test_end_to_end_strategy_workflow_with_tools(
+        self, enhanced_strategy_generator, enhanced_strategy_evaluator
+    ):
         """Test complete strategy workflow using multiple tools"""
-        
+
         # Mock comprehensive research and analysis
         market_research = """Search results for: digital transformation trends 2024
 
@@ -487,7 +472,7 @@ Large Django application with 50+ models, complex business logic.
    URL: https://example.com/ai-survey-2024  
    Latest statistics on AI adoption in enterprise environments
 """
-        
+
         detailed_report = """Content from https://example.com/dt-report-2024:
 
 # Digital Transformation Report 2024
@@ -539,61 +524,55 @@ Modern cloud-native platform with microservices architecture.
 - 15+ countries deployment
 """
 
-        with patch.object(WEB_SEARCH_TOOL.function, '__call__', return_value=market_research), \
-             patch.object(WEB_FETCH_TOOL.function, '__call__', return_value=detailed_report), \
-             patch.object(GIT_REPO_TOOL.function, '__call__', return_value=competitor_analysis):
-            
+        with (
+            patch.object(WEB_SEARCH_TOOL.function, "__call__", return_value=market_research),
+            patch.object(WEB_FETCH_TOOL.function, "__call__", return_value=detailed_report),
+            patch.object(GIT_REPO_TOOL.function, "__call__", return_value=competitor_analysis),
+        ):
+
             # Step 1: Generate strategy with research
-            enhanced_strategy_generator.agent.model.add_sequence([
-                {
-                    'role': 'user',
-                    'content': 'Generate a digital transformation strategy. Research market trends and analyze competitor platform at https://github.com/competitor/platform.'
-                },
-                {
-                    'role': 'assistant',
-                    'content': 'I\'ll research digital transformation trends first.',
-                    'tool_calls': [{
-                        'tool_name': 'web_search_tool',
-                        'args': {'query': 'digital transformation trends 2024', 'max_results': 5}
-                    }]
-                },
-                {
-                    'role': 'tool',
-                    'tool_name': 'web_search_tool',
-                    'content': market_research
-                },
-                {
-                    'role': 'assistant',
-                    'content': 'Now let me get detailed market data.',
-                    'tool_calls': [{
-                        'tool_name': 'web_fetch_tool',
-                        'args': {'url': 'https://example.com/dt-report-2024'}
-                    }]
-                },
-                {
-                    'role': 'tool',
-                    'tool_name': 'web_fetch_tool',
-                    'content': detailed_report
-                },
-                {
-                    'role': 'assistant',
-                    'content': 'Let me analyze the competitor platform architecture.',
-                    'tool_calls': [{
-                        'tool_name': 'git_repo_to_md_tool',
-                        'args': {
-                            'repo_url': 'https://github.com/competitor/platform',
-                            'output_format': 'markdown'
-                        }
-                    }]
-                },
-                {
-                    'role': 'tool',
-                    'tool_name': 'git_repo_to_md_tool',
-                    'content': competitor_analysis
-                },
-                {
-                    'role': 'assistant',
-                    'content': '''Based on comprehensive market research and competitive analysis:
+            enhanced_strategy_generator.agent.model.add_sequence(
+                [
+                    {
+                        "role": "user",
+                        "content": "Generate a digital transformation strategy. Research market trends and analyze competitor platform at https://github.com/competitor/platform.",
+                    },
+                    {
+                        "role": "assistant",
+                        "content": "I'll research digital transformation trends first.",
+                        "tool_calls": [
+                            {
+                                "tool_name": "web_search_tool",
+                                "args": {"query": "digital transformation trends 2024", "max_results": 5},
+                            }
+                        ],
+                    },
+                    {"role": "tool", "tool_name": "web_search_tool", "content": market_research},
+                    {
+                        "role": "assistant",
+                        "content": "Now let me get detailed market data.",
+                        "tool_calls": [
+                            {"tool_name": "web_fetch_tool", "args": {"url": "https://example.com/dt-report-2024"}}
+                        ],
+                    },
+                    {"role": "tool", "tool_name": "web_fetch_tool", "content": detailed_report},
+                    {
+                        "role": "assistant",
+                        "content": "Let me analyze the competitor platform architecture.",
+                        "tool_calls": [
+                            {
+                                "tool_name": "git_repo_to_md_tool",
+                                "args": {
+                                    "repo_url": "https://github.com/competitor/platform",
+                                    "output_format": "markdown",
+                                },
+                            }
+                        ],
+                    },
+                    {"role": "tool", "tool_name": "git_repo_to_md_tool", "content": competitor_analysis},
+                    {
+                        "role": "assistant",
+                        "content": """Based on comprehensive market research and competitive analysis:
 
 {
   "title": "Enterprise Digital Transformation Strategy 2024",
@@ -642,16 +621,17 @@ Modern cloud-native platform with microservices architecture.
     "customer_satisfaction": 8.5,
     "innovation_capability": 9.0
   }
-}'''
-                }
-            ])
-            
+}""",
+                    },
+                ]
+            )
+
             # Generate the strategy
             strategies = await enhanced_strategy_generator.generate_strategies(
                 temperature_counts=[(0.7, 1)],
-                user_prompt="Generate a digital transformation strategy. Research market trends and analyze competitor platform at https://github.com/competitor/platform."
+                user_prompt="Generate a digital transformation strategy. Research market trends and analyze competitor platform at https://github.com/competitor/platform.",
             )
-            
+
             # Verify strategy incorporates research insights
             assert len(strategies) == 1
             strategy = strategies[0]
@@ -660,16 +640,17 @@ Modern cloud-native platform with microservices architecture.
             assert any("cloud" in step.action.lower() for step in strategy.strategy.steps)
             assert any("api" in step.action.lower() for step in strategy.strategy.steps)
             assert any("ai" in step.action.lower() for step in strategy.strategy.steps)
-            
+
             # Step 2: Evaluate the strategy with additional research
-            enhanced_strategy_evaluator.agent.model.add_sequence([
-                {
-                    'role': 'user',
-                    'content': 'Evaluate this digital transformation strategy for feasibility and market alignment.'
-                },
-                {
-                    'role': 'assistant',
-                    'content': '''Strategy Evaluation: Enterprise Digital Transformation Strategy 2024
+            enhanced_strategy_evaluator.agent.model.add_sequence(
+                [
+                    {
+                        "role": "user",
+                        "content": "Evaluate this digital transformation strategy for feasibility and market alignment.",
+                    },
+                    {
+                        "role": "assistant",
+                        "content": """Strategy Evaluation: Enterprise Digital Transformation Strategy 2024
 
 **Strategic Viability: 9.0/10**
 - Well-aligned with market trends (78% of enterprises accelerating digital initiatives)
@@ -702,24 +683,24 @@ This strategy demonstrates strong market alignment and technical feasibility. Th
 **Recommendations:**
 - Consider parallel workstreams to accelerate timeline
 - Ensure change management resources are adequate
-- Plan for continuous competitor monitoring during execution'''
-                }
-            ])
-            
-            evaluation = await enhanced_strategy_evaluator.evaluate_strategy(
-                strategy,
-                context="Enterprise seeking competitive advantage through digital transformation"
+- Plan for continuous competitor monitoring during execution""",
+                    },
+                ]
             )
-            
-            assert "viability" in evaluation['evaluation_text'].lower()
-            assert "8" in evaluation['evaluation_text'] or "9" in evaluation['evaluation_text']  # Scores
-            assert "market" in evaluation['evaluation_text'].lower()
-            assert "competitive" in evaluation['evaluation_text'].lower()
 
-    @pytest.mark.asyncio 
+            evaluation = await enhanced_strategy_evaluator.evaluate_strategy(
+                strategy, context="Enterprise seeking competitive advantage through digital transformation"
+            )
+
+            assert "viability" in evaluation["evaluation_text"].lower()
+            assert "8" in evaluation["evaluation_text"] or "9" in evaluation["evaluation_text"]  # Scores
+            assert "market" in evaluation["evaluation_text"].lower()
+            assert "competitive" in evaluation["evaluation_text"].lower()
+
+    @pytest.mark.asyncio
     async def test_tool_usage_in_strategy_techniques(self, enhanced_strategy_generator):
         """Test that strategic techniques can leverage web and git tools"""
-        
+
         technique_research = """Search results for: blue ocean strategy examples 2024
 
 1. Blue Ocean Strategy Success Stories
@@ -730,33 +711,29 @@ This strategy demonstrates strong market alignment and technical feasibility. Th
    URL: https://example.com/market-disruption
    Analysis of industries ripe for blue ocean innovation
 """
-        
-        with patch.object(WEB_SEARCH_TOOL.function, '__call__', return_value=technique_research):
-            
-            enhanced_strategy_generator.agent.model.add_sequence([
-                {
-                    'role': 'user',
-                    'content': 'Use Blue Ocean Strategy technique to address market differentiation challenge.'
-                },
-                {
-                    'role': 'assistant',
-                    'content': 'I\'ll research current Blue Ocean Strategy examples to inform the approach.',
-                    'tool_calls': [{
-                        'tool_name': 'web_search_tool',
-                        'args': {
-                            'query': 'blue ocean strategy examples 2024',
-                            'max_results': 3
-                        }
-                    }]
-                },
-                {
-                    'role': 'tool',
-                    'tool_name': 'web_search_tool',
-                    'content': technique_research
-                },
-                {
-                    'role': 'assistant',
-                    'content': '''Based on current Blue Ocean Strategy research and examples:
+
+        with patch.object(WEB_SEARCH_TOOL.function, "__call__", return_value=technique_research):
+
+            enhanced_strategy_generator.agent.model.add_sequence(
+                [
+                    {
+                        "role": "user",
+                        "content": "Use Blue Ocean Strategy technique to address market differentiation challenge.",
+                    },
+                    {
+                        "role": "assistant",
+                        "content": "I'll research current Blue Ocean Strategy examples to inform the approach.",
+                        "tool_calls": [
+                            {
+                                "tool_name": "web_search_tool",
+                                "args": {"query": "blue ocean strategy examples 2024", "max_results": 3},
+                            }
+                        ],
+                    },
+                    {"role": "tool", "tool_name": "web_search_tool", "content": technique_research},
+                    {
+                        "role": "assistant",
+                        "content": """Based on current Blue Ocean Strategy research and examples:
 
 {
   "title": "Blue Ocean Market Differentiation Strategy",
@@ -790,17 +767,18 @@ This strategy demonstrates strong market alignment and technical feasibility. Th
     "competitive_advantage": 9.0,
     "innovation_potential": 8.5
   }
-}'''
-                }
-            ])
-            
+}""",
+                    },
+                ]
+            )
+
             strategies = await enhanced_strategy_generator.generate_with_technique(
                 strategic_challenge="Market differentiation in competitive landscape",
                 technique_name="Blue Ocean Strategy",
                 temperature=0.7,
-                count=1
+                count=1,
             )
-            
+
             assert len(strategies) == 1
             strategy = strategies[0]
             assert "blue ocean" in strategy.strategy.title.lower()
@@ -810,48 +788,55 @@ This strategy demonstrates strong market alignment and technical feasibility. Th
     @pytest.mark.asyncio
     async def test_tools_error_resilience_in_workflows(self, enhanced_strategy_generator):
         """Test that strategy generation continues gracefully when tools fail"""
-        
+
         # Mock tool failure and recovery
-        with patch.object(WEB_SEARCH_TOOL.function, '__call__', return_value="Web search failed: Network timeout"), \
-             patch.object(GIT_REPO_TOOL.function, '__call__', return_value="Repository content from backup analysis: Basic microservices architecture identified"):
-            
-            enhanced_strategy_generator.agent.model.add_sequence([
-                {
-                    'role': 'user',
-                    'content': 'Generate a microservices migration strategy. Research best practices and analyze our codebase.'
-                },
-                {
-                    'role': 'assistant',
-                    'content': 'I\'ll research microservices best practices.',
-                    'tool_calls': [{
-                        'tool_name': 'web_search_tool',
-                        'args': {'query': 'microservices migration best practices', 'max_results': 5}
-                    }]
-                },
-                {
-                    'role': 'tool',
-                    'tool_name': 'web_search_tool',
-                    'content': "Web search failed: Network timeout"
-                },
-                {
-                    'role': 'assistant',
-                    'content': 'Web search failed, but I can still analyze the codebase for insights.',
-                    'tool_calls': [{
-                        'tool_name': 'git_repo_to_md_tool',
-                        'args': {
-                            'repo_url': 'https://github.com/company/monolith',
-                            'output_format': 'markdown'
-                        }
-                    }]
-                },
-                {
-                    'role': 'tool',
-                    'tool_name': 'git_repo_to_md_tool',
-                    'content': "Repository content from backup analysis: Basic microservices architecture identified"
-                },
-                {
-                    'role': 'assistant',
-                    'content': '''Despite web search limitations, based on codebase analysis:
+        with (
+            patch.object(WEB_SEARCH_TOOL.function, "__call__", return_value="Web search failed: Network timeout"),
+            patch.object(
+                GIT_REPO_TOOL.function,
+                "__call__",
+                return_value="Repository content from backup analysis: Basic microservices architecture identified",
+            ),
+        ):
+
+            enhanced_strategy_generator.agent.model.add_sequence(
+                [
+                    {
+                        "role": "user",
+                        "content": "Generate a microservices migration strategy. Research best practices and analyze our codebase.",
+                    },
+                    {
+                        "role": "assistant",
+                        "content": "I'll research microservices best practices.",
+                        "tool_calls": [
+                            {
+                                "tool_name": "web_search_tool",
+                                "args": {"query": "microservices migration best practices", "max_results": 5},
+                            }
+                        ],
+                    },
+                    {"role": "tool", "tool_name": "web_search_tool", "content": "Web search failed: Network timeout"},
+                    {
+                        "role": "assistant",
+                        "content": "Web search failed, but I can still analyze the codebase for insights.",
+                        "tool_calls": [
+                            {
+                                "tool_name": "git_repo_to_md_tool",
+                                "args": {
+                                    "repo_url": "https://github.com/company/monolith",
+                                    "output_format": "markdown",
+                                },
+                            }
+                        ],
+                    },
+                    {
+                        "role": "tool",
+                        "tool_name": "git_repo_to_md_tool",
+                        "content": "Repository content from backup analysis: Basic microservices architecture identified",
+                    },
+                    {
+                        "role": "assistant",
+                        "content": """Despite web search limitations, based on codebase analysis:
 
 {
   "title": "Microservices Migration Strategy",
@@ -878,15 +863,16 @@ This strategy demonstrates strong market alignment and technical feasibility. Th
     "maintainability": 7.5,
     "team_autonomy": 8.5
   }
-}'''
-                }
-            ])
-            
+}""",
+                    },
+                ]
+            )
+
             strategies = await enhanced_strategy_generator.generate_strategies(
                 temperature_counts=[(0.7, 1)],
-                user_prompt="Generate a microservices migration strategy. Research best practices and analyze our codebase."
+                user_prompt="Generate a microservices migration strategy. Research best practices and analyze our codebase.",
             )
-            
+
             # Verify strategy was still generated despite tool failures
             assert len(strategies) == 1
             strategy = strategies[0].strategy

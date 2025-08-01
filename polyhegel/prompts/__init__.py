@@ -14,17 +14,10 @@ from .loader import (
     get_prompt_loader,
     get_system_prompt,
     get_template,
-    load_prompt  # Legacy compatibility
+    load_prompt,  # Legacy compatibility
 )
 
 # Constants for backwards compatibility
 PROMPTS_DIR = Path(__file__).parent
 
-__all__ = [
-    'PromptLoader',
-    'get_prompt_loader', 
-    'get_system_prompt',
-    'get_template',
-    'load_prompt',
-    'PROMPTS_DIR'
-]
+__all__ = ["PromptLoader", "get_prompt_loader", "get_system_prompt", "get_template", "load_prompt", "PROMPTS_DIR"]

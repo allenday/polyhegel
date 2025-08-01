@@ -14,7 +14,7 @@ from polyhegel.strategic_techniques import (
     get_technique_by_name,
     get_recommended_techniques,
     get_techniques_prompt_text,
-    format_technique_for_prompt
+    format_technique_for_prompt,
 )
 
 
@@ -25,12 +25,12 @@ class TestStrategicTechniques:
         """Test that all techniques are properly loaded"""
         assert len(ALL_TECHNIQUES) == 15  # 5 per domain * 3 domains
         assert len(TECHNIQUE_REGISTRY) == 15
-        
+
         # Verify each domain has 5 techniques
         resource_techniques = get_techniques_for_domain(StrategyDomain.RESOURCE_ACQUISITION)
         security_techniques = get_techniques_for_domain(StrategyDomain.STRATEGIC_SECURITY)
         value_techniques = get_techniques_for_domain(StrategyDomain.VALUE_CATALYSIS)
-        
+
         assert len(resource_techniques) == 5
         assert len(security_techniques) == 5
         assert len(value_techniques) == 5
@@ -51,10 +51,10 @@ class TestStrategicTechniques:
         """Test filtering techniques by domain"""
         resource_techniques = get_techniques_for_domain(StrategyDomain.RESOURCE_ACQUISITION)
         assert all(t.domain == StrategyDomain.RESOURCE_ACQUISITION for t in resource_techniques)
-        
+
         security_techniques = get_techniques_for_domain(StrategyDomain.STRATEGIC_SECURITY)
         assert all(t.domain == StrategyDomain.STRATEGIC_SECURITY for t in security_techniques)
-        
+
         value_techniques = get_techniques_for_domain(StrategyDomain.VALUE_CATALYSIS)
         assert all(t.domain == StrategyDomain.VALUE_CATALYSIS for t in value_techniques)
 
@@ -63,16 +63,16 @@ class TestStrategicTechniques:
         low_complexity = get_techniques_by_complexity("low")
         medium_complexity = get_techniques_by_complexity("medium")
         high_complexity = get_techniques_by_complexity("high")
-        
+
         assert all(t.complexity == "low" for t in low_complexity)
         assert all(t.complexity == "medium" for t in medium_complexity)
         assert all(t.complexity == "high" for t in high_complexity)
-        
+
         # Should have techniques in each category
         assert len(low_complexity) > 0
         assert len(medium_complexity) > 0
         assert len(high_complexity) > 0
-        
+
         # Total should equal all techniques
         assert len(low_complexity) + len(medium_complexity) + len(high_complexity) == len(ALL_TECHNIQUES)
 
@@ -81,16 +81,16 @@ class TestStrategicTechniques:
         immediate = get_techniques_by_timeframe("immediate")
         short_term = get_techniques_by_timeframe("short-term")
         long_term = get_techniques_by_timeframe("long-term")
-        
+
         assert all(t.timeframe == "immediate" for t in immediate)
         assert all(t.timeframe == "short-term" for t in short_term)
         assert all(t.timeframe == "long-term" for t in long_term)
-        
+
         # Should have techniques in each timeframe
         assert len(immediate) > 0
         assert len(short_term) > 0
         assert len(long_term) > 0
-        
+
         # Total should equal all techniques
         assert len(immediate) + len(short_term) + len(long_term) == len(ALL_TECHNIQUES)
 
@@ -98,25 +98,21 @@ class TestStrategicTechniques:
         """Test getting specific technique by name"""
         technique_name = ALL_TECHNIQUES[0].name
         technique = get_technique_by_name(technique_name)
-        
+
         assert technique is not None
         assert technique.name == technique_name
-        
+
         # Test non-existent technique
         assert get_technique_by_name("Non-existent Technique") is None
 
     def test_get_recommended_techniques_filtering(self):
         """Test multi-criteria filtering"""
         # Filter by domain and complexity
-        resource_medium = get_recommended_techniques(
-            domain=StrategyDomain.RESOURCE_ACQUISITION,
-            complexity="medium"
-        )
+        resource_medium = get_recommended_techniques(domain=StrategyDomain.RESOURCE_ACQUISITION, complexity="medium")
         assert all(
-            t.domain == StrategyDomain.RESOURCE_ACQUISITION and t.complexity == "medium"
-            for t in resource_medium
+            t.domain == StrategyDomain.RESOURCE_ACQUISITION and t.complexity == "medium" for t in resource_medium
         )
-        
+
         # Filter by timeframe with limit
         immediate_limited = get_recommended_techniques(timeframe="immediate", limit=2)
         assert len(immediate_limited) <= 2
@@ -126,13 +122,13 @@ class TestStrategicTechniques:
         """Test technique formatting for prompts"""
         technique = ALL_TECHNIQUES[0]
         formatted = format_technique_for_prompt(technique)
-        
+
         assert technique.name in formatted
         assert technique.description in formatted
         assert technique.domain.value in formatted
         assert technique.complexity.title() in formatted
         assert technique.timeframe.title() in formatted
-        
+
         # Should include use cases
         for use_case in technique.use_cases:
             assert use_case in formatted
@@ -142,23 +138,19 @@ class TestStrategicTechniques:
         # Basic prompt text
         prompt_text = get_techniques_prompt_text(limit=2)
         assert len(prompt_text) > 0
-        
+
         # Should contain technique names
         techniques = get_recommended_techniques(limit=2)
         for technique in techniques:
             assert technique.name in prompt_text
-        
+
         # Test with specific criteria
-        resource_prompt = get_techniques_prompt_text(
-            domain=StrategyDomain.RESOURCE_ACQUISITION,
-            limit=1
-        )
+        resource_prompt = get_techniques_prompt_text(domain=StrategyDomain.RESOURCE_ACQUISITION, limit=1)
         assert len(resource_prompt) > 0
-        
+
         # Test no matches
         no_match_prompt = get_techniques_prompt_text(
-            domain=StrategyDomain.RESOURCE_ACQUISITION,
-            complexity="nonexistent"
+            domain=StrategyDomain.RESOURCE_ACQUISITION, complexity="nonexistent"
         )
         assert "No techniques match" in no_match_prompt
 
@@ -166,14 +158,14 @@ class TestStrategicTechniques:
         """Test that all strategic domains are covered"""
         domains_covered = set(t.domain for t in ALL_TECHNIQUES)
         expected_domains = set(StrategyDomain)
-        
+
         assert domains_covered == expected_domains
 
     def test_technique_diversity(self):
         """Test that techniques have good diversity in complexity and timeframe"""
         complexities = set(t.complexity for t in ALL_TECHNIQUES)
         timeframes = set(t.timeframe for t in ALL_TECHNIQUES)
-        
+
         assert complexities == {"low", "medium", "high"}
         assert timeframes == {"immediate", "short-term", "long-term"}
 

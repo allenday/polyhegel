@@ -3,7 +3,6 @@ Test prompt templates loading
 """
 
 import pytest
-from pathlib import Path
 from polyhegel.prompts import load_prompt, PROMPTS_DIR
 
 
