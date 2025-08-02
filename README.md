@@ -38,21 +38,36 @@ Polyhegel is a sophisticated strategic simulation framework that uses AI-driven 
 
 ## 🚀 Quick Start
 
-### Installation
+### Try It Now (No Setup Required!)
 
 ```bash
 # Install from PyPI
 pip install polyhegel
 
-# Or install from source
+# Try it immediately with the demo
+polyhegel demo
+
+# Or with your own strategic challenge
+polyhegel demo "Launch a new fintech product"
+```
+
+The demo shows how Polyhegel works without requiring API keys or configuration.
+
+### Full Installation
+
+```bash
+# Install from source for development
 git clone https://github.com/allenday/polyhegel.git
 cd polyhegel
 pip install -e .[dev]
 ```
 
-### Basic Usage
+### Real Simulations (API Keys Required)
 
 ```bash
+# Set up API keys
+export ANTHROPIC_API_KEY=your_key
+
 # Run a strategic simulation
 polyhegel simulate "Develop a market entry strategy for AI products"
 
@@ -70,7 +85,6 @@ make docs
 
 ```python
 from polyhegel import PolyhegelSimulator
-from polyhegel.models import StrategyChain
 
 # Initialize simulator
 simulator = PolyhegelSimulator()
@@ -83,10 +97,13 @@ results = await simulator.run_simulation(
 )
 
 # Analyze results
-for chain in results.strategy_chains:
-    print(f"Strategy: {chain.strategy.title}")
-    print(f"Score: {chain.strategy.alignment_score}")
+if results['trunk']:
+    strategy = results['trunk']['strategy']
+    print(f"Best Strategy: {strategy['title']}")
+    print(f"Timeline: {strategy['estimated_timeline']}")
 ```
+
+**💡 See [examples/quickstart_python_api.py](examples/quickstart_python_api.py) for comprehensive Python examples!**
 
 ## 📖 Documentation
 
