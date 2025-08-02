@@ -3,10 +3,11 @@ Clustering module for strategy identification
 """
 
 import logging
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 import numpy as np
 import hdbscan
 from sklearn_extra.cluster import KMedoids
+from sklearn.metrics.pairwise import cosine_similarity
 
 from .models import StrategyChain
 from .config import Config
@@ -28,7 +29,7 @@ class StrategyClusterer:
         self.min_cluster_size = min_cluster_size or Config.DEFAULT_MIN_CLUSTER_SIZE
         self.twig_threshold = twig_threshold or Config.DEFAULT_TWIG_THRESHOLD
 
-    def cluster_strategies(self, chains: List[StrategyChain]) -> Dict[str, any]:
+    def cluster_strategies(self, chains: List[StrategyChain]) -> Dict[str, Any]:
         """
         Cluster strategies and identify trunk/twigs
 
@@ -42,8 +43,11 @@ class StrategyClusterer:
             logger.warning(f"Not enough chains ({len(chains)}) for clustering")
             return self._handle_insufficient_chains(chains)
 
-        # Stack embeddings
-        embeddings = np.vstack([chain.embedding for chain in chains])
+        # Stack embeddings (filter out None embeddings)
+        valid_embeddings = [chain.embedding for chain in chains if chain.embedding is not None]
+        if not valid_embeddings:
+            raise ValueError("No valid embeddings found in strategy chains")
+        embeddings = np.vstack(valid_embeddings)
 
         # Perform HDBSCAN clustering
         logger.info("Performing HDBSCAN clustering")
@@ -59,7 +63,7 @@ class StrategyClusterer:
 
         return results
 
-    def _handle_insufficient_chains(self, chains: List[StrategyChain]) -> Dict[str, any]:
+    def _handle_insufficient_chains(self, chains: List[StrategyChain]) -> Dict[str, Any]:
         """Handle case when there aren't enough chains for clustering"""
         if chains:
             chains[0].is_trunk = True
@@ -68,7 +72,7 @@ class StrategyClusterer:
 
     def _analyze_clusters(
         self, chains: List[StrategyChain], cluster_labels: np.ndarray, embeddings: np.ndarray
-    ) -> Dict[str, any]:
+    ) -> Dict[str, Any]:
         """
         Analyze clustering results to identify trunk and twigs
 
@@ -96,7 +100,7 @@ class StrategyClusterer:
 
         # Find largest cluster
         label_counts = {label: np.sum(cluster_labels == label) for label in unique_labels}
-        largest_cluster = max(label_counts, key=label_counts.get)
+        largest_cluster = max(label_counts.keys(), key=lambda x: label_counts[x])
         results["cluster_sizes"] = label_counts
 
         # Find trunk (medoid of largest cluster)
@@ -150,7 +154,8 @@ class StrategyClusterer:
         kmedoids.fit(cluster_embeddings)
         medoid_idx = kmedoids.medoid_indices_[0]
 
-        return cluster_chains[medoid_idx]
+        trunk_chain: StrategyChain = cluster_chains[medoid_idx]
+        return trunk_chain
 
     def _find_twigs(
         self, chains: List[StrategyChain], cluster_labels: np.ndarray, trunk_cluster: int, total_chains: int
@@ -209,11 +214,15 @@ class StrategyClusterer:
                 continue
 
             # Compute average pairwise similarity within cluster
-            cluster_embeddings = np.vstack([c.embedding for c in cluster_chains])
+            valid_embeddings = [c.embedding for c in cluster_chains if c.embedding is not None]
+            if not valid_embeddings:
+                coherence_scores[label] = 0.0
+                continue
+            cluster_embeddings = np.vstack(valid_embeddings)
             similarity_matrix = cosine_similarity(cluster_embeddings)
 
             # Average off-diagonal elements
-            n = len(cluster_chains)
+            n = len(valid_embeddings)
             total_similarity = (np.sum(similarity_matrix) - n) / (n * (n - 1))
             coherence_scores[label] = total_similarity
 

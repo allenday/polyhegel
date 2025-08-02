@@ -3,12 +3,13 @@ Main simulator class for Polyhegel
 """
 
 import logging
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple, Optional, Any
 import numpy as np
 import networkx as nx
 
 from .config import Config
 from .models import StrategyChain
+from pydantic import BaseModel
 from .model_manager import ModelManager
 from .strategy_generator import StrategyGenerator
 from .graph_builder import GraphBuilder
@@ -19,6 +20,14 @@ from .tournament import StrategyTournament
 from .strategy_evaluator import StrategyEvaluator
 
 logger = logging.getLogger(__name__)
+
+
+class SimulationStatistics(BaseModel):
+    """Statistics from a simulation run"""
+    total_strategies: int
+    average_steps: float
+    temperature_distribution: Dict[float, int]
+    cluster_distribution: Dict[int, int]
 
 
 class PolyhegelSimulator:
@@ -59,7 +68,7 @@ class PolyhegelSimulator:
         """List available models from model manager"""
         return self.model_manager.discover_available_models()
 
-    def list_models_with_availability(self) -> Dict[str, Dict[str, any]]:
+    def list_models_with_availability(self) -> Dict[str, Dict[str, Any]]:
         """List models with their availability status"""
         return self.model_manager.list_models_with_availability()
 
@@ -221,7 +230,7 @@ class PolyhegelSimulator:
 
         # Add statistics
         if self.chains:
-            results["statistics"] = self._compute_statistics()
+            results["statistics"] = self._compute_statistics().model_dump()
 
         return results
 
@@ -242,26 +251,27 @@ class PolyhegelSimulator:
             },
         }
 
-    def _compute_statistics(self) -> Dict:
+    def _compute_statistics(self) -> SimulationStatistics:
         """Compute statistics about the generated strategies"""
-        stats = {
-            "total_strategies": len(self.chains),
-            "average_steps": float(np.mean([len(c.strategy.steps) for c in self.chains])),
-            "temperature_distribution": {},
-            "cluster_distribution": {},
-        }
+        temperature_distribution: Dict[float, int] = {}
+        cluster_distribution: Dict[int, int] = {}
 
         # Temperature distribution
         for chain in self.chains:
             temp = chain.temperature
-            stats["temperature_distribution"][temp] = stats["temperature_distribution"].get(temp, 0) + 1
+            temperature_distribution[temp] = temperature_distribution.get(temp, 0) + 1
 
         # Cluster distribution
         for chain in self.chains:
             label = int(chain.cluster_label)  # Convert numpy types to int
-            stats["cluster_distribution"][label] = stats["cluster_distribution"].get(label, 0) + 1
+            cluster_distribution[label] = cluster_distribution.get(label, 0) + 1
 
-        return stats
+        return SimulationStatistics(
+            total_strategies=len(self.chains),
+            average_steps=float(np.mean([len(c.strategy.steps) for c in self.chains])),
+            temperature_distribution=temperature_distribution,
+            cluster_distribution=cluster_distribution,
+        )
 
     def _clean_cluster_results(self) -> Dict:
         """Clean cluster results for JSON serialization"""
@@ -371,7 +381,7 @@ class PolyhegelSimulator:
             # Generate strategies via A2A coordination
             strategy_chains = await generate_hierarchical_strategies_a2a(
                 strategic_challenge=user_prompt,
-                context=context,
+                context=context.model_dump(),
                 leader_url=leader_url,
                 follower_urls=follower_urls,
                 max_themes=5,

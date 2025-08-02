@@ -342,7 +342,7 @@ class MetricsCollector:
 
             # Compare strategy titles for uniqueness
             titles = [getattr(s, "strategy", s).title if hasattr(s, "strategy") else str(s) for s in all_strategies]
-            unique_words = set()
+            unique_words: set[str] = set()
             for title in titles:
                 unique_words.update(title.lower().split())
 
@@ -369,7 +369,7 @@ class MetricsCollector:
                             confidences.append(step.confidence)
 
             if len(confidences) > 1:
-                return stdev(confidences)
+                return float(stdev(confidences))
             return 0.0
 
         except Exception as e:
@@ -386,7 +386,7 @@ class MetricsCollector:
                 step_count = len(strategy.steps)
 
                 # Extract time estimate
-                months = 0
+                months: float = 0
                 if "day" in timeline:
                     months = 0.1
                 elif "week" in timeline:
@@ -441,10 +441,12 @@ class MetricsCollector:
         if not metrics_list:
             return {}
 
-        comparison = {"summary": {}, "by_method": {}, "recommendations": []}
+        comparison: Dict[str, Any] = {"summary": {}, "by_method": {}, "recommendations": []}
+        by_method: Dict[str, Dict[str, float]] = comparison["by_method"]
+        recommendations: List[str] = comparison["recommendations"]
 
         # Group by selection method
-        method_groups = {}
+        method_groups: Dict[str, List[Any]] = {}
         for metrics in metrics_list:
             method = metrics.selection_method
             if method not in method_groups:
@@ -464,30 +466,30 @@ class MetricsCollector:
                 "avg_execution_time": mean([m.execution_time for m in method_metrics]),
                 "avg_strategy_diversity": mean([m.strategy_diversity for m in method_metrics]),
             }
-            comparison["by_method"][method] = avg_metrics
+            by_method[method] = avg_metrics
 
         # Generate recommendations
         if len(method_groups) >= 2:
             methods = list(method_groups.keys())
             method1, method2 = methods[0], methods[1]
 
-            m1_overall = comparison["by_method"][method1]["avg_overall"]
-            m2_overall = comparison["by_method"][method2]["avg_overall"]
+            m1_overall = by_method[method1]["avg_overall"]
+            m2_overall = by_method[method2]["avg_overall"]
 
             if abs(m1_overall - m2_overall) < 0.5:
-                comparison["recommendations"].append("Both methods show similar overall performance")
+                recommendations.append("Both methods show similar overall performance")
             elif m1_overall > m2_overall:
-                comparison["recommendations"].append(f"{method1} shows superior overall strategic quality")
+                recommendations.append(f"{method1} shows superior overall strategic quality")
             else:
-                comparison["recommendations"].append(f"{method2} shows superior overall strategic quality")
+                recommendations.append(f"{method2} shows superior overall strategic quality")
 
             # Performance comparison
-            m1_time = comparison["by_method"][method1]["avg_execution_time"]
-            m2_time = comparison["by_method"][method2]["avg_execution_time"]
+            m1_time = by_method[method1]["avg_execution_time"]
+            m2_time = by_method[method2]["avg_execution_time"]
 
             if m1_time < m2_time * 0.8:
-                comparison["recommendations"].append(f"{method1} is significantly faster")
+                recommendations.append(f"{method1} is significantly faster")
             elif m2_time < m1_time * 0.8:
-                comparison["recommendations"].append(f"{method2} is significantly faster")
+                recommendations.append(f"{method2} is significantly faster")
 
         return comparison

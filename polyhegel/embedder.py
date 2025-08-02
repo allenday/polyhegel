@@ -38,7 +38,9 @@ class StrategyEmbedder:
 
         for chain in chains:
             text = self._extract_text_from_chain(chain)
-            chain.embedding = self.embedder.encode(text)
+            embedding_tensor = self.embedder.encode(text)
+            # Convert tensor to numpy array
+            chain.embedding = np.array(embedding_tensor)
 
     def _extract_text_from_chain(self, chain: StrategyChain) -> str:
         """
@@ -78,17 +80,22 @@ class StrategyEmbedder:
         Returns:
             Similarity matrix
         """
-        if not chains or not all(chain.embedding is not None for chain in chains):
-            raise ValueError("All chains must have embeddings")
-
-        embeddings = np.vstack([chain.embedding for chain in chains])
+        if not chains:
+            raise ValueError("No chains provided")
+        
+        # Filter valid embeddings
+        valid_embeddings = [chain.embedding for chain in chains if chain.embedding is not None]
+        if not valid_embeddings:
+            raise ValueError("No valid embeddings found in chains")
+        
+        embeddings = np.vstack(valid_embeddings)
 
         # Compute cosine similarity
         from sklearn.metrics.pairwise import cosine_similarity
 
         similarity_matrix = cosine_similarity(embeddings)
 
-        return similarity_matrix
+        return np.array(similarity_matrix)
 
     def find_similar_strategies(
         self, target_chain: StrategyChain, chains: List[StrategyChain], top_k: int = 5
