@@ -1,11 +1,11 @@
 """
-Polyhegel Core Servers Package
+Compatibility and convenience wrappers for server modules.
 
-This package provides the generic server framework for polyhegel.
-Domain-specific servers are provided through examples and can be loaded via PYTHONPATH.
+This module provides compatibility imports and factory functions for creating
+leader and follower servers in the Polyhegel framework.
 """
 
-# This is now a namespace package that can be extended by examples/
-__path__ = __import__("pkgutil").extend_path(__path__, __name__)
+from .leader_server import create_leader_server
+from .follower_server import create_follower_server
 
-__all__ = []
+__all__ = ["create_leader_server", "create_follower_server"]
