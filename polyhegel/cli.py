@@ -6,8 +6,10 @@ import argparse
 import asyncio
 import json
 import logging
+import os
 import sys
 import numpy as np
+from datetime import datetime
 from pathlib import Path
 from typing import Union
 
@@ -234,6 +236,130 @@ def display_json_demo_results(strategies: list[StrategyChain], prompt: str):
     print(json.dumps(results, indent=2))
 
 
+async def run_discover(domain: str, output_format: str):
+    """Discover available techniques and agents"""
+    print("🔍 Discovering Polyhegel Capabilities...")
+
+    # Try to load examples if available
+    project_root = Path(__file__).parent.parent
+    examples_path = project_root / "examples"
+
+    if examples_path.exists():
+        examples_str = str(examples_path)
+        current_pythonpath = os.environ.get("PYTHONPATH", "")
+        if examples_str not in current_pythonpath:
+            new_pythonpath = f"{examples_str}:{current_pythonpath}" if current_pythonpath else examples_str
+            os.environ["PYTHONPATH"] = new_pythonpath
+            # Also add to sys.path for immediate use
+            sys.path.insert(0, examples_str)
+
+    capabilities = {}
+    setup_tips = []
+
+    # Discover based on domain selection
+    if domain == "all" or domain == "common":
+        capabilities["Common Techniques"] = discover_techniques("common")
+
+    if domain == "all" or domain == "strategic":
+        techniques = discover_techniques("strategic")
+        if techniques:
+            capabilities["Strategic Domain"] = techniques
+        else:
+            setup_tips.append("Strategic domain: Run `./scripts/polyhegel-setup.py with-examples` to enable")
+
+    if domain == "all" or domain == "product":
+        techniques = discover_techniques("product")
+        if techniques:
+            capabilities["Product Domain"] = techniques
+        else:
+            setup_tips.append("Product domain: Run `./scripts/polyhegel-setup.py with-examples` to enable")
+
+    if domain == "all" or domain == "technical_architecture":
+        techniques = discover_techniques("technical_architecture")
+        if techniques:
+            capabilities["Technical Architecture"] = techniques
+        else:
+            setup_tips.append("Technical Architecture: Run `./scripts/polyhegel-setup.py with-examples` to enable")
+
+    if output_format == "friendly":
+        display_friendly_discovery(capabilities, setup_tips)
+    else:
+        display_json_discovery(capabilities, setup_tips)
+
+
+def discover_techniques(domain: str) -> list:
+    """Discover techniques for a domain"""
+    try:
+        if domain == "common":
+            from polyhegel.techniques.common.techniques import ALL_TECHNIQUES
+        else:
+            # Dynamic import for domain-specific techniques
+            module_name = f"polyhegel.techniques.{domain}.techniques"
+            module = __import__(module_name, fromlist=["ALL_TECHNIQUES"])
+            ALL_TECHNIQUES = getattr(module, "ALL_TECHNIQUES")
+
+        return [
+            {
+                "name": tech.name,
+                "type": (
+                    getattr(tech, "technique_type", {}).value
+                    if hasattr(getattr(tech, "technique_type", {}), "value")
+                    else "unknown"
+                ),
+            }
+            for tech in ALL_TECHNIQUES
+        ]
+    except (ImportError, AttributeError):
+        return []
+
+
+def display_friendly_discovery(capabilities: dict, setup_tips: list):
+    """Display discovery results in friendly format"""
+    print("\n📋 Available Capabilities:")
+    print("=" * 50)
+
+    total_techniques = 0
+
+    for category, techniques in capabilities.items():
+        if techniques:
+            print(f"\n🎯 {category} ({len(techniques)} techniques):")
+            for tech in techniques[:5]:  # Show first 5
+                print(f"   • {tech['name']} ({tech['type']})")
+            if len(techniques) > 5:
+                print(f"   ... and {len(techniques) - 5} more")
+            total_techniques += len(techniques)
+
+    print(f"\n📊 Total: {total_techniques} techniques discovered")
+
+    if setup_tips:
+        print("\n💡 Expand capabilities:")
+        for tip in setup_tips:
+            print(f"   {tip}")
+
+    # Usage examples
+    if total_techniques > 0:
+        print("\n🚀 Usage Examples:")
+        if "Common Techniques" in capabilities:
+            print("   from polyhegel.techniques.common import ALL_TECHNIQUES")
+        if "Strategic Domain" in capabilities:
+            print("   from polyhegel.techniques.strategic import ALL_TECHNIQUES")
+        if "Product Domain" in capabilities:
+            print("   from polyhegel.techniques.product import ALL_TECHNIQUES")
+
+    print("\n📚 Full setup guide: ./scripts/polyhegel-setup.py --help")
+
+
+def display_json_discovery(capabilities: dict, setup_tips: list):
+    """Display discovery results in JSON format"""
+    results = {
+        "capabilities": capabilities,
+        "total_techniques": sum(len(techs) for techs in capabilities.values()),
+        "setup_tips": setup_tips,
+        "timestamp": str(datetime.now()),
+    }
+    print(json.dumps(results, indent=2))
+
+
 def main():
     """Main CLI function."""
     parser = argparse.ArgumentParser(
@@ -341,6 +467,20 @@ Environment Variables:
         "--with-availability", action="store_true", help="Show availability status based on API keys"
     )
 
+    # Discover command (new)
+    discover_parser = subparsers.add_parser(
+        "discover", help="Discover available techniques and agents across all domains"
+    )
+    discover_parser.add_argument(
+        "--domain",
+        choices=["common", "strategic", "product", "technical_architecture", "all"],
+        default="all",
+        help="Domain to discover (default: all)",
+    )
+    discover_parser.add_argument(
+        "--format", choices=["friendly", "json"], default="friendly", help="Output format (default: friendly)"
+    )
+
     args = parser.parse_args()
 
     if not args.command:
@@ -372,6 +512,11 @@ Environment Variables:
                     print(f"\n{provider.upper()}: {description}")
             return
 
+        if args.command == "discover":
+            # Run discovery with improved error handling
+            asyncio.run(run_discover(args.domain, args.format))
+            return
+
         if args.command == "simulate":
             # Load system prompt if provided
             system_prompt = None
@@ -386,21 +531,59 @@ Environment Variables:
             # Determine user prompt (from argument or file)
             user_prompt = None
             if args.prompt:
-                user_prompt = args.prompt
+                # Validate that the prompt is not empty or just whitespace
+                if not args.prompt.strip():
+                    logger.error("Empty prompt provided")
+                    print("❌ Error: Strategic challenge cannot be empty.")
+                    print("\n💡 Quick solutions:")
+                    print("1. Try the demo first: polyhegel demo")
+                    print("2. Provide a meaningful challenge:")
+                    print("   polyhegel simulate 'develop a market entry strategy'")
+                    print("   polyhegel simulate 'optimize our pricing model'")
+                    print("3. Use a prompt file: polyhegel simulate --user-prompt-file challenge.txt")
+                    print("\n📚 More examples: https://allendy.github.io/polyhegel/getting-started/quickstart/")
+                    sys.exit(1)
+
+                user_prompt = args.prompt.strip()
                 logger.info(f"Using prompt from command line: {args.prompt[:50]}...")
             elif args.user_prompt_file:
                 try:
                     user_prompt = read_text_from_file(args.user_prompt_file)
+
+                    # Validate that the file content is not empty
+                    if not user_prompt.strip():
+                        logger.error(f"Prompt file {args.user_prompt_file} is empty")
+                        print(f"❌ Error: Prompt file '{args.user_prompt_file}' is empty.")
+                        print("\n💡 Quick solutions:")
+                        print("1. Try the demo first: polyhegel demo")
+                        print("2. Add content to your prompt file with a strategic challenge")
+                        print("3. Use inline prompt: polyhegel simulate 'your strategic challenge'")
+                        print("\n📚 More examples: https://allendy.github.io/polyhegel/getting-started/quickstart/")
+                        sys.exit(1)
+
+                    user_prompt = user_prompt.strip()
                     logger.info(f"Loaded user prompt from: {args.user_prompt_file}")
                 except Exception as e:
                     logger.error(f"Failed to load user prompt file: {str(e)}")
+                    print(f"❌ Error: Could not read prompt file '{args.user_prompt_file}'")
+                    print(f"   Details: {str(e)}")
+                    print("\n💡 Quick solutions:")
+                    print("1. Try the demo first: polyhegel demo")
+                    print("2. Check the file path and permissions")
+                    print("3. Use inline prompt: polyhegel simulate 'your strategic challenge'")
+                    print("\n📚 More examples: https://allendy.github.io/polyhegel/getting-started/quickstart/")
                     sys.exit(1)
             else:
                 logger.error("Must provide either a prompt argument or --user-prompt-file")
-                print("Error: Please provide a strategic challenge either as:")
-                print("  polyhegel simulate 'your strategic challenge'")
-                print("  polyhegel simulate --user-prompt-file challenge.txt")
-                print("\nFor a quick demo without API keys: polyhegel demo")
+                print("❌ Error: No strategic challenge provided.")
+                print("\n💡 Quick solutions:")
+                print("1. Try the demo first: polyhegel demo")
+                print("2. Provide a challenge directly:")
+                print("   polyhegel simulate 'develop a market entry strategy'")
+                print("   polyhegel simulate 'optimize our pricing model'")
+                print("3. Use a prompt file:")
+                print("   polyhegel simulate --user-prompt-file challenge.txt")
+                print("\n📚 More examples: https://allendy.github.io/polyhegel/getting-started/quickstart/")
                 sys.exit(1)
 
             # Determine models to use
