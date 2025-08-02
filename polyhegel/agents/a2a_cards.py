@@ -192,16 +192,16 @@ def create_follower_agent_card(
     """Create A2A AgentCard for polyhegel FollowerAgent"""
 
     # Determine specialization name for card
-    if specialization_domain == StrategyDomain.RESOURCE_ACQUISITION:
+    if specialization_domain is StrategyDomain.RESOURCE_ACQUISITION:
         specialization_name = "Resource Acquisition"
         description_suffix = "specializing in resource acquisition and optimization strategies"
-    elif specialization_domain == StrategyDomain.STRATEGIC_SECURITY:
+    elif specialization_domain is StrategyDomain.STRATEGIC_SECURITY:
         specialization_name = "Strategic Security"
         description_suffix = "specializing in security, risk management, and resilience strategies"
-    elif specialization_domain == StrategyDomain.VALUE_CATALYSIS:
+    elif specialization_domain is StrategyDomain.VALUE_CATALYSIS:
         specialization_name = "Value Catalysis"
         description_suffix = "specializing in value creation and stakeholder engagement strategies"
-    else:
+    else:  # specialization_domain is None  # type: ignore[unreachable]
         specialization_name = "General Strategy"
         description_suffix = "providing general strategic implementation capabilities"
 

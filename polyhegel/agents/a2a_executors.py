@@ -69,7 +69,7 @@ class LeaderAgentExecutor(AgentExecutor):
                 data={"themes": themes, "total_count": len(themes)},
                 description="Strategic themes",
             )
-            await event_queue.enqueue_event(artifact)
+            await event_queue.enqueue_event(artifact)  # type: ignore[arg-type]
 
             # Record successful completion
             self._telemetry_collector.record_event(
@@ -151,13 +151,13 @@ class FollowerAgentExecutor(AgentExecutor):
 
             # Update metrics
             self._telemetry_collector.increment_counter("strategies_developed_total")
-            self._telemetry_collector.increment_counter("strategies_by_domain", tags={"domain": strategy["domain"]})
+            self._telemetry_collector.increment_counter("strategies_by_domain", tags={"domain": str(strategy["domain"])})
             self._telemetry_collector.set_gauge("last_strategy_steps", len(strategy["steps"]))
 
             artifact = new_data_artifact(
                 name=f"strategy_{context.task_id}.json", data=strategy, description="Implementation strategy"
             )
-            await event_queue.enqueue_event(artifact)
+            await event_queue.enqueue_event(artifact)  # type: ignore[arg-type]
 
             # Record successful completion
             self._telemetry_collector.record_event(
