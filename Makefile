@@ -1,4 +1,4 @@
-.PHONY: test test-unit test-integration test-slow test-all test-quick test-no-llm test-coverage clean help agents agents-start agents-stop agents-status agents-restart typecheck build docs install-dev ci-setup ci-deps ci-security docs-serve release-major release-minor release-patch release-prerelease release-current
+.PHONY: test test-unit test-integration test-slow test-all test-quick test-no-llm test-coverage clean help agents agents-start agents-stop agents-status agents-restart typecheck build docs docs-clean docs-build-fast docs-check docs-validate docs-check-links docs-summary docs-dev docs-open install-dev ci-setup ci-deps ci-security docs-serve release-major release-minor release-patch release-prerelease release-current
 
 # Python executable - detect if we're in CI or local dev
 PYTHON := $(shell if [ -f .venv/bin/python ]; then echo ".venv/bin/python"; else echo "python"; fi)
@@ -29,14 +29,24 @@ help:
 	@echo "  make dx-new-domain - Create a new custom domain (interactive)"
 	@echo "  make dx-doctor     - Diagnose and fix common DX issues"
 	@echo ""
+	@echo "Documentation targets:"
+	@echo "  make docs          - Build documentation"
+	@echo "  make docs-serve    - Serve documentation locally (with auto-reload)"
+	@echo "  make docs-dev      - Start documentation development environment"
+	@echo "  make docs-clean    - Clean documentation build artifacts"
+	@echo "  make docs-build-fast - Build documentation (fast mode, no warnings)"
+	@echo "  make docs-check    - Build documentation with strict error checking"
+	@echo "  make docs-validate - Validate documentation structure"
+	@echo "  make docs-check-links - Check for broken internal links"
+	@echo "  make docs-summary  - Generate documentation summary and stats"
+	@echo "  make docs-open     - Open documentation in browser after serving"
+	@echo ""
 	@echo "Other targets:"
 	@echo "  make clean         - Remove cache and temporary files"
 	@echo "  make format        - Format code with black"
 	@echo "  make lint          - Run linting checks"
 	@echo "  make typecheck     - Run type checking with mypy"
 	@echo "  make build         - Build Python package"
-	@echo "  make docs          - Build documentation"
-	@echo "  make docs-serve    - Serve documentation locally"
 	@echo "  make install-dev   - Install development dependencies"
 	@echo ""
 	@echo "CI targets:"
@@ -102,6 +112,41 @@ build:
 docs:
 	@echo "📚 Building documentation..."
 	$(PYTHON) -m mkdocs build
+
+docs-clean:
+	@echo "🧹 Cleaning documentation build..."
+	rm -rf site/
+	rm -rf docs/reference/polyhegel/
+	
+docs-build-fast:
+	@echo "📚 Building documentation (fast mode)..."
+	$(PYTHON) -m mkdocs build --clean --quiet
+
+docs-check:
+	@echo "🔍 Checking documentation for issues..."
+	$(PYTHON) -m mkdocs build --strict --verbose
+
+docs-open:
+	@echo "🌐 Opening documentation in browser..."
+	$(PYTHON) -m mkdocs serve --dev-addr=127.0.0.1:8000 &
+	sleep 2
+	open http://127.0.0.1:8000
+
+docs-validate:
+	@echo "🔍 Validating documentation structure..."
+	$(PYTHON) scripts/docs-dev.py validate
+
+docs-check-links:
+	@echo "🔗 Checking for broken internal links..."
+	$(PYTHON) scripts/docs-dev.py check-links
+
+docs-summary:
+	@echo "📊 Generating documentation summary..."
+	$(PYTHON) scripts/docs-dev.py summary
+
+docs-dev:
+	@echo "🚀 Starting documentation development environment..."
+	$(PYTHON) scripts/docs-dev.py serve
 
 install-dev:
 	$(PYTHON) -m pip install -e .[dev]

@@ -370,16 +370,16 @@ curl http://localhost:7002/health  # Stakeholder follower
 ## Next Steps
 
 1. **Try the Demo:** `polyhegel demo` - See capabilities immediately
-2. **Read Architecture Guide:** [Core vs Examples Architecture](docs/architecture/core-vs-examples.md)
+2. **Read Architecture Guide:** [Core vs Examples Architecture](architecture/core-vs-examples.md)
 3. **Explore Examples:** Check `examples/polyhegel/techniques/` for domain implementations
 4. **Join Community:** Contributing guide and discussions on GitHub
 
 ## Resources
 
-- **Architecture Guide:** [Core vs Examples](docs/architecture/core-vs-examples.md)
-- **API Reference:** [API Documentation](docs/api/)
-- **Examples:** [Domain Implementations](examples/)
-- **Contributing:** [Development Guide](docs/development/)
+- **Architecture Guide:** [Core vs Examples](architecture/core-vs-examples.md)
+- **API Reference:** [API Documentation](reference/index.md)
+- **Examples:** [Domain Implementations](../examples/)
+- **Contributing:** [Development Guide](contributing/development.md)
 
 ---
 
