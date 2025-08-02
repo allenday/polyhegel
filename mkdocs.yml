@@ -17,6 +17,7 @@ theme:
     - toc.follow
     - content.code.copy
     - content.code.annotate
+    - content.tabs.link
   palette:
     - scheme: default
       primary: blue
@@ -49,15 +50,25 @@ plugins:
             filters: ["!^_"]
             merge_init_into_class: true
             docstring_section_style: spacy
-
+            show_root_full_path: false
+            show_signature_annotations: true
+  - autorefs
+  - mkdocs-jupyter:
+      include_source: True
+      
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - pymdownx.superfences
+  - pymdownx.snippets:
+      base_path: ['.']
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.details
   - pymdownx.tabbed:
       alternate_style: true
@@ -67,6 +78,7 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
+  - footnotes
 
 nav:
   - Home: index.md
@@ -79,9 +91,12 @@ nav:
     - A2A Agents: guide/a2a-agents.md
     - Strategic Techniques: guide/strategic-techniques.md
     - Tournament Mode: guide/tournament.md
-  - API Reference: reference/
+  - API Reference: 
+    - Overview: reference/index.md
+    - Core Modules: reference/polyhegel/
   - Architecture:
     - Overview: architecture/overview.md
+    - Agent System: architecture/agent-system.md
     - Strategic Techniques: architecture/strategic-techniques.md
     - Security: architecture/security.md
   - Contributing:
@@ -95,3 +110,6 @@ extra:
       link: https://github.com/allenday/polyhegel
   version:
     provider: mike
+  analytics:
+    provider: google
+    property: G-XXXXXXXXXX  # Replace with actual tracking ID
