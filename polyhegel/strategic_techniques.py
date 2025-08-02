@@ -24,17 +24,17 @@ class StrategyDomain(Enum):
     @property
     def display_name(self) -> str:
         """Human-readable display name for the domain"""
-        return DOMAIN_METADATA[self]["display_name"]
+        return str(DOMAIN_METADATA[self]["display_name"])
 
     @property
     def tags(self) -> List[str]:
         """Tags associated with this domain"""
-        return DOMAIN_METADATA[self]["tags"]
+        return list(DOMAIN_METADATA[self]["tags"])
 
     @property
     def description(self) -> str:
         """Description of this domain"""
-        return DOMAIN_METADATA[self]["description"]
+        return str(DOMAIN_METADATA[self]["description"])
 
 
 # Domain metadata dictionary

@@ -4,10 +4,32 @@ Configuration management for Polyhegel
 
 from typing import Dict
 import os
+from enum import Enum
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+
+
+class ModelProvider(str, Enum):
+    """Supported model providers"""
+    OPENAI = "openai"
+    ANTHROPIC = "anthropic"
+    GOOGLE = "google"
+    LOCAL = "local"
+    UNKNOWN = "unknown"
+
+
+class ModelPatterns:
+    """Model name patterns for provider detection"""
+    OPENAI_PREFIXES = ('gpt-', 'o1-', 'text-davinci', 'text-curie', 'text-babbage', 'text-ada')
+    ANTHROPIC_PREFIXES = ('claude-', 'claude_')
+    GOOGLE_PREFIXES = ('gemini-', 'models/gemini-', 'palm-', 'bison-')
+    LOCAL_PREFIXES = ('llama-', 'mistral-', 'mixtral-')
+    
+    OPENAI_KEYWORDS = ('gpt', 'openai', 'davinci', 'curie')
+    ANTHROPIC_KEYWORDS = ('claude', 'anthropic')
+    GOOGLE_KEYWORDS = ('gemini', 'google', 'palm', 'bison')
 
 
 class Config:
@@ -48,22 +70,42 @@ class Config:
 
     @staticmethod
     def get_provider_from_model(model_name: str) -> str:
-        """Get the provider from model name using pydantic-ai model inference."""
-        # Delegate to pydantic-ai for model provider detection
-        # This is called rarely so expense is acceptable
-        from pydantic_ai import infer_model
-
-        model = infer_model(model_name)
-        return model.__class__.__module__.split(".")[-1]  # Extract provider from module
+        """Get the provider from model name using pattern matching."""
+        try:
+            # Check exact prefixes first
+            if model_name.startswith(ModelPatterns.OPENAI_PREFIXES):
+                return ModelProvider.OPENAI.value
+            elif model_name.startswith(ModelPatterns.ANTHROPIC_PREFIXES):
+                return ModelProvider.ANTHROPIC.value
+            elif model_name.startswith(ModelPatterns.GOOGLE_PREFIXES):
+                return ModelProvider.GOOGLE.value
+            elif model_name.startswith(ModelPatterns.LOCAL_PREFIXES):
+                return ModelProvider.LOCAL.value
+            else:
+                # Fallback pattern matching with keywords
+                model_lower = model_name.lower()
+                if any(keyword in model_lower for keyword in ModelPatterns.OPENAI_KEYWORDS):
+                    return ModelProvider.OPENAI.value
+                elif any(keyword in model_lower for keyword in ModelPatterns.ANTHROPIC_KEYWORDS):
+                    return ModelProvider.ANTHROPIC.value
+                elif any(keyword in model_lower for keyword in ModelPatterns.GOOGLE_KEYWORDS):
+                    return ModelProvider.GOOGLE.value
+                else:
+                    return ModelProvider.UNKNOWN.value
+                
+        except Exception:
+            # Ultimate fallback
+            return ModelProvider.UNKNOWN.value
 
     @staticmethod
     def set_api_key_for_provider(provider: str, api_key: str):
         """Set API key for the specified provider."""
-        if provider == "openai":
+        if provider == ModelProvider.OPENAI.value:
             os.environ["OPENAI_API_KEY"] = api_key
-        elif provider == "anthropic":
+        elif provider == ModelProvider.ANTHROPIC.value:
             os.environ["ANTHROPIC_API_KEY"] = api_key
-        elif provider == "google":
+        elif provider == ModelProvider.GOOGLE.value:
             os.environ["GOOGLE_API_KEY"] = api_key
-        elif provider == "mistral":
-            os.environ["MISTRAL_API_KEY"] = api_key
+        elif provider == ModelProvider.LOCAL.value:
+            # Local models might use different env vars
+            os.environ["LOCAL_MODEL_API_KEY"] = api_key
