@@ -235,7 +235,7 @@ class TelemetryCollector:
             recent_events = list(self._events)[-100:]  # Last 100 events
 
             # Event counts by type
-            event_counts = defaultdict(int)
+            event_counts: Dict[str, int] = defaultdict(int)
             error_count = 0
 
             for event in recent_events:

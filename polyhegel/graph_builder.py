@@ -3,7 +3,7 @@ Graph building module for strategy DAGs
 """
 
 import logging
-from typing import List
+from typing import List, Dict
 import networkx as nx
 
 from .models import StrategyChain
@@ -108,9 +108,9 @@ class GraphBuilder:
         """
         metrics = {
             "total_chains": len(chains),
-            "avg_steps": 0,
-            "avg_edges": 0,
-            "max_parallelism": 0,
+            "avg_steps": 0.0,
+            "avg_edges": 0.0,
+            "max_parallelism": 0.0,
             "linear_chains": 0,
         }
 
@@ -130,7 +130,7 @@ class GraphBuilder:
                 if chain.graph.number_of_nodes() > 0:
                     try:
                         lengths = nx.single_source_shortest_path_length(chain.graph, 0)
-                        depth_counts = {}
+                        depth_counts: Dict[int, int] = {}
                         for node, depth in lengths.items():
                             depth_counts[depth] = depth_counts.get(depth, 0) + 1
                         max_parallelism_sum += max(depth_counts.values())
