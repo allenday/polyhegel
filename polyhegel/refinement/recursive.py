@@ -176,9 +176,26 @@ class RecursiveRefinementEngine:
 
     async def _execute_refinement_loop(
         self, session: RefinementSession, system_prompt: Optional[str], user_prompt: Optional[str]
-    ):
-        """Execute the main refinement loop"""
+    ) -> None:
+        """Execute the main recursive refinement loop for a strategy.
 
+        This method orchestrates the strategy refinement process by:
+        1. Evaluating the initial strategy
+        2. Generating feedback and performance metrics
+        3. Iteratively improving the strategy
+        4. Tracking performance and implementing stopping conditions
+
+        Args:
+            session (RefinementSession): The current refinement session being processed.
+            system_prompt (Optional[str]): Optional system-level context for refinement.
+            user_prompt (Optional[str]): Optional user-level context for refinement.
+
+        Returns:
+            None: Modifies the session in-place with refinement results.
+
+        Raises:
+            Exception: If strategy improvement or evaluation fails during the process.
+        """
         current_strategy = session.original_strategy
         session.generations.append(current_strategy)
 

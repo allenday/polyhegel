@@ -18,7 +18,20 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class A2AAgentEndpoints:
-    """Configuration for A2A agent endpoints"""
+    """Configuration for A2A agent endpoints.
+
+    This class manages endpoint URLs and authentication credentials for
+    distributed A2A agents in the polyhegel system.
+
+    Attributes:
+        leader_url: URL of the leader agent that generates strategic themes.
+        follower_resource_url: URL of the resource acquisition specialist follower.
+        follower_security_url: URL of the strategic security specialist follower.
+        follower_value_url: URL of the value catalysis specialist follower.
+        follower_general_url: URL of the general purpose follower agent.
+        api_keys: Mapping of agent names to their API keys.
+        jwt_tokens: Mapping of agent names to their JWT tokens.
+    """
 
     leader_url: str = "http://localhost:8001"
     follower_resource_url: str = "http://localhost:8002"
@@ -32,7 +45,23 @@ class A2AAgentEndpoints:
 
     @classmethod
     def from_env(cls) -> "A2AAgentEndpoints":
-        """Create endpoints configuration from environment variables"""
+        """Create endpoints configuration from environment variables.
+
+        Loads agent URLs and authentication credentials from environment variables.
+        Falls back to default localhost URLs if environment variables are not set.
+
+        Environment variables:
+            POLYHEGEL_LEADER_URL: Leader agent URL
+            POLYHEGEL_FOLLOWER_RESOURCE_URL: Resource follower URL
+            POLYHEGEL_FOLLOWER_SECURITY_URL: Security follower URL
+            POLYHEGEL_FOLLOWER_VALUE_URL: Value follower URL
+            POLYHEGEL_FOLLOWER_GENERAL_URL: General follower URL
+            POLYHEGEL_{AGENT}_API_KEY: API key for each agent
+            POLYHEGEL_{AGENT}_JWT_TOKEN: JWT token for each agent
+
+        Returns:
+            Configured A2AAgentEndpoints instance.
+        """
         import os
 
         # Load API keys from environment
@@ -60,7 +89,11 @@ class A2AAgentEndpoints:
         )
 
     def get_follower_urls(self) -> Dict[str, str]:
-        """Get follower URLs by domain"""
+        """Get follower URLs by domain.
+
+        Returns:
+            Dictionary mapping domain names to their corresponding follower URLs.
+        """
         return {
             "resource": self.follower_resource_url,
             "security": self.follower_security_url,
@@ -69,7 +102,16 @@ class A2AAgentEndpoints:
         }
 
     def get_auth_headers(self, agent_name: str) -> Dict[str, str]:
-        """Get authentication headers for agent"""
+        """Get authentication headers for agent.
+
+        Prioritizes JWT tokens over API keys when both are available.
+
+        Args:
+            agent_name: Name of the agent to get headers for.
+
+        Returns:
+            Dictionary of HTTP headers for authentication.
+        """
         headers = {}
 
         # Prefer JWT token if available
@@ -82,17 +124,23 @@ class A2AAgentEndpoints:
 
 
 class PolyhegelA2AClient:
-    """
-    Client for connecting to distributed polyhegel A2A agents
+    """Client for connecting to distributed polyhegel A2A agents.
+
+    This client orchestrates communication with multiple A2A agents to generate
+    hierarchical strategies. It handles theme generation via leader agents and
+    strategy development via specialized follower agents.
+
+    Attributes:
+        endpoints: Configuration for agent endpoints and authentication.
+        timeout: HTTP request timeout in seconds.
     """
 
     def __init__(self, endpoints: A2AAgentEndpoints, timeout: float = 30.0):
-        """
-        Initialize A2A client
+        """Initialize A2A client.
 
         Args:
-            endpoints: Agent endpoint configuration
-            timeout: Request timeout in seconds
+            endpoints: Agent endpoint configuration.
+            timeout: Request timeout in seconds. Defaults to 30.0.
         """
         self.endpoints = endpoints
         self.timeout = timeout
@@ -100,17 +148,31 @@ class PolyhegelA2AClient:
         self._telemetry_collector = get_telemetry_collector("polyhegel-a2a-client")
 
     async def __aenter__(self):
+        """Async context manager entry.
+
+        Returns:
+            Self for use in async with statements.
+        """
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit.
+
+        Args:
+            exc_type: Exception type if an exception occurred.
+            exc_val: Exception value if an exception occurred.
+            exc_tb: Exception traceback if an exception occurred.
+        """
         await self._http_client.aclose()
 
     async def verify_agent_availability(self) -> Dict[str, bool]:
-        """
-        Verify which agents are available
+        """Verify which agents are available.
+
+        Sends health check requests to all configured agents to determine
+        their availability status.
 
         Returns:
-            Dictionary mapping agent names to availability status
+            Dictionary mapping agent names to availability status (True/False).
         """
         agents = {
             "leader": self.endpoints.leader_url,
@@ -138,15 +200,21 @@ class PolyhegelA2AClient:
         return availability
 
     async def generate_themes(self, strategic_challenge: str, max_themes: int = 5) -> List[Dict[str, Any]]:
-        """
-        Generate strategic themes using the leader agent
+        """Generate strategic themes using the leader agent.
+
+        Sends a strategic challenge to the leader agent and receives back
+        a list of strategic themes for further development.
 
         Args:
-            strategic_challenge: Strategic challenge description
-            max_themes: Maximum number of themes to generate
+            strategic_challenge: Strategic challenge description.
+            max_themes: Maximum number of themes to generate. Defaults to 5.
 
         Returns:
-            List of theme dictionaries
+            List of theme dictionaries containing title and domain information.
+
+        Raises:
+            Exception: If communication with the leader agent fails, falls back
+                to mock themes instead of raising.
         """
         logger.info(f"Generating themes via A2A leader agent at {self.endpoints.leader_url}")
 
@@ -180,15 +248,21 @@ class PolyhegelA2AClient:
             ]
 
     async def develop_strategy(self, theme: Dict[str, Any], domain: Optional[str] = None) -> Dict[str, Any]:
-        """
-        Develop detailed strategy from theme using follower agent
+        """Develop detailed strategy from theme using follower agent.
+
+        Selects the appropriate specialized follower agent based on the domain
+        and sends the theme for detailed strategy development.
 
         Args:
-            theme: Theme dictionary from leader agent
-            domain: Strategic domain specialization
+            theme: Theme dictionary from leader agent containing title and domain.
+            domain: Strategic domain specialization. If None, uses general follower.
 
         Returns:
-            Strategy dictionary
+            Strategy dictionary with title, steps, and domain information.
+
+        Raises:
+            Exception: If communication with follower agent fails, falls back
+                to mock strategy instead of raising.
         """
         # Select appropriate follower agent based on domain
         follower_urls = self.endpoints.get_follower_urls()
@@ -239,16 +313,25 @@ class PolyhegelA2AClient:
     async def generate_hierarchical_strategies(
         self, strategic_challenge: str, max_themes: int = 5, context: Optional[Dict] = None
     ) -> List[StrategyChain]:
-        """
-        Generate strategies using hierarchical A2A delegation
+        """Generate strategies using hierarchical A2A delegation.
+
+        Orchestrates the full hierarchical strategy generation process:
+        1. Generates themes using the leader agent
+        2. Develops detailed strategies using specialized follower agents
+        3. Converts results to polyhegel StrategyChain format
+
+        Includes comprehensive telemetry and error handling throughout the process.
 
         Args:
-            strategic_challenge: Strategic challenge description
-            max_themes: Maximum number of themes to generate
-            context: Additional context information
+            strategic_challenge: Strategic challenge description.
+            max_themes: Maximum number of themes to generate. Defaults to 5.
+            context: Additional context information (currently unused).
 
         Returns:
-            List of StrategyChain objects
+            List of StrategyChain objects representing complete strategies.
+
+        Raises:
+            Exception: Re-raises any unhandled errors after recording telemetry.
         """
         logger.info("Starting hierarchical A2A strategy generation")
 
@@ -354,7 +437,19 @@ class PolyhegelA2AClient:
     def _convert_to_strategy_chain(
         self, theme: Dict[str, Any], strategy_data: Dict[str, Any], index: int
     ) -> StrategyChain:
-        """Convert A2A response to StrategyChain"""
+        """Convert A2A response to StrategyChain.
+
+        Transforms the raw strategy data from A2A agents into the polyhegel
+        StrategyChain format with proper StrategyStep and GenesisStrategy objects.
+
+        Args:
+            theme: Original theme dictionary from leader agent.
+            strategy_data: Strategy data from follower agent.
+            index: Index of this strategy in the generation batch.
+
+        Returns:
+            StrategyChain object ready for use in polyhegel systems.
+        """
 
         # Extract steps
         steps = []
