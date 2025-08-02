@@ -13,7 +13,7 @@ import yaml
 from typing import Dict, Optional, Any, List
 from pathlib import Path
 from dataclasses import dataclass
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 import logging
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,8 @@ class PromptTemplate(BaseModel):
     parameters: Optional[List[str]] = Field(default=None, description="List of template parameters")
     version: Optional[str] = Field(default="1.0", description="Prompt version")
 
-    @validator("file")
+    @field_validator("file")
+    @classmethod
     def validate_file_extension(cls, v):
         """Validate file has appropriate extension"""
         if not (v.endswith(".md") or v.endswith(".txt")):

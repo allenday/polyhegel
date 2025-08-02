@@ -8,7 +8,7 @@ in-memory session data for the refinement feedback loop.
 import time
 import logging
 from typing import Dict, List, Any, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 import statistics
 
@@ -51,8 +51,7 @@ class RefinementMetrics(BaseModel):
     refinement_cost: float = Field(default=0.0, ge=0.0, description="Time/compute cost for this refinement")
     roi_estimate: float = Field(default=0.0, description="Return on investment for refinement effort")
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for storage"""

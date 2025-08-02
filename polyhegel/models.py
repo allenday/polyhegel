@@ -6,7 +6,7 @@ from typing import List, Dict, Optional, Literal
 from enum import Enum
 import numpy as np
 import networkx as nx
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 
 class StrategyStep(BaseModel):
@@ -79,7 +79,8 @@ class StrategicTheme(BaseModel):
         default=None, description="Additional context about why this theme is strategically important"
     )
 
-    @validator("domain_alignment")
+    @field_validator("domain_alignment")
+    @classmethod
     def validate_domain_alignment(cls, v):
         """Validate Strategic domain alignment scores"""
         valid_domains = {"2.1", "2.2", "2.3"}
@@ -90,14 +91,16 @@ class StrategicTheme(BaseModel):
                 raise ValueError(f"Strategic alignment score must be between 1.0 and 5.0, got {score}")
         return v
 
-    @validator("key_concepts")
+    @field_validator("key_concepts")
+    @classmethod
     def validate_key_concepts(cls, v):
         """Validate key concepts are not empty"""
         if not v:
             raise ValueError("At least one key concept is required")
         return [concept.strip() for concept in v if concept.strip()]
 
-    @validator("success_criteria")
+    @field_validator("success_criteria")
+    @classmethod
     def validate_success_criteria(cls, v):
         """Validate success criteria are meaningful"""
         if not v:
@@ -150,8 +153,7 @@ class StrategyChain(BaseModel):
     technique_name: Optional[str] = None
     technique_domain: Optional[str] = None
 
-    class Config:
-        arbitrary_types_allowed = True  # Allow numpy arrays and networkx graphs
+    model_config = ConfigDict(arbitrary_types_allowed=True)  # Allow numpy arrays and networkx graphs
 
 
 class StrategyEvaluationResponse(BaseModel):

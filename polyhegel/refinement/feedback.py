@@ -7,7 +7,7 @@ generate automated strategy improvement suggestions.
 
 import logging
 from typing import Dict, List, Any, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from enum import Enum
 import statistics
 
@@ -71,8 +71,7 @@ class FeedbackAnalysis(BaseModel):
     refinement_priority: float = Field(default=0.5, ge=0.0, le=1.0, description="Refinement priority level")
     next_steps: List[str] = Field(default_factory=list)
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class FeedbackLoop:

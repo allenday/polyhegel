@@ -8,7 +8,7 @@ using systematic optimization protocols and performance feedback loops.
 import logging
 import time
 from typing import Dict, List, Any, Optional, Tuple
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from pathlib import Path
 import json
 from datetime import datetime
@@ -50,8 +50,7 @@ class RefinementConfiguration(BaseModel):
     save_intermediate_results: bool = True
     output_directory: Optional[Path] = None
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class RefinementSession(BaseModel):
@@ -79,8 +78,7 @@ class RefinementSession(BaseModel):
     total_llm_calls: int = Field(default=0, ge=0)
     total_cost_estimate: float = Field(default=0.0, ge=0.0)
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class RecursiveRefinementEngine:
