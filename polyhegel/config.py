@@ -13,6 +13,7 @@ load_dotenv()
 
 class ModelProvider(str, Enum):
     """Supported model providers"""
+
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     GOOGLE = "google"
@@ -22,14 +23,15 @@ class ModelProvider(str, Enum):
 
 class ModelPatterns:
     """Model name patterns for provider detection"""
-    OPENAI_PREFIXES = ('gpt-', 'o1-', 'text-davinci', 'text-curie', 'text-babbage', 'text-ada')
-    ANTHROPIC_PREFIXES = ('claude-', 'claude_')
-    GOOGLE_PREFIXES = ('gemini-', 'models/gemini-', 'palm-', 'bison-')
-    LOCAL_PREFIXES = ('llama-', 'mistral-', 'mixtral-')
-    
-    OPENAI_KEYWORDS = ('gpt', 'openai', 'davinci', 'curie')
-    ANTHROPIC_KEYWORDS = ('claude', 'anthropic')
-    GOOGLE_KEYWORDS = ('gemini', 'google', 'palm', 'bison')
+
+    OPENAI_PREFIXES = ("gpt-", "o1-", "text-davinci", "text-curie", "text-babbage", "text-ada")
+    ANTHROPIC_PREFIXES = ("claude-", "claude_")
+    GOOGLE_PREFIXES = ("gemini-", "models/gemini-", "palm-", "bison-")
+    LOCAL_PREFIXES = ("llama-", "mistral-", "mixtral-")
+
+    OPENAI_KEYWORDS = ("gpt", "openai", "davinci", "curie")
+    ANTHROPIC_KEYWORDS = ("claude", "anthropic")
+    GOOGLE_KEYWORDS = ("gemini", "google", "palm", "bison")
 
 
 class Config:
@@ -92,7 +94,7 @@ class Config:
                     return ModelProvider.GOOGLE.value
                 else:
                     return ModelProvider.UNKNOWN.value
-                
+
         except Exception:
             # Ultimate fallback
             return ModelProvider.UNKNOWN.value

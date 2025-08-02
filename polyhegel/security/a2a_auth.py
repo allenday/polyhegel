@@ -253,6 +253,7 @@ class A2AAuthManager:
 # Dependency injection for FastAPI
 _auth_manager_instance: Optional[A2AAuthManager] = None
 
+
 def get_auth_manager() -> A2AAuthManager:
     """Get auth manager instance"""
     global _auth_manager_instance

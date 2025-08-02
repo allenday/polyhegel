@@ -402,7 +402,9 @@ class TournamentRunner:
                 results["by_domain"][domain] = {"winner": group_strategies[0], "results": {"single_strategy": True}}
 
         # If we have winners from multiple domains, run final tournament
-        domain_winners = [result["winner"] for result in results["by_domain"].values() if result.get("winner") is not None]
+        domain_winners = [
+            result["winner"] for result in results["by_domain"].values() if result.get("winner") is not None
+        ]
 
         if len(domain_winners) > 1:
             overall_winner, final_results = await self.find_best_strategy(
