@@ -21,6 +21,14 @@ help:
 	@echo "  make agents-status - Check status of A2A agent servers"
 	@echo "  make agents-restart- Restart all A2A agent servers"
 	@echo ""
+	@echo "Developer Experience targets:"
+	@echo "  make dx-setup-core - Setup core polyhegel only"
+	@echo "  make dx-setup-examples - Setup with examples (extended functionality)"
+	@echo "  make dx-setup-dev  - Full development environment setup"
+	@echo "  make dx-discover   - Discover available techniques and capabilities"
+	@echo "  make dx-new-domain - Create a new custom domain (interactive)"
+	@echo "  make dx-doctor     - Diagnose and fix common DX issues"
+	@echo ""
 	@echo "Other targets:"
 	@echo "  make clean         - Remove cache and temporary files"
 	@echo "  make format        - Format code with black"
@@ -137,8 +145,44 @@ agents-restart:
 	@echo "🔄 Restarting Polyhegel A2A Agent Ecosystem..."
 	./scripts/run-all-agents.sh restart
 
+# Developer Experience targets
+dx-setup-core:
+	@echo "🏗️  Setting up Polyhegel Core..."
+	./scripts/polyhegel-setup.py core
+
+dx-setup-examples:
+	@echo "🏗️  Setting up Polyhegel with Examples..."
+	./scripts/polyhegel-setup.py with-examples
+
+dx-setup-dev:
+	@echo "🏗️  Setting up Polyhegel Development Environment..."
+	./scripts/polyhegel-setup.py dev
+
+dx-discover:
+	@echo "🔍 Discovering Polyhegel Capabilities..."
+	./scripts/polyhegel-setup.py discover
+
+dx-new-domain:
+	@echo "🏗️  Creating New Polyhegel Domain..."
+	@read -p "Enter domain name (e.g., marketing, hr-analytics): " domain_name; \
+	./scripts/polyhegel-create-domain.py "$$domain_name"
+
+dx-test-domain:
+	@echo "🧪 Testing Custom Domain..."
+	@read -p "Enter domain name to test: " domain_name; \
+	$(PYTHON) -c "from polyhegel.techniques.$$domain_name import ALL_TECHNIQUES; print(f'✓ $$domain_name domain: {len(ALL_TECHNIQUES)} techniques')"
+
+dx-doctor:
+	@echo "🏥 Running Polyhegel Health Check..."
+	./scripts/polyhegel-doctor.py
+
+dx-doctor-fix:
+	@echo "🏥 Running Polyhegel Health Check with Auto-Fix..."
+	./scripts/polyhegel-doctor.py --fix
+
 # Convenience aliases
 agents: agents-start
+dx: dx-discover
 
 # Release targets
 release-current:

@@ -211,3 +211,5 @@ __marimo__/
 md/
 uq_pipeline/
 tests/out/
+results/
+logs/

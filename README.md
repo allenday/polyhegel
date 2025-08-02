@@ -38,47 +38,33 @@ Polyhegel is a sophisticated strategic simulation framework that uses AI-driven 
 
 ## 🚀 Quick Start
 
-### Try It Now (No Setup Required!)
+**Choose your path:**
 
+### **Try It Now** (0 minutes, no setup)
 ```bash
-# Install from PyPI
 pip install polyhegel
-
-# Try it immediately with the demo
 polyhegel demo
-
-# Or with your own strategic challenge
-polyhegel demo "Launch a new fintech product"
 ```
 
-The demo shows how Polyhegel works without requiring API keys or configuration.
-
-### Full Installation
-
+### **Domain Expert** (5 minutes, strategic/product/tech domains)
 ```bash
-# Install from source for development
-git clone https://github.com/allenday/polyhegel.git
-cd polyhegel
-pip install -e .[dev]
+git clone https://github.com/allendy/polyhegel.git
+cd polyhegel && make dx-setup-examples
 ```
 
-### Real Simulations (API Keys Required)
-
+### **Developer** (10 minutes, full development environment)
 ```bash
-# Set up API keys
-export ANTHROPIC_API_KEY=your_key
+git clone https://github.com/allenday/polyhegel.git  
+cd polyhegel && make dx-setup-dev
+```
 
-# Run a strategic simulation
-polyhegel simulate "Develop a market entry strategy for AI products"
+**→ [Complete Getting Started Guide](GETTING_STARTED.md)** - Choose the right path for your needs.
 
-# Start the A2A agent ecosystem
-make agents-start
-
-# Run tests
-make test
-
-# Build documentation
-make docs
+### Discover Capabilities
+```bash
+make dx-discover              # Interactive capability discovery
+polyhegel discover           # CLI discovery
+polyhegel discover --domain strategic  # Domain-specific
 ```
 
 ### Python API
