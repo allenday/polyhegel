@@ -194,9 +194,9 @@ def check_broken_links():
         matches = re.findall(link_pattern, content)
 
         for link_text, link_url in matches:
-            # Skip external links, anchors, and mailto links
+            # Skip external links, anchors, mailto links, and generated reference links
             if (
-                link_url.startswith(("http", "mailto:", "#"))
+                link_url.startswith(("http", "mailto:", "#", "reference/"))
                 or link_url.startswith("../")
                 and not link_url.endswith(".md")
             ):
