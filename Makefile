@@ -1,4 +1,7 @@
-.PHONY: test test-unit test-integration test-slow test-all test-quick test-no-llm test-coverage clean help agents agents-start agents-stop agents-status agents-restart typecheck build docs install-dev
+.PHONY: test test-unit test-integration test-slow test-all test-quick test-no-llm test-coverage clean help agents agents-start agents-stop agents-status agents-restart typecheck build docs install-dev ci-setup ci-deps ci-security docs-serve
+
+# Python executable - detect if we're in CI or local dev
+PYTHON := $(shell if [ -f .venv/bin/python ]; then echo ".venv/bin/python"; else echo "python"; fi)
 
 # Default target
 help:
@@ -25,32 +28,38 @@ help:
 	@echo "  make typecheck     - Run type checking with mypy"
 	@echo "  make build         - Build Python package"
 	@echo "  make docs          - Build documentation"
+	@echo "  make docs-serve    - Serve documentation locally"
 	@echo "  make install-dev   - Install development dependencies"
+	@echo ""
+	@echo "CI targets:"
+	@echo "  make ci-setup      - Setup CI environment"
+	@echo "  make ci-deps       - Install CI dependencies with constraints"
+	@echo "  make ci-security   - Run security scans"
 
 # Default test target
 test: test-unit
 
 # Test targets
 test-unit:
-	source .venv/bin/activate && pytest -m "unit" -v --tb=short
+	$(PYTHON) -m pytest -m "unit" -v --tb=short
 
 test-integration:
-	source .venv/bin/activate && pytest -m "integration" -v --tb=short
+	$(PYTHON) -m pytest -m "integration" -v --tb=short
 
 test-slow:
-	source .venv/bin/activate && pytest -m "slow" -v --tb=short
+	$(PYTHON) -m pytest -m "slow" -v --tb=short
 
 test-all:
-	source .venv/bin/activate && pytest -v --tb=short
+	$(PYTHON) -m pytest -v --tb=short
 
 test-quick:
-	source .venv/bin/activate && pytest -m "unit and not slow" -v --tb=short
+	$(PYTHON) -m pytest -m "unit and not slow" -v --tb=short
 
 test-no-llm:
-	source .venv/bin/activate && pytest -m "not llm" -v --tb=short
+	$(PYTHON) -m pytest -m "not llm" -v --tb=short
 
 test-coverage:
-	source .venv/bin/activate && pytest --cov=polyhegel --cov-report=html --cov-report=term -v
+	$(PYTHON) -m pytest --cov=polyhegel --cov-report=html --cov-report=term -v
 
 # Utility targets
 clean:
@@ -61,24 +70,48 @@ clean:
 	find . -type d -name "htmlcov" -exec rm -rf {} +
 
 format:
-	source .venv/bin/activate && black polyhegel tests
+	$(PYTHON) -m black polyhegel tests
 
 lint:
-	source .venv/bin/activate && ruff check polyhegel tests
-	source .venv/bin/activate && black --check polyhegel tests
+	$(PYTHON) -m ruff check polyhegel tests
+	$(PYTHON) -m black --check polyhegel tests
 
 typecheck:
-	source .venv/bin/activate && mypy polyhegel --ignore-missing-imports
+	@echo "🔍 Running type checking with mypy..."
+	$(PYTHON) -m mypy polyhegel --config-file mypy.ini
+	@echo "✅ Type check passed"
 
 build:
-	source .venv/bin/activate && python -m build
+	$(PYTHON) -m build
 
 docs:
 	@echo "📚 Building documentation..."
-	@echo "Documentation target not yet implemented - placeholder for future docs build"
+	$(PYTHON) -m mkdocs build
 
 install-dev:
-	source .venv/bin/activate && pip install -e .[dev]
+	$(PYTHON) -m pip install -e .[dev]
+
+# CI-specific targets
+ci-setup:
+	@echo "🔧 Setting up CI environment..."
+	$(PYTHON) -m pip install --upgrade pip
+
+ci-deps:
+	@echo "📦 Installing dependencies with constraints..."
+	pip install --constraint constraints.txt "numpy<2.0"
+	pip install --constraint constraints.txt --no-binary scikit-learn-extra "scikit-learn-extra"
+	pip install --constraint constraints.txt -e .[dev]
+
+ci-security:
+	@echo "🔍 Running security scans..."
+	pip install safety bandit pip-audit
+	pip-audit --format=json --output=audit-results.json || echo "⚠️  pip-audit found issues"
+	bandit -r polyhegel -f json -o bandit-results.json || echo "⚠️  bandit found issues"  
+	safety check --json --output safety-results.json || echo "⚠️  safety found issues"
+
+docs-serve:
+	@echo "📚 Serving documentation locally..."
+	$(PYTHON) -m mkdocs serve
 
 # A2A Agent management
 agents-start:

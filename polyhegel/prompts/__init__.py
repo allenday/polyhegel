@@ -8,18 +8,16 @@ This module provides a pydantic-ai compatible prompt management system with:
 - Version management
 """
 
+from pathlib import Path
 from .loader import (
     PromptLoader,
     get_prompt_loader,
     get_system_prompt,
     get_template,
-    load_prompt  # Legacy compatibility
+    load_prompt,  # Legacy compatibility
 )
 
-__all__ = [
-    'PromptLoader',
-    'get_prompt_loader', 
-    'get_system_prompt',
-    'get_template',
-    'load_prompt'
-]
+# Constants for backwards compatibility
+PROMPTS_DIR = Path(__file__).parent
+
+__all__ = ["PromptLoader", "get_prompt_loader", "get_system_prompt", "get_template", "load_prompt", "PROMPTS_DIR"]

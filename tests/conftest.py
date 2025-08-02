@@ -21,19 +21,19 @@ def pytest_collection_modifyitems(config, items):
         # Auto-mark integration tests
         if "test_integration" in item.nodeid or "test_full_integration" in item.nodeid:
             item.add_marker(pytest.mark.integration)
-            
+
         # Auto-mark web tests
         if "test_web_tools" in item.nodeid:
             item.add_marker(pytest.mark.web)
-            
+
         # Auto-mark git tests
         if "test_git_tools" in item.nodeid:
             item.add_marker(pytest.mark.git)
-            
+
         # Auto-mark slow tests
         if any(name in item.nodeid for name in ["test_full_integration", "test_tournament"]):
             item.add_marker(pytest.mark.slow)
-            
+
         # Auto-mark unit tests (if not already marked)
         if not any(mark.name in ["integration", "slow", "llm", "web", "git"] for mark in item.iter_markers()):
             if "test_models" in item.nodeid or "test_base_agent" in item.nodeid or "test_leader_agent" in item.nodeid:

@@ -210,3 +210,4 @@ __marimo__/
 .claude/
 md/
 uq_pipeline/
+tests/out/

@@ -21,4 +21,12 @@ Compare these strategies by evaluating:
 
 5. **Strategic Alignment**: Which approach better aligns with core strategic domains and constraints?
 
-Examine the differences thoroughly, then provide your preference by stating "Preferred Strategy Index: " followed by the number (1 or 2) and a brief justification focusing on strategic effectiveness.
+Provide your analysis including:
+- **Preferred Strategy Index**: 1 or 2 (which strategy is better)
+- **Confidence Score**: 0.0-1.0 (how confident you are in this choice)
+- **Reasoning**: Brief explanation of why this strategy was preferred
+- **Coherence Comparison**: Scores for both strategies (1-10 scale)
+- **Feasibility Comparison**: Scores for both strategies (1-10 scale) 
+- **Risk Management Comparison**: Scores for both strategies (1-10 scale)
+
+Focus on strategic effectiveness and provide specific, actionable comparisons.

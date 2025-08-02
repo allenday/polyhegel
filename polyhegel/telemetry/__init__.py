@@ -15,12 +15,12 @@ from .a2a_telemetry import (
     get_telemetry_collector,
     setup_telemetry_for_agent,
     time_operation,
-    timed_operation
+    timed_operation,
 )
 
 __all__ = [
     "MetricType",
-    "EventType", 
+    "EventType",
     "TelemetryEvent",
     "MetricValue",
     "TelemetryCollector",
@@ -29,5 +29,5 @@ __all__ = [
     "get_telemetry_collector",
     "setup_telemetry_for_agent",
     "time_operation",
-    "timed_operation"
+    "timed_operation",
 ]

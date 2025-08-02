@@ -1,0 +1,11 @@
+mkdocs==1.5.3
+mkdocs-material==9.5.3
+mkdocstrings[python]==0.24.0
+mkdocs-gen-files==0.5.0
+mkdocs-literate-nav==0.6.0
+mkdocs-section-index==0.3.5
+mkdocs-autorefs==0.5.0
+mkdocs-jupyter==0.24.6
+pygments==2.17.2
+pymdown-extensions==10.5
+mkdocs-awesome-pages-plugin==2.9.2
