@@ -1,0 +1,32 @@
+Strategic Situation:
+{question}
+
+Presented below are two strategic approaches:
+
+**Strategy 1:**
+{solution1}
+
+**Strategy 2:**
+{solution2}
+
+Compare these strategies by evaluating:
+
+1. **Strategic Viability**: Which approach is more realistic and executable given available resources?
+
+2. **Coherence**: Which strategy has better logical flow and clearer dependencies between steps?
+
+3. **Risk Management**: Which approach better identifies and mitigates potential failure modes?
+
+4. **Resource Efficiency**: Which strategy makes more effective use of available assets and capabilities?
+
+5. **Strategic Alignment**: Which approach better aligns with core strategic domains and constraints?
+
+Provide your analysis including:
+- **Preferred Strategy Index**: 1 or 2 (which strategy is better)
+- **Confidence Score**: 0.0-1.0 (how confident you are in this choice)
+- **Reasoning**: Brief explanation of why this strategy was preferred
+- **Coherence Comparison**: Scores for both strategies (1-10 scale)
+- **Feasibility Comparison**: Scores for both strategies (1-10 scale) 
+- **Risk Management Comparison**: Scores for both strategies (1-10 scale)
+
+Focus on strategic effectiveness and provide specific, actionable comparisons.
