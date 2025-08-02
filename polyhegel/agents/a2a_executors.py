@@ -5,10 +5,12 @@ Minimal A2A protocol implementation for strategic simulation.
 """
 
 import logging
+import uuid
 from typing import Any, List, Optional
 
 from a2a.server.agent_execution import AgentExecutor, RequestContext
 from a2a.server.events import EventQueue
+from a2a.types import TaskArtifactUpdateEvent
 from a2a.utils import new_agent_text_message, new_data_artifact
 
 from ..strategic_techniques import StrategyDomain
@@ -69,7 +71,11 @@ class LeaderAgentExecutor(AgentExecutor):
                 data={"themes": themes, "total_count": len(themes)},
                 description="Strategic themes",
             )
-            await event_queue.enqueue_event(artifact)  # type: ignore[arg-type]
+            task_id = context.task_id or str(uuid.uuid4())
+            artifact_event = TaskArtifactUpdateEvent(
+                task_id=task_id, context_id=task_id, artifact=artifact, append=False, last_chunk=True
+            )
+            await event_queue.enqueue_event(artifact_event)
 
             # Record successful completion
             self._telemetry_collector.record_event(
@@ -159,7 +165,11 @@ class FollowerAgentExecutor(AgentExecutor):
             artifact = new_data_artifact(
                 name=f"strategy_{context.task_id}.json", data=strategy, description="Implementation strategy"
             )
-            await event_queue.enqueue_event(artifact)  # type: ignore[arg-type]
+            task_id = context.task_id or str(uuid.uuid4())
+            artifact_event = TaskArtifactUpdateEvent(
+                task_id=task_id, context_id=task_id, artifact=artifact, append=False, last_chunk=True
+            )
+            await event_queue.enqueue_event(artifact_event)
 
             # Record successful completion
             self._telemetry_collector.record_event(
