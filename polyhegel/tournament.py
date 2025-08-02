@@ -12,7 +12,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from .models import StrategyChain
-from .strategy_evaluator import StrategyEvaluator
+from .evaluator import Evaluator as StrategyEvaluator
 
 logger = logging.getLogger(__name__)
 

@@ -13,6 +13,7 @@ from typing import Union
 
 from .simulator import PolyhegelSimulator
 from .config import Config
+from .models import StrategyChain, GenesisStrategy, StrategyStep
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +46,192 @@ def read_text_from_file(file_path: Union[str, Path]) -> str:
         # Try to read as text
         with open(file_path, "r", encoding="utf-8") as f:
             return f.read()
+
+
+async def run_demo(prompt: str, output_format: str):
+    """Run a demonstration with mock data"""
+    print("🚀 Welcome to Polyhegel Demo!")
+    print("This demo shows how Polyhegel works without requiring API keys.\n")
+
+    print(f"📋 Strategic Challenge: {prompt}\n")
+    print("🔄 Generating mock strategies...")
+
+    # Create mock strategies
+    mock_strategies = create_mock_strategies(prompt)
+
+    print(f"✅ Generated {len(mock_strategies)} strategy options\n")
+
+    if output_format == "friendly":
+        display_friendly_demo_results(mock_strategies, prompt)
+    else:
+        display_json_demo_results(mock_strategies, prompt)
+
+    print("\n🎯 Next Steps:")
+    print("1. Set up API keys: export ANTHROPIC_API_KEY=your_key")
+    print("2. Run real simulation: polyhegel simulate --output results/ 'your prompt'")
+    print("3. Explore Python API: from polyhegel import PolyhegelSimulator")
+    print("\n📚 Full documentation: https://allendy.github.io/polyhegel/")
+
+
+def create_mock_strategies(prompt: str) -> list[StrategyChain]:
+    """Create mock strategies for demonstration"""
+    strategies = []
+
+    # Strategy 1: Conservative approach
+    strategy1 = GenesisStrategy(
+        title="Market Research & Validation Approach",
+        steps=[
+            StrategyStep(
+                action="Conduct comprehensive market research",
+                prerequisites=["Budget allocated", "Research team assembled"],
+                outcome="Clear market understanding and customer validation",
+                risks=["Research may reveal unfavorable market conditions"],
+            ),
+            StrategyStep(
+                action="Develop minimum viable product (MVP)",
+                prerequisites=["Market research complete", "Technical team ready"],
+                outcome="Working prototype ready for testing",
+                risks=["MVP may not meet market expectations"],
+            ),
+            StrategyStep(
+                action="Launch limited beta program",
+                prerequisites=["MVP completed", "Beta users identified"],
+                outcome="Product validated with real users",
+                risks=["Limited user feedback may not be representative"],
+            ),
+        ],
+        alignment_score={"resource_acquisition": 3.5, "strategic_security": 4.2, "value_catalysis": 3.8},
+        estimated_timeline="6-9 months",
+        resource_requirements=["Market research budget", "Technical development team", "Beta user community"],
+    )
+
+    # Strategy 2: Aggressive approach
+    strategy2 = GenesisStrategy(
+        title="Rapid Market Entry Strategy",
+        steps=[
+            StrategyStep(
+                action="Launch with existing product features",
+                prerequisites=["Core product ready", "Marketing campaign prepared"],
+                outcome="Immediate market presence and early revenue",
+                risks=["Product may not be fully optimized"],
+            ),
+            StrategyStep(
+                action="Scale marketing and customer acquisition",
+                prerequisites=["Initial launch complete", "Marketing budget available"],
+                outcome="Rapid customer growth and market share capture",
+                risks=["High customer acquisition costs"],
+            ),
+            StrategyStep(
+                action="Iterate based on market feedback",
+                prerequisites=["Customer feedback collected", "Development capacity available"],
+                outcome="Product-market fit achieved through rapid iteration",
+                risks=["Fast iteration may introduce bugs or instability"],
+            ),
+        ],
+        alignment_score={"resource_acquisition": 4.5, "strategic_security": 2.8, "value_catalysis": 4.7},
+        estimated_timeline="3-4 months",
+        resource_requirements=["Large marketing budget", "Agile development team", "Customer support infrastructure"],
+    )
+
+    # Strategy 3: Partnership approach
+    strategy3 = GenesisStrategy(
+        title="Strategic Partnership Launch",
+        steps=[
+            StrategyStep(
+                action="Identify and secure key strategic partners",
+                prerequisites=["Partnership strategy defined", "Business development team"],
+                outcome="Strong partnerships established for market entry",
+                risks=["Partner priorities may not align with timeline"],
+            ),
+            StrategyStep(
+                action="Co-develop integrated solutions",
+                prerequisites=["Partners onboarded", "Technical integration plan"],
+                outcome="Enhanced product value through integration",
+                risks=["Technical integration complexity"],
+            ),
+            StrategyStep(
+                action="Launch through partner channels",
+                prerequisites=["Integrated solution ready", "Partner sales training complete"],
+                outcome="Leveraged distribution through established channels",
+                risks=["Dependence on partner performance"],
+            ),
+        ],
+        alignment_score={"resource_acquisition": 4.0, "strategic_security": 3.9, "value_catalysis": 4.3},
+        estimated_timeline="4-6 months",
+        resource_requirements=[
+            "Business development team",
+            "Technical integration resources",
+            "Partner relationship management",
+        ],
+    )
+
+    strategies.extend(
+        [
+            StrategyChain(strategy=strategy1, source_sample=0, temperature=0.3),
+            StrategyChain(strategy=strategy2, source_sample=1, temperature=0.9),
+            StrategyChain(strategy=strategy3, source_sample=2, temperature=0.7),
+        ]
+    )
+
+    return strategies
+
+
+def display_friendly_demo_results(strategies: list[StrategyChain], prompt: str):
+    """Display demo results in a user-friendly format"""
+    print("📊 Generated Strategy Options:\n")
+
+    for i, chain in enumerate(strategies, 1):
+        strategy = chain.strategy
+        temp_desc = {0.3: "Conservative", 0.7: "Balanced", 0.9: "Aggressive"}[chain.temperature]
+
+        print(f"🎯 Strategy {i}: {strategy.title}")
+        print(f"   Approach: {temp_desc} (temperature: {chain.temperature})")
+        print(f"   Timeline: {strategy.estimated_timeline}")
+        print(f"   Key Steps: {len(strategy.steps)} execution phases")
+
+        # Show top alignment score
+        best_domain = max(strategy.alignment_score.items(), key=lambda x: x[1])
+        print(f"   Strongest in: {best_domain[0].replace('_', ' ').title()} ({best_domain[1]:.1f}/5.0)")
+        print()
+
+    # Simulate trunk selection
+    trunk_strategy = max(strategies, key=lambda s: sum(s.strategy.alignment_score.values()))
+    print(f"🏆 Recommended Trunk Strategy: {trunk_strategy.strategy.title}")
+    print(f"   Total alignment score: {sum(trunk_strategy.strategy.alignment_score.values()):.1f}")
+    print("   Why: Highest overall strategic alignment across all domains")
+
+
+def display_json_demo_results(strategies: list[StrategyChain], prompt: str):
+    """Display demo results in JSON format"""
+    results = {
+        "prompt": prompt,
+        "demo_mode": True,
+        "total_strategies": len(strategies),
+        "strategies": [],
+        "trunk_recommendation": None,
+    }
+
+    for chain in strategies:
+        strategy_data = {
+            "title": chain.strategy.title,
+            "temperature": chain.temperature,
+            "timeline": chain.strategy.estimated_timeline,
+            "alignment_scores": chain.strategy.alignment_score,
+            "total_score": sum(chain.strategy.alignment_score.values()),
+            "steps_count": len(chain.strategy.steps),
+            "resource_requirements": chain.strategy.resource_requirements,
+        }
+        results["strategies"].append(strategy_data)
+
+    # Find trunk strategy
+    trunk_strategy = max(strategies, key=lambda s: sum(s.strategy.alignment_score.values()))
+    results["trunk_recommendation"] = {
+        "title": trunk_strategy.strategy.title,
+        "total_score": sum(trunk_strategy.strategy.alignment_score.values()),
+        "reasoning": "Highest overall strategic alignment",
+    }
+
+    print(json.dumps(results, indent=2))
 
 
 def main():
@@ -92,9 +279,29 @@ Environment Variables:
 
     subparsers = parser.add_subparsers(dest="command", help="Command to execute")
 
+    # Demo command (no API keys required)
+    demo_parser = subparsers.add_parser(
+        "demo", help="Run a demonstration with sample strategies (no API keys required)"
+    )
+    demo_parser.add_argument(
+        "prompt",
+        nargs="?",
+        default="Develop a go-to-market strategy for a new AI product",
+        help="Strategic challenge to demonstrate (optional)",
+    )
+    demo_parser.add_argument(
+        "--output-format",
+        choices=["friendly", "json"],
+        default="friendly",
+        help="Output format: friendly summary or full JSON",
+    )
+
     # Simulate command
     simulate_parser = subparsers.add_parser("simulate", help="Run strategy simulation")
-    simulate_parser.add_argument("--output", required=True, help="Output directory path")
+    simulate_parser.add_argument(
+        "prompt", nargs="?", help="Strategic challenge to analyze (optional, can use --user-prompt-file instead)"
+    )
+    simulate_parser.add_argument("--output", help="Output directory path (optional, defaults to current directory)")
     simulate_parser.add_argument("--model", default=Config.DEFAULT_MODEL, help="Default model to use")
     simulate_parser.add_argument("--leader-model", help="Model for leader agent (overrides --model)")
     simulate_parser.add_argument("--follower-model", help="Model for follower agents (defaults to leader model)")
@@ -141,6 +348,11 @@ Environment Variables:
         return
 
     try:
+        if args.command == "demo":
+            # Run demo mode with mock data
+            asyncio.run(run_demo(args.prompt, args.output_format))
+            return
+
         if args.command == "models":
             # Use model manager directly for listing
             from .model_manager import ModelManager
@@ -171,22 +383,48 @@ Environment Variables:
                     logger.error(f"Failed to load system prompt file: {str(e)}")
                     sys.exit(1)
 
-            # Load user prompt from file
+            # Determine user prompt (from argument or file)
             user_prompt = None
-            if args.user_prompt_file:
+            if args.prompt:
+                user_prompt = args.prompt
+                logger.info(f"Using prompt from command line: {args.prompt[:50]}...")
+            elif args.user_prompt_file:
                 try:
                     user_prompt = read_text_from_file(args.user_prompt_file)
                     logger.info(f"Loaded user prompt from: {args.user_prompt_file}")
                 except Exception as e:
                     logger.error(f"Failed to load user prompt file: {str(e)}")
                     sys.exit(1)
+            else:
+                logger.error("Must provide either a prompt argument or --user-prompt-file")
+                print("Error: Please provide a strategic challenge either as:")
+                print("  polyhegel simulate 'your strategic challenge'")
+                print("  polyhegel simulate --user-prompt-file challenge.txt")
+                print("\nFor a quick demo without API keys: polyhegel demo")
+                sys.exit(1)
 
             # Determine models to use
             leader_model = args.leader_model or args.model
             follower_model = args.follower_model or leader_model
 
             # Initialize simulator with leader model
-            simulator = PolyhegelSimulator(model_name=leader_model, api_key=args.api_key)
+            try:
+                simulator = PolyhegelSimulator(model_name=leader_model, api_key=args.api_key)
+            except Exception as e:
+                if "API" in str(e) or "key" in str(e).lower():
+                    logger.error("API key configuration error")
+                    print("\n❌ API Key Error:")
+                    print("Polyhegel requires API keys to generate strategies.\n")
+                    print("Quick solutions:")
+                    print("1. Try the demo first: polyhegel demo")
+                    print("2. Set up API keys:")
+                    print("   export ANTHROPIC_API_KEY=your_key")
+                    print("   export OPENAI_API_KEY=your_key")
+                    print("3. Create a .env file with your keys\n")
+                    print("📚 Setup guide: https://allendy.github.io/polyhegel/getting-started/installation/")
+                    sys.exit(1)
+                else:
+                    raise e
 
             # TODO: Implement follower model support in the simulator architecture
             if follower_model != leader_model:
@@ -242,7 +480,7 @@ Environment Variables:
             )
 
             # Create output directory
-            output_dir = Path(args.output)
+            output_dir = Path(args.output) if args.output else Path(".")
             output_dir.mkdir(parents=True, exist_ok=True)
 
             # Save results
