@@ -7,7 +7,6 @@ from typing import List, Dict, Optional, Any
 import numpy as np
 import hdbscan
 from sklearn_extra.cluster import KMedoids
-from sklearn.metrics.pairwise import cosine_similarity
 
 from .models import StrategyChain
 from .config import Config

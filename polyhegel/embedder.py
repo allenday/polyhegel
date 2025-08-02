@@ -82,12 +82,12 @@ class StrategyEmbedder:
         """
         if not chains:
             raise ValueError("No chains provided")
-        
+
         # Filter valid embeddings
         valid_embeddings = [chain.embedding for chain in chains if chain.embedding is not None]
         if not valid_embeddings:
             raise ValueError("No valid embeddings found in chains")
-        
+
         embeddings = np.vstack(valid_embeddings)
 
         # Compute cosine similarity

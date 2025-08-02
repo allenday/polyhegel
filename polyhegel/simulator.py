@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 class SimulationStatistics(BaseModel):
     """Statistics from a simulation run"""
+
     total_strategies: int
     average_steps: float
     temperature_distribution: Dict[float, int]
