@@ -38,6 +38,26 @@ This directory contains the CI/CD workflows for the Polyhegel project.
   - Artifact upload for review
   - Documentation structure validation
 
+### `release.yml` - Release Management
+- **Trigger**: 
+  - Manual dispatch (workflow_dispatch) 
+  - Published GitHub releases
+- **Purpose**: Automated release creation and publishing
+- **Jobs**:
+  - `validate-release`: Version validation and testing
+  - `create-github-release`: GitHub release creation with changelog
+  - `build-and-publish`: Package building and asset upload
+  - `deploy-docs`: Documentation deployment for release
+  - `notify-completion`: Release summary and status
+- **Features**:
+  - Semantic version validation
+  - Automatic changelog generation
+  - Package building and verification
+  - GitHub release asset upload
+  - Documentation deployment
+  - Pre-release support
+  - PyPI publishing (when enabled)
+
 ## Manual Actions
 
 ### Build Documentation
@@ -45,6 +65,21 @@ This directory contains the CI/CD workflows for the Polyhegel project.
 2. Select "Build Documentation" workflow
 3. Click "Run workflow"
 4. Optionally check "Deploy to GitHub Pages" for immediate deployment
+
+### Create Release
+1. **Local version bump** (recommended):
+   ```bash
+   make release-minor  # or release-major, release-patch, release-prerelease
+   git push origin main --tags
+   ```
+
+2. **Manual GitHub Release**:
+   - Go to Actions tab in GitHub
+   - Select "Release" workflow  
+   - Click "Run workflow"
+   - Enter version (e.g., "1.2.0")
+   - Choose if it's a pre-release
+   - Click "Run workflow"
 
 ### Trigger Integration Tests
 Integration tests run automatically on `main` branch pushes, or can be triggered by:

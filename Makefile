@@ -1,4 +1,4 @@
-.PHONY: test test-unit test-integration test-slow test-all test-quick test-no-llm test-coverage clean help agents agents-start agents-stop agents-status agents-restart typecheck build docs install-dev ci-setup ci-deps ci-security docs-serve
+.PHONY: test test-unit test-integration test-slow test-all test-quick test-no-llm test-coverage clean help agents agents-start agents-stop agents-status agents-restart typecheck build docs install-dev ci-setup ci-deps ci-security docs-serve release-major release-minor release-patch release-prerelease release-current
 
 # Python executable - detect if we're in CI or local dev
 PYTHON := $(shell if [ -f .venv/bin/python ]; then echo ".venv/bin/python"; else echo "python"; fi)
@@ -35,6 +35,13 @@ help:
 	@echo "  make ci-setup      - Setup CI environment"
 	@echo "  make ci-deps       - Install CI dependencies with constraints"
 	@echo "  make ci-security   - Run security scans"
+	@echo ""
+	@echo "Release targets:"
+	@echo "  make release-current    - Show current version"
+	@echo "  make release-major      - Bump major version (X.0.0)"
+	@echo "  make release-minor      - Bump minor version (X.Y.0)"  
+	@echo "  make release-patch      - Bump patch version (X.Y.Z)"
+	@echo "  make release-prerelease - Bump prerelease version (X.Y.Z-alpha.N)"
 
 # Default test target
 test: test-unit
@@ -132,3 +139,23 @@ agents-restart:
 
 # Convenience aliases
 agents: agents-start
+
+# Release targets
+release-current:
+	$(PYTHON) scripts/release.py current
+
+release-major:
+	$(PYTHON) scripts/release.py bump major --commit --tag
+	@echo "🚀 Major version bumped! Push with: git push origin main --tags"
+
+release-minor:
+	$(PYTHON) scripts/release.py bump minor --commit --tag
+	@echo "🚀 Minor version bumped! Push with: git push origin main --tags"
+
+release-patch:
+	$(PYTHON) scripts/release.py bump patch --commit --tag
+	@echo "🚀 Patch version bumped! Push with: git push origin main --tags"
+
+release-prerelease:
+	$(PYTHON) scripts/release.py bump prerelease --commit --tag
+	@echo "🚀 Prerelease version bumped! Push with: git push origin main --tags"
