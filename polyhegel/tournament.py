@@ -28,7 +28,7 @@ class StrategyTournament:
             evaluator: StrategyEvaluator instance for pairwise comparisons
         """
         self.evaluator = evaluator
-        self.results = {}
+        self.results: Dict[str, Any] = {}
 
     async def run_tournament(
         self,
@@ -37,7 +37,7 @@ class StrategyTournament:
         num_comparisons: int = 1,
         save_results: bool = True,
         results_file: Optional[str] = None,
-    ) -> Tuple[StrategyChain, Dict]:
+    ) -> Tuple[Optional[StrategyChain], Dict[Any, Any]]:
         """
         Run a tournament to find the best strategy
 
@@ -57,7 +57,7 @@ class StrategyTournament:
         logger.info(f"Starting tournament with {len(strategies)} strategies")
 
         # Initialize results tracking
-        tournament_results = {
+        tournament_results: Dict[str, Any] = {
             "strategies": {i: strategy for i, strategy in enumerate(strategies)},
             "comparisons": [],
             "voting_results": {},
@@ -184,7 +184,7 @@ class StrategyTournament:
         Returns:
             Aggregated voting result
         """
-        voting = defaultdict(int)
+        voting: Dict[int, int] = defaultdict(int)
 
         for result in comparison_results:
             preferred = result.get("preferred_strategy", 1)
@@ -226,8 +226,8 @@ class StrategyTournament:
         logger.info(f"Starting round-robin tournament with {len(strategies)} strategies")
 
         # Track wins and losses for each strategy
-        wins = defaultdict(int)
-        losses = defaultdict(int)
+        wins: Dict[int, int] = defaultdict(int)
+        losses: Dict[int, int] = defaultdict(int)
         head_to_head = {}
         all_comparisons = []
 
@@ -341,7 +341,7 @@ class TournamentRunner:
         num_comparisons: int = 1,
         save_results: bool = False,
         results_file: Optional[str] = None,
-    ) -> Tuple[StrategyChain, Dict]:
+    ) -> Tuple[Optional[StrategyChain], Dict[Any, Any]]:
         """
         Find the best strategy using tournament selection
 
@@ -389,7 +389,7 @@ class TournamentRunner:
             domain = getattr(strategy, "technique_domain", "unknown")
             domain_groups[domain].append(strategy)
 
-        results = {"by_domain": {}, "overall_winner": None}
+        results: Dict[str, Any] = {"by_domain": {}, "overall_winner": None}
 
         # Run tournament within each domain group
         for domain, group_strategies in domain_groups.items():
@@ -402,7 +402,7 @@ class TournamentRunner:
                 results["by_domain"][domain] = {"winner": group_strategies[0], "results": {"single_strategy": True}}
 
         # If we have winners from multiple domains, run final tournament
-        domain_winners = [result["winner"] for result in results["by_domain"].values() if result["winner"] is not None]
+        domain_winners = [result["winner"] for result in results["by_domain"].values() if result.get("winner") is not None]
 
         if len(domain_winners) > 1:
             overall_winner, final_results = await self.find_best_strategy(

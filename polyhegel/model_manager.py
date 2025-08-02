@@ -4,7 +4,7 @@ Model management for Polyhegel - handles pydantic-ai model discovery and initial
 
 import logging
 import os
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from pydantic_ai import models
 from pydantic_ai.models import Model
 
@@ -27,7 +27,7 @@ class ModelManager:
 
         try:
             # Try to discover models by attempting to create them with dummy API keys
-            available_models = {}
+            available_models: Dict[str, List[str]] = {}
 
             # Test each provider by trying to initialize a model
             test_models = {
@@ -52,7 +52,7 @@ class ModelManager:
                     models.infer_model(test_model)
 
                     # If we get here, the provider is supported
-                    available_models[provider] = f"Models available (use any valid {provider} model name)"
+                    available_models[provider] = [f"Models available (use any valid {provider} model name)"]
 
                     # Restore original key
                     if original_key is not None:
@@ -78,7 +78,7 @@ class ModelManager:
             logger.error(f"Failed to discover models from pydantic-ai: {e}")
             raise
 
-    def list_models_with_availability(self) -> Dict[str, Dict[str, any]]:
+    def list_models_with_availability(self) -> Dict[str, Dict[str, Any]]:
         """List models with their availability status based on API keys"""
         models_dict = self.discover_available_models()
         availability = {}

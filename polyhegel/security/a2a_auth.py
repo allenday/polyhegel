@@ -9,7 +9,7 @@ import hashlib
 import time
 import uuid
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Any
 from enum import Enum
 import os
 import logging
@@ -66,7 +66,7 @@ class SecurityConfig:
     require_tls: bool = True
     rate_limit_per_minute: int = 100
     max_request_size: int = 10 * 1024 * 1024  # 10MB
-    allowed_origins: List[str] = None
+    allowed_origins: Optional[List[str]] = None
 
     @classmethod
     def from_env(cls) -> "SecurityConfig":
@@ -80,7 +80,7 @@ class SecurityConfig:
             rate_limit_per_minute=int(os.getenv("POLYHEGEL_RATE_LIMIT", "100")),
             max_request_size=int(os.getenv("POLYHEGEL_MAX_REQUEST_SIZE", str(10 * 1024 * 1024))),
             allowed_origins=(
-                os.getenv("POLYHEGEL_ALLOWED_ORIGINS", "").split(",")
+                [origin.strip() for origin in os.getenv("POLYHEGEL_ALLOWED_ORIGINS", "").split(",")]
                 if os.getenv("POLYHEGEL_ALLOWED_ORIGINS")
                 else None
             ),
@@ -106,7 +106,7 @@ class A2AAuthManager:
 
     def _setup_default_agents(self):
         """Setup default agent credentials"""
-        default_agents = [
+        default_agents: List[Dict[str, Any]] = [
             {
                 "agent_id": "polyhegel-leader",
                 "role": AgentRole.LEADER,
@@ -215,13 +215,14 @@ class A2AAuthManager:
         if additional_claims:
             payload.update(additional_claims)
 
-        return jwt.encode(payload, self.config.jwt_secret, algorithm=self.config.jwt_algorithm)
+        token = jwt.encode(payload, self.config.jwt_secret, algorithm=self.config.jwt_algorithm)
+        return str(token)
 
-    def verify_jwt_token(self, token: str) -> Dict:
+    def verify_jwt_token(self, token: str) -> Dict[str, Any]:
         """Verify JWT token and return payload"""
         try:
             payload = jwt.decode(token, self.config.jwt_secret, algorithms=[self.config.jwt_algorithm])
-            return payload
+            return dict(payload)
         except jwt.ExpiredSignatureError:
             raise HTTPException(status_code=401, detail="Token expired")
         except jwt.InvalidTokenError:
@@ -250,12 +251,15 @@ class A2AAuthManager:
 
 
 # Dependency injection for FastAPI
+_auth_manager_instance: Optional[A2AAuthManager] = None
+
 def get_auth_manager() -> A2AAuthManager:
     """Get auth manager instance"""
-    if not hasattr(get_auth_manager, "_instance"):
+    global _auth_manager_instance
+    if _auth_manager_instance is None:
         config = SecurityConfig.from_env()
-        get_auth_manager._instance = A2AAuthManager(config)
-    return get_auth_manager._instance
+        _auth_manager_instance = A2AAuthManager(config)
+    return _auth_manager_instance
 
 
 async def verify_api_key_auth(
