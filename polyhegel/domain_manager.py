@@ -30,7 +30,8 @@ class DomainManager:
             return
 
         try:
-            # Import the domains package which will auto-register domains
+            # Try to import the domains package which will auto-register domains
+            # This is optional - examples/ provides domain extensions via PYTHONPATH
             import domains
 
             domains.discover_domains()
@@ -39,8 +40,10 @@ class DomainManager:
             self._domains = {name: domains.get_domain(name) for name in domains.list_domains()}
             self._loaded = True
 
-        except ImportError as e:
-            print(f"Warning: Could not import domains package: {e}")
+        except ImportError:
+            # No domains package found - this is expected when using examples/ approach
+            # Domain extensions are loaded via PYTHONPATH and namespace packages
+            self._loaded = True
         except Exception as e:
             print(f"Warning: Error discovering domains: {e}")
 
