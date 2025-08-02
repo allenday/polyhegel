@@ -114,7 +114,7 @@ release = "1.2.0"
 git log --oneline --no-merges v1.1.0..HEAD > CHANGELOG_draft.md
 
 # Or use automated tools
-conventional-changelog -p angular -i CHANGELOG.md -s
+conventional-changelog -p angular -i CHANGELOG_draft.md -s
 ```
 
 #### Documentation Updates
@@ -392,7 +392,7 @@ Improved agent-to-agent communication with:
 - Corrected serialization issues with complex strategy chains
 
 ## 📋 Full Changelog
-See [CHANGELOG.md](CHANGELOG.md) for complete details.
+See the project's version control history for complete details.
 
 ## 🔄 Upgrade Instructions
 ```bash

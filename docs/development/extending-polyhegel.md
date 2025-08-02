@@ -365,7 +365,7 @@ Consider contributing useful domains back to the polyhegel examples:
 - **Examples Reference:** `examples/polyhegel/techniques/strategic/`
 - **A2A Documentation:** Agent-to-Agent protocol specifications
 - **Core Architecture:** [Core vs Examples Guide](../architecture/core-vs-examples.md)
-- **Contributing:** [Contribution Guidelines](../contributing.md)
+- **Contributing:** [Development Guide](../contributing/development.md)
 
 ---
 

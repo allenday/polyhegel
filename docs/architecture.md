@@ -119,4 +119,4 @@ register_technique(MyCustomTechnique)
 - PYTHONPATH-based loading ensures efficient technique discovery
 
 ## Contributing
-See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines on extending Polyhegel's core and example packages.
+See [Development Guide](contributing/development.md) for guidelines on extending Polyhegel's core and example packages.

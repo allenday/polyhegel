@@ -377,7 +377,7 @@ curl http://localhost:7002/health  # Stakeholder follower
 ## Resources
 
 - **Architecture Guide:** [Core vs Examples](architecture/core-vs-examples.md)
-- **API Reference:** [API Documentation](reference/index.md)
+- **API Reference:** [API Documentation](reference/)
 - **Examples:** [Domain Implementations](../examples/)
 - **Contributing:** [Development Guide](contributing/development.md)
 

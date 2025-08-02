@@ -80,7 +80,7 @@ graph TB
 - [Installation Guide](getting-started/installation.md) - Get Polyhegel set up
 - [Quick Start Tutorial](getting-started/quickstart.md) - Your first simulation
 - [A2A Agents Guide](guide/a2a-agents.md) - Learn about distributed agents
-- [API Reference](reference/index.md) - Detailed code documentation
+- [API Reference](reference/) - Detailed code documentation
 
 ## Contributing
 

@@ -195,7 +195,7 @@ The technical tool is working, but you need help with strategic thinking:
 
 ### "I want to contribute"
 
-Great! See [DEVELOPMENT.md](../../DEVELOPMENT.md) for:
+Great! See [Development Guide](../contributing/development.md) for:
 - Development setup
 - Testing guidelines  
 - Code style standards
