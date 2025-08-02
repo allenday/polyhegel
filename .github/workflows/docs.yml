@@ -78,8 +78,8 @@ jobs:
         echo "Testing documentation build..."
         test -f site/index.html || (echo "Missing index.html" && exit 1)
         test -d site/reference || (echo "Missing API reference" && exit 1)
-        test -f site/getting-started/installation/index.html || (echo "Missing installation guide" && exit 1)
-        test -f site/getting-started/quickstart/index.html || (echo "Missing quickstart guide" && exit 1)
+        test -f site/getting-started/installation.html || (echo "Missing installation guide" && exit 1)
+        test -f site/getting-started/quickstart.html || (echo "Missing quickstart guide" && exit 1)
         echo "✅ Documentation structure validated"
     
     - name: Check for broken links (basic)
