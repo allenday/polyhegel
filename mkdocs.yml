@@ -1,0 +1,97 @@
+site_name: Polyhegel Documentation
+site_description: Simulator for identifying effective trunk narratives for swarm AI genesis
+site_url: https://allenday.github.io/polyhegel/
+repo_url: https://github.com/allenday/polyhegel
+repo_name: allenday/polyhegel
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - search.highlight
+    - search.share
+    - toc.follow
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - scheme: default
+      primary: blue
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - search
+  - gen-files:
+      scripts:
+        - docs/gen_ref_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - section-index
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            members_order: source
+            separate_signature: true
+            filters: ["!^_"]
+            merge_init_into_class: true
+            docstring_section_style: spacy
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Configuration: getting-started/configuration.md
+  - User Guide:
+    - Strategic Simulation: guide/simulation.md
+    - A2A Agents: guide/a2a-agents.md
+    - Strategic Techniques: guide/strategic-techniques.md
+    - Tournament Mode: guide/tournament.md
+  - API Reference: reference/
+  - Architecture:
+    - Overview: architecture/overview.md
+    - Strategic Techniques: architecture/strategic-techniques.md
+    - Security: architecture/security.md
+  - Contributing:
+    - Development Guide: contributing/development.md
+    - Testing: contributing/testing.md
+    - Release Process: contributing/releases.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/allenday/polyhegel
+  version:
+    provider: mike
