@@ -1,4 +1,4 @@
-.PHONY: test test-unit test-integration test-slow test-all test-quick test-no-llm test-coverage clean help agents agents-start agents-stop agents-status agents-restart typecheck build docs install-dev
+.PHONY: test test-unit test-integration test-slow test-all test-quick test-no-llm test-coverage clean help agents agents-start agents-stop agents-status agents-restart typecheck build docs install-dev ci-setup ci-deps ci-security docs-serve
 
 # Python executable - detect if we're in CI or local dev
 PYTHON := $(shell if [ -f .venv/bin/python ]; then echo ".venv/bin/python"; else echo "python"; fi)
@@ -28,7 +28,13 @@ help:
 	@echo "  make typecheck     - Run type checking with mypy"
 	@echo "  make build         - Build Python package"
 	@echo "  make docs          - Build documentation"
+	@echo "  make docs-serve    - Serve documentation locally"
 	@echo "  make install-dev   - Install development dependencies"
+	@echo ""
+	@echo "CI targets:"
+	@echo "  make ci-setup      - Setup CI environment"
+	@echo "  make ci-deps       - Install CI dependencies with constraints"
+	@echo "  make ci-security   - Run security scans"
 
 # Default test target
 test: test-unit
@@ -80,10 +86,32 @@ build:
 
 docs:
 	@echo "📚 Building documentation..."
-	@echo "Documentation target not yet implemented - placeholder for future docs build"
+	$(PYTHON) -m mkdocs build
 
 install-dev:
 	$(PYTHON) -m pip install -e .[dev]
+
+# CI-specific targets
+ci-setup:
+	@echo "🔧 Setting up CI environment..."
+	$(PYTHON) -m pip install --upgrade pip
+
+ci-deps:
+	@echo "📦 Installing dependencies with constraints..."
+	pip install --constraint constraints.txt "numpy<2.0"
+	pip install --constraint constraints.txt --no-binary scikit-learn-extra "scikit-learn-extra"
+	pip install --constraint constraints.txt -e .[dev]
+
+ci-security:
+	@echo "🔍 Running security scans..."
+	pip install safety bandit pip-audit
+	pip-audit --format=json --output=audit-results.json || echo "⚠️  pip-audit found issues"
+	bandit -r polyhegel -f json -o bandit-results.json || echo "⚠️  bandit found issues"  
+	safety check --json --output safety-results.json || echo "⚠️  safety found issues"
+
+docs-serve:
+	@echo "📚 Serving documentation locally..."
+	$(PYTHON) -m mkdocs serve
 
 # A2A Agent management
 agents-start:
