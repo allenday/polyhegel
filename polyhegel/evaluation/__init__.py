@@ -1,8 +1,13 @@
 """
-Evaluation and comparative testing framework for Polyhegel
+Generic Evaluation Framework for Polyhegel
+
+Provides base classes and interfaces for domain-specific evaluation implementations.
+Domain-specific evaluations are available through examples via PYTHONPATH.
 """
 
-from .comparative_test import ComparativeTestFramework
-from .metrics import StrategicMetrics, MetricsCollector
+from .base import EvaluationMetrics, MetricsCollector, EvaluationFramework, BaseTestConfiguration
 
-__all__ = ["ComparativeTestFramework", "StrategicMetrics", "MetricsCollector"]
+# This is now a namespace package that can be extended by examples/
+__path__ = __import__("pkgutil").extend_path(__path__, __name__)
+
+__all__ = ["EvaluationMetrics", "MetricsCollector", "EvaluationFramework", "BaseTestConfiguration"]

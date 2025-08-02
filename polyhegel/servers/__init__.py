@@ -1,10 +1,11 @@
 """
-Polyhegel A2A Server Applications
+Polyhegel Core Servers Package
 
-Standalone server applications for running polyhegel agents as distributed A2A services.
+This package provides the generic server framework for polyhegel.
+Domain-specific servers are provided through examples and can be loaded via PYTHONPATH.
 """
 
-from .leader_server import create_leader_server
-from .follower_server import create_follower_server
+# This is now a namespace package that can be extended by examples/
+__path__ = __import__("pkgutil").extend_path(__path__, __name__)
 
-__all__ = ["create_leader_server", "create_follower_server"]
+__all__ = []

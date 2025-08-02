@@ -7,7 +7,6 @@ from enum import Enum
 import numpy as np
 import networkx as nx
 from pydantic import BaseModel, Field, validator
-from .strategic_techniques import StrategyDomain
 
 
 class StrategyStep(BaseModel):
@@ -33,9 +32,9 @@ class GenesisStrategy(BaseModel):
 class ThemeCategory(str, Enum):
     """Strategic theme categories aligned with strategic domains"""
 
-    RESOURCE_ACQUISITION = StrategyDomain.RESOURCE_ACQUISITION.value
-    STRATEGIC_SECURITY = StrategyDomain.STRATEGIC_SECURITY.value
-    VALUE_CATALYSIS = StrategyDomain.VALUE_CATALYSIS.value
+    RESOURCE_ACQUISITION = "resource_acquisition"
+    STRATEGIC_SECURITY = "strategic_security"
+    VALUE_CATALYSIS = "value_catalysis"
     CROSS_CUTTING = "cross_cutting"  # Themes that span multiple domains
     FOUNDATIONAL = "foundational"  # Core infrastructure themes
 
@@ -121,11 +120,11 @@ class StrategicTheme(BaseModel):
         if not self.domain_alignment:
             return "No Strategic alignment specified"
 
-        # Map legacy numeric codes to StrategyDomain display names
+        # Map legacy numeric codes to display names
         domain_names = {
-            "2.1": StrategyDomain.RESOURCE_ACQUISITION.display_name,
-            "2.2": StrategyDomain.STRATEGIC_SECURITY.display_name,
-            "2.3": StrategyDomain.VALUE_CATALYSIS.display_name,
+            "2.1": "Resource Acquisition",
+            "2.2": "Strategic Security",
+            "2.3": "Value Catalysis",
         }
 
         summaries = []

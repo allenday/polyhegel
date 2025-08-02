@@ -14,7 +14,7 @@ from .prompts import get_system_prompt, get_template
 logger = logging.getLogger(__name__)
 
 
-class StrategyEvaluator:
+class Evaluator:
     """Evaluates and compares strategic plans using LLM-based analysis"""
 
     def __init__(self, model, system_prompt: Optional[str] = None):

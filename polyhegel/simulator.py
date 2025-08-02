@@ -11,13 +11,13 @@ from .config import Config
 from .models import StrategyChain
 from pydantic import BaseModel
 from .model_manager import ModelManager
-from .strategy_generator import StrategyGenerator
+from .generator import Generator as StrategyGenerator
 from .graph_builder import GraphBuilder
 from .embedder import StrategyEmbedder
 from .clusterer import StrategyClusterer
 from .summarizer import StrategySummarizer
 from .tournament import StrategyTournament
-from .strategy_evaluator import StrategyEvaluator
+from .evaluator import Evaluator as StrategyEvaluator
 
 logger = logging.getLogger(__name__)
 

@@ -9,13 +9,13 @@ from pydantic_ai import Agent
 
 from .models import GenesisStrategy, StrategyChain
 from .config import Config
-from .strategic_techniques import get_technique_by_name
+from .domain_manager import get_domain
 from .prompts import get_system_prompt, get_template
 
 logger = logging.getLogger(__name__)
 
 
-class StrategyGenerator:
+class Generator:
     """Handles strategy generation using LLMs.
 
     This class orchestrates the generation of strategic content using various
@@ -182,8 +182,12 @@ class StrategyGenerator:
         Raises:
             ValueError: If the specified technique name is not found.
         """
-        # Get the technique
-        technique = get_technique_by_name(technique_name)
+        # Get the technique from strategic domain
+        strategic_domain = get_domain("strategic")
+        if not strategic_domain:
+            raise ValueError("Strategic domain not available")
+
+        technique = strategic_domain.get_technique_registry().get(technique_name)
         if not technique:
             raise ValueError(f"Unknown technique: {technique_name}")
 
