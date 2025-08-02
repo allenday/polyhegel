@@ -85,6 +85,8 @@ class PromptLoader:
         """Load and cache prompt configuration"""
         if self._config is None:
             self._load_config()
+        if self._config is None:
+            raise RuntimeError("Failed to load prompt configuration")
         return self._config
 
     def _load_config(self):

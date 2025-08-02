@@ -30,11 +30,11 @@ class TestConfiguration:
 
     # Simulation parameters
     model_name: str = Config.DEFAULT_MODEL
-    temperature_counts: List[Tuple[float, int]] = None
+    temperature_counts: Optional[List[Tuple[float, int]]] = None
     mode: str = "temperature"
 
     # Test scenarios
-    test_scenarios: List[Dict[str, Any]] = None
+    test_scenarios: Optional[List[Dict[str, Any]]] = None
 
     def __post_init__(self):
         if self.temperature_counts is None:
@@ -98,7 +98,7 @@ class ComparativeTestFramework:
         # Initialize results storage
         clustering_metrics = []
         tournament_metrics = []
-        execution_summary = {
+        execution_summary: Dict[str, Any] = {
             "test_start_time": test_start_time,
             "clustering_runs": [],
             "tournament_runs": [],
@@ -244,7 +244,7 @@ class ComparativeTestFramework:
     ) -> Dict[str, Any]:
         """Perform statistical analysis comparing the two methods"""
 
-        analysis = {
+        analysis: Dict[str, Any] = {
             "statistical_significance": {},
             "effect_sizes": {},
             "performance_comparison": {},
@@ -307,8 +307,8 @@ class ComparativeTestFramework:
             }
 
         # Reliability analysis (consistency across runs)
-        clustering_cv = 0
-        tournament_cv = 0
+        clustering_cv: float = 0.0
+        tournament_cv: float = 0.0
 
         if len(clustering_scores["overall"]) > 1 and statistics.mean(clustering_scores["overall"]) > 0:
             clustering_cv = statistics.stdev(clustering_scores["overall"]) / statistics.mean(

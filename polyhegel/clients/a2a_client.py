@@ -5,11 +5,10 @@ Client for connecting to distributed polyhegel A2A agents.
 """
 
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any
 
 import httpx
-from a2a.client import A2AClient, create_text_message_object
 
 from ..models import StrategyChain, GenesisStrategy, StrategyStep
 from ..telemetry import get_telemetry_collector, EventType, time_operation
@@ -28,8 +27,8 @@ class A2AAgentEndpoints:
     follower_general_url: str = "http://localhost:8005"
 
     # Authentication credentials
-    api_keys: Dict[str, str] = None  # agent_name -> api_key mapping
-    jwt_tokens: Dict[str, str] = None  # agent_name -> jwt_token mapping
+    api_keys: Dict[str, str] = field(default_factory=dict)  # agent_name -> api_key mapping
+    jwt_tokens: Dict[str, str] = field(default_factory=dict)  # agent_name -> jwt_token mapping
 
     @classmethod
     def from_env(cls) -> "A2AAgentEndpoints":
@@ -56,8 +55,8 @@ class A2AAgentEndpoints:
             follower_security_url=os.getenv("POLYHEGEL_FOLLOWER_SECURITY_URL", "http://localhost:8003"),
             follower_value_url=os.getenv("POLYHEGEL_FOLLOWER_VALUE_URL", "http://localhost:8004"),
             follower_general_url=os.getenv("POLYHEGEL_FOLLOWER_GENERAL_URL", "http://localhost:8005"),
-            api_keys=api_keys if api_keys else None,
-            jwt_tokens=jwt_tokens if jwt_tokens else None,
+            api_keys=api_keys or {},
+            jwt_tokens=jwt_tokens or {},
         )
 
     def get_follower_urls(self) -> Dict[str, str]:
@@ -152,15 +151,15 @@ class PolyhegelA2AClient:
         logger.info(f"Generating themes via A2A leader agent at {self.endpoints.leader_url}")
 
         try:
-            # Use A2A client for leader agent
-            client = A2AClient(self.endpoints.leader_url)
-
-            # Send strategic challenge to leader agent
-            message = create_text_message_object(strategic_challenge)
-
-            # Simple request-response pattern for now
-            await client.message_send(message)
-            logger.info("Received response from leader agent")
+            # Use HTTP client for leader agent (placeholder implementation)
+            async with httpx.AsyncClient() as http_client:
+                response = await http_client.post(
+                    f"{self.endpoints.leader_url}/generate_themes",
+                    json={"strategic_challenge": strategic_challenge, "max_themes": max_themes},
+                )
+                response.raise_for_status()
+                _ = response.json()  # Response data would be used in full implementation
+                logger.info("Received response from leader agent")
 
             # Parse themes from response (simplified)
             themes = [
@@ -202,16 +201,14 @@ class PolyhegelA2AClient:
         logger.info(f"Developing strategy via A2A follower agent at {follower_url}")
 
         try:
-            # Use A2A client for follower agent
-            client = A2AClient(follower_url)
-
-            # Send theme to follower agent
-            theme_text = f"Develop strategy for theme: {theme.get('title', 'Unknown Theme')}"
-            message = create_text_message_object(theme_text)
-
-            # Simple request-response pattern
-            await client.message_send(message)
-            logger.info("Received response from follower agent")
+            # Use HTTP client for follower agent (placeholder implementation)
+            async with httpx.AsyncClient() as http_client:
+                response = await http_client.post(
+                    f"{follower_url}/develop_strategy", json={"theme": theme, "domain": domain}
+                )
+                response.raise_for_status()
+                _ = response.json()  # Response data would be used in full implementation
+                logger.info("Received response from follower agent")
 
             # Return basic strategy structure
             strategy = {

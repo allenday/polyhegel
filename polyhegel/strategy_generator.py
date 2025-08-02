@@ -99,7 +99,7 @@ class StrategyGenerator:
         return chains
 
     async def _generate_single_strategy(
-        self, agent: Agent, prompt: str, temperature: float, sample_id: int, max_retries: int = 3
+        self, agent: Agent[None, GenesisStrategy], prompt: str, temperature: float, sample_id: int, max_retries: int = 3
     ) -> StrategyChain:
         """Generate a single strategy with retry logic"""
         from pydantic_ai.settings import ModelSettings
@@ -119,6 +119,9 @@ class StrategyGenerator:
                 else:
                     logger.warning(f"Attempt {attempt + 1} failed for strategy {sample_id}: {e}. Retrying...")
                     await asyncio.sleep(1)  # Brief delay before retry
+
+        # Should never reach here due to raise above, but needed for mypy
+        raise RuntimeError(f"Failed to generate strategy {sample_id} after all attempts")
 
     async def generate_with_technique(
         self, strategic_challenge: str, technique_name: str, temperature: float = 0.7, count: int = 1

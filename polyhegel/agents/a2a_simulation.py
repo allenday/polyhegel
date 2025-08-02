@@ -51,9 +51,10 @@ async def generate_hierarchical_strategies_a2a(
 
             if available_agents:
                 logger.info(f"Using real A2A agents: {available_agents}")
-                return await client.generate_hierarchical_strategies(
+                result = await client.generate_hierarchical_strategies(
                     strategic_challenge=strategic_challenge, max_themes=max_themes, context=context
                 )
+                return list(result) if result else []
             else:
                 logger.warning("No A2A agents available, falling back to mock")
 

@@ -407,22 +407,26 @@ class RecursiveRefinementEngine:
                 "execution_time_seconds": session.total_execution_time,
                 "llm_calls": session.total_llm_calls,
             },
-            "best_strategy": {
-                "title": session.best_strategy.strategy.title,
-                "steps": [
-                    {
-                        "action": step.action,
-                        "prerequisites": step.prerequisites,
-                        "outcome": step.outcome,
-                        "risks": step.risks,
-                        "confidence": step.confidence,
-                    }
-                    for step in session.best_strategy.strategy.steps
-                ],
-                "alignment_score": session.best_strategy.strategy.alignment_score,
-                "estimated_timeline": session.best_strategy.strategy.estimated_timeline,
-                "resource_requirements": session.best_strategy.strategy.resource_requirements,
-            },
+            "best_strategy": (
+                {
+                    "title": session.best_strategy.strategy.title,
+                    "steps": [
+                        {
+                            "action": step.action,
+                            "prerequisites": step.prerequisites,
+                            "outcome": step.outcome,
+                            "risks": step.risks,
+                            "confidence": step.confidence,
+                        }
+                        for step in session.best_strategy.strategy.steps
+                    ],
+                    "alignment_score": session.best_strategy.strategy.alignment_score,
+                    "estimated_timeline": session.best_strategy.strategy.estimated_timeline,
+                    "resource_requirements": session.best_strategy.strategy.resource_requirements,
+                }
+                if session.best_strategy is not None
+                else None
+            ),
             "performance_history": [metrics.model_dump(mode="json") for metrics in session.performance_history],
             "feedback_analyses": [
                 {
@@ -473,25 +477,26 @@ class RecursiveRefinementEngine:
             "",
             "## Best Strategy",
             "",
-            f"**Title:** {session.best_strategy.strategy.title}",
-            f"**Timeline:** {session.best_strategy.strategy.estimated_timeline}",
-            f"**Resources:** {len(session.best_strategy.strategy.resource_requirements)} required",
-            f"**Steps:** {len(session.best_strategy.strategy.steps)}",
+            f"**Title:** {session.best_strategy.strategy.title if session.best_strategy else 'No strategy found'}",
+            f"**Timeline:** {session.best_strategy.strategy.estimated_timeline if session.best_strategy else 'N/A'}",
+            f"**Resources:** {len(session.best_strategy.strategy.resource_requirements) if session.best_strategy else 0} required",
+            f"**Steps:** {len(session.best_strategy.strategy.steps) if session.best_strategy else 0}",
             "",
             "### Strategy Steps",
             "",
         ]
 
-        for i, step in enumerate(session.best_strategy.strategy.steps, 1):
-            report_lines.extend(
-                [
-                    f"**{i}. {step.action}** (Confidence: {step.confidence:.1f})",
-                    f"   - Prerequisites: {', '.join(step.prerequisites)}",
-                    f"   - Outcome: {step.outcome}",
-                    f"   - Risks: {', '.join(step.risks)}",
-                    "",
-                ]
-            )
+        if session.best_strategy:
+            for i, step in enumerate(session.best_strategy.strategy.steps, 1):
+                report_lines.extend(
+                    [
+                        f"**{i}. {step.action}** (Confidence: {step.confidence:.1f})",
+                        f"   - Prerequisites: {', '.join(step.prerequisites)}",
+                        f"   - Outcome: {step.outcome}",
+                        f"   - Risks: {', '.join(step.risks)}",
+                        "",
+                    ]
+                )
 
         # Performance evolution
         report_lines.extend(
@@ -518,12 +523,12 @@ class RecursiveRefinementEngine:
             report_lines.extend(["", "## Key Insights", ""])
 
             # Most common weaknesses
-            all_weaknesses = []
+            all_weaknesses: List[str] = []
             for analysis in session.feedback_analyses:
                 all_weaknesses.extend(analysis.weaknesses)
 
             if all_weaknesses:
-                weakness_counts = {}
+                weakness_counts: Dict[str, int] = {}
                 for weakness in all_weaknesses:
                     weakness_counts[weakness] = weakness_counts.get(weakness, 0) + 1
 
@@ -538,8 +543,8 @@ class RecursiveRefinementEngine:
             final_analysis = session.feedback_analyses[-1]
             if final_analysis.next_steps:
                 report_lines.extend(["**Final Recommendations:**"])
-                for step in final_analysis.next_steps[:5]:
-                    report_lines.append(f"- {step}")
+                for step_text in final_analysis.next_steps[:5]:
+                    report_lines.append(f"- {step_text}")
 
         # Write report
         with open(report_file, "w") as f:
