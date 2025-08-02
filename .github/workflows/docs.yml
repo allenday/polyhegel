@@ -65,6 +65,14 @@ jobs:
         name: documentation-site
         path: site/
     
+    - name: Debug artifact contents
+      run: |
+        echo "=== Artifact contents ==="
+        find site/ -type f -name "*.html" | head -20
+        echo "=== Getting started directory ==="
+        ls -la site/getting-started/ || echo "getting-started directory not found"
+        echo "=========================="
+    
     - name: Test documentation structure
       run: |
         echo "Testing documentation build..."
